@@ -1,5 +1,11 @@
-import 'package:example/assets/app_images.dart';
 import 'package:example/controllers/app_controller.dart';
+import 'package:example/pages/avatars_page.dart';
+import 'package:example/pages/buttons_page.dart';
+import 'package:example/pages/card_page.dart';
+import 'package:example/pages/dialogs_page.dart';
+import 'package:example/pages/home_page.dart';
+import 'package:example/pages/modal_page.dart';
+import 'package:example/pages/textbox_page.dart';
 import 'package:example/services/auth_service.dart';
 import 'package:example/services/storage_service.dart';
 import 'package:example/theme/app_theme.dart';
@@ -28,19 +34,49 @@ void main() async {
       lightTheme: MyAppTheme.light,
       menuItems: [
         MenuItem(
+          title: 'avatars'.tr,
+          icon: Icons.account_circle,
+          route: '/avatars',
+        ),
+        MenuItem(
+          title: 'buttons'.tr,
+          icon: Icons.smart_button,
+          route: '/buttons',
+        ),
+        MenuItem(
+          title: 'cards'.tr,
+          icon: Icons.style,
+          route: '/cards',
+        ),
+        MenuItem(
+          title: 'dialogs'.tr,
+          icon: Icons.chat_bubble_outline,
+          route: '/dialogs',
+        ),
+        MenuItem(
           title: 'home'.tr,
           icon: Icons.home,
           route: '/home',
         ),
         MenuItem(
-          title: 'settings'.tr,
-          icon: Icons.settings,
-          route: '/settings',
+          title: 'tabs'.tr,
+          icon: Icons.tab,
+          route: '/tabs',
         ),
         MenuItem(
-          title: 'settings2'.tr,
-          icon: Icons.settings,
-          route: '/settings2',
+          title: 'tables'.tr,
+          icon: Icons.table_chart,
+          route: '/tables',
+        ),
+        MenuItem(
+          title: 'modals'.tr,
+          icon: Icons.window,
+          route: '/modals',
+        ),
+        MenuItem(
+          title: 'textboxes'.tr,
+          icon: Icons.text_fields,
+          route: '/textboxes',
         ),
       ],
       customTranslations:
@@ -78,14 +114,38 @@ class MyApp extends StatelessWidget {
               preventDuplicates: true,
             ),
             GetPage(
-              name: '/settings',
-              page: () => const SettingsPage(),
+              name: '/dialogs',
+              page: () => const DialogsPage(),
               transition: Transition.noTransition,
               preventDuplicates: true,
             ),
             GetPage(
-              name: '/settings2',
-              page: () => const SettingsPage(),
+              name: '/cards',
+              page: () => const CardPage(),
+              transition: Transition.noTransition,
+              preventDuplicates: true,
+            ),
+            GetPage(
+              name: '/buttons',
+              page: () => const ButtonsPage(),
+              transition: Transition.noTransition,
+              preventDuplicates: true,
+            ),
+            GetPage(
+              name: '/avatars',
+              page: () => const AvatarsPage(),
+              transition: Transition.noTransition,
+              preventDuplicates: true,
+            ),
+            GetPage(
+              name: '/modals',
+              page: () => const ModalPage(),
+              transition: Transition.noTransition,
+              preventDuplicates: true,
+            ),
+            GetPage(
+              name: '/textboxes',
+              page: () => const TextBoxPage(),
               transition: Transition.noTransition,
               preventDuplicates: true,
             ),
@@ -95,13 +155,17 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class CustomLayout extends StatelessWidget {
+  final String title;
+  final Widget body;
+  final Widget? footer;
+  const CustomLayout(
+      {super.key, required this.title, required this.body, this.footer});
 
   @override
   Widget build(BuildContext context) {
     return ModBaseLayout(
-      title: 'home'.tr,
+      title: title,
       appBarActions: const [
         ProfileWidget(
           showFullProfile: true,
@@ -109,75 +173,48 @@ class HomePage extends StatelessWidget {
       ],
       menuItems: [
         MenuItem(
+          title: 'avatars'.tr,
+          icon: Icons.account_circle,
+          route: '/avatars',
+        ),
+        MenuItem(
+          title: 'buttons'.tr,
+          icon: Icons.smart_button,
+          route: '/buttons',
+        ),
+        MenuItem(
+          title: 'cards'.tr,
+          icon: Icons.style,
+          route: '/cards',
+        ),
+        MenuItem(
+          title: 'dialogs'.tr,
+          icon: Icons.chat_bubble_outline,
+          route: '/dialogs',
+        ),
+        MenuItem(
           title: 'home'.tr,
           icon: Icons.home,
           route: '/home',
         ),
         MenuItem(
-          title: 'settings'.tr,
-          icon: Icons.settings,
-          route: '/settings',
+          title: 'tabs'.tr,
+          icon: Icons.tab,
+          route: '/tabs',
         ),
         MenuItem(
-          title: 'settings2'.tr,
-          icon: Icons.settings,
-          route: '/settings2',
+          title: 'modals'.tr,
+          icon: Icons.window,
+          route: '/modals',
+        ),
+        MenuItem(
+          title: 'textboxes'.tr,
+          icon: Icons.text_fields,
+          route: '/textboxes',
         ),
       ],
-      body: Center(
-        child: ModCard(
-          header: Text('welcome'.tr),
-          content: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('This is an example of Mod Layout One package'),
-              const SizedBox(height: 20),
-              ModContainer(
-                child: ModRow(
-                  columns: [
-                    ModColumn(
-                      columnSizes: const {
-                        ScreenSize.xs: ColumnSize.col12,
-                        ScreenSize.md: ColumnSize.col4,
-                      },
-                      child: Container(
-                        color: Colors.blue.withOpacity(0.2),
-                        padding: const EdgeInsets.all(16),
-                        child: const Text('Column 1'),
-                      ),
-                    ),
-                    ModColumn(
-                      columnSizes: const {
-                        ScreenSize.xs: ColumnSize.col12,
-                        ScreenSize.md: ColumnSize.col4,
-                      },
-                      child: Container(
-                        color: Colors.green.withOpacity(0.2),
-                        padding: const EdgeInsets.all(16),
-                        child: const Text('Column 2'),
-                      ),
-                    ),
-                    ModColumn(
-                      columnSizes: const {
-                        ScreenSize.xs: ColumnSize.col12,
-                        ScreenSize.md: ColumnSize.col4,
-                      },
-                      child: Container(
-                        color: Colors.red.withOpacity(0.2),
-                        padding: const EdgeInsets.all(16),
-                        child: const Text('Column 2'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      footer: Row(
-        children: [Text('footer'.tr), Text('footer'.tr)],
-      ),
+      body: body,
+      footer: footer,
     );
   }
 }
@@ -187,31 +224,8 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ModBaseLayout(
+    return CustomLayout(
       title: 'settings'.tr,
-      logo: Image.asset(AppImages.logoMod, height: 30),
-      appBarActions: const [
-        ProfileWidget(
-          showFullProfile: true,
-        ),
-      ],
-      menuItems: [
-        MenuItem(
-          title: 'home'.tr,
-          icon: Icons.home,
-          route: '/home',
-        ),
-        MenuItem(
-          title: 'settings'.tr,
-          icon: Icons.settings,
-          route: '/settings',
-        ),
-        MenuItem(
-          title: 'settings2'.tr,
-          icon: Icons.settings,
-          route: '/settings2',
-        ),
-      ],
       body: Center(
         child: ModCard(
           header: Text('settings'.tr),

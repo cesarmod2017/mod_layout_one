@@ -1,0 +1,202 @@
+import 'package:flutter/material.dart';
+
+enum DialogSize {
+  sm,
+  md,
+  lg,
+}
+
+enum DialogPosition {
+  topLeft,
+  topCenter,
+  topRight,
+  centerLeft,
+  center,
+  centerRight,
+  bottomLeft,
+  bottomCenter,
+  bottomRight,
+}
+
+class ModDialog extends StatelessWidget {
+  final String title;
+  final Widget content;
+  final List<Widget> buttons;
+  final ButtonAlignment buttonAlignment;
+  final bool dismissible;
+  final VoidCallback? onClose;
+  final DialogSize size;
+  final DialogPosition position;
+  final Color? headerColor;
+  final Color? contentColor;
+  final Color? footerColor;
+  final IconData? icon;
+  final double borderRadius;
+
+  const ModDialog({
+    super.key,
+    required this.title,
+    required this.content,
+    required this.buttons,
+    this.buttonAlignment = ButtonAlignment.right,
+    this.dismissible = true,
+    this.onClose,
+    this.size = DialogSize.md,
+    this.position = DialogPosition.center,
+    this.headerColor,
+    this.contentColor,
+    this.footerColor,
+    this.icon,
+    this.borderRadius = 8,
+  });
+
+  double _getDialogWidth(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    switch (size) {
+      case DialogSize.sm:
+        return screenWidth * 0.3;
+      case DialogSize.md:
+        return screenWidth * 0.5;
+      case DialogSize.lg:
+        return screenWidth * 0.7;
+    }
+  }
+
+  Alignment _getDialogPosition() {
+    switch (position) {
+      case DialogPosition.topLeft:
+        return Alignment.topLeft;
+      case DialogPosition.topCenter:
+        return Alignment.topCenter;
+      case DialogPosition.topRight:
+        return Alignment.topRight;
+      case DialogPosition.centerLeft:
+        return Alignment.centerLeft;
+      case DialogPosition.center:
+        return Alignment.center;
+      case DialogPosition.centerRight:
+        return Alignment.centerRight;
+      case DialogPosition.bottomLeft:
+        return Alignment.bottomLeft;
+      case DialogPosition.bottomCenter:
+        return Alignment.bottomCenter;
+      case DialogPosition.bottomRight:
+        return Alignment.bottomRight;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return PopScope(
+      canPop: dismissible,
+      child: Dialog(
+        alignment: _getDialogPosition(),
+        elevation: 8,
+        child: Container(
+          width: _getDialogWidth(context),
+          decoration: BoxDecoration(
+            color: Theme.of(context).dialogBackgroundColor,
+            borderRadius: BorderRadius.circular(borderRadius),
+            boxShadow: [
+              BoxShadow(
+                color: (isDark ? Colors.grey : Colors.black).withOpacity(0.2),
+                blurRadius: 5,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: headerColor,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(borderRadius),
+                    topRight: Radius.circular(borderRadius),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          if (icon != null) ...[
+                            Icon(icon),
+                            const SizedBox(width: 8),
+                          ],
+                          Text(
+                            title,
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () {
+                        if (onClose != null) {
+                          onClose!();
+                        }
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
+              // Content
+              Container(
+                padding: const EdgeInsets.all(16),
+                width: double.infinity,
+                color: contentColor,
+                child: content,
+              ),
+
+              // Footer
+              Container(
+                padding: const EdgeInsets.all(16),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: footerColor,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(borderRadius),
+                    bottomRight: Radius.circular(borderRadius),
+                  ),
+                ),
+                alignment: _getAlignment(),
+                child: Wrap(
+                  spacing: 8,
+                  children: buttons,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Alignment _getAlignment() {
+    switch (buttonAlignment) {
+      case ButtonAlignment.left:
+        return Alignment.centerLeft;
+      case ButtonAlignment.center:
+        return Alignment.center;
+      case ButtonAlignment.right:
+        return Alignment.centerRight;
+    }
+  }
+}
+
+enum ButtonAlignment {
+  left,
+  center,
+  right,
+}

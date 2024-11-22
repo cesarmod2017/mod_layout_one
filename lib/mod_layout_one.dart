@@ -10,6 +10,8 @@ import 'package:mod_layout_one/themes/app_theme.dart';
 import 'package:mod_layout_one/translations/base_translations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+export 'package:mod_layout_one/widgets/avatars/avatars.dart';
+
 export 'controllers/language_controller.dart';
 export 'controllers/layout_controller.dart';
 // Controllers
@@ -32,8 +34,10 @@ export 'translations/base_translations.dart';
 export 'translations/en_us.dart';
 export 'translations/es_es.dart';
 export 'translations/pt_br.dart';
+export 'widgets/buttons/buttons.dart';
 // Cards
 export 'widgets/cards/card_default.dart';
+export 'widgets/dialogs/dialog.dart';
 // Grid
 export 'widgets/grid/mod_grid.dart';
 // Grid System
@@ -43,6 +47,9 @@ export 'widgets/grid_system/grid_system.dart';
 export 'widgets/grid_system/grid_system_colums.dart';
 export 'widgets/grid_system/grid_system_container.dart';
 export 'widgets/grid_system/grid_system_rows.dart';
+export 'widgets/modal/modal.dart';
+export 'widgets/tabs/tabs.dart';
+export 'widgets/textbox/textbox.dart';
 
 // Configuration
 class ModLayoutConfig {

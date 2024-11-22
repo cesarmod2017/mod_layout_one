@@ -1,7 +1,7 @@
 name: mod_layout_one
-description: A flexible and customizable layout package for Flutter applications with built-in theme and language support.
-version: 0.0.1
-homepage: https://github.com/yourusername/mod_layout_one
+description: A comprehensive Flutter layout package with theming and i18n support
+version: 1.0.0
+homepage: https://github.com/cesarmod2017/mod_layout_one
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -13,6 +13,7 @@ dependencies:
   get: ^4.6.6
   shared_preferences: ^2.3.3
   flutter_svg: ^2.0.15
+  cached_network_image: ^3.4.1
 
 dev_dependencies:
   flutter_test:
