@@ -21,6 +21,7 @@ class ModBaseLayout extends StatelessWidget {
   final Color? sidebarBackgroundColor;
   final Color? sidebarSelectedColor;
   final Color? sidebarUnselectedColor;
+  final double footerHeight; // Created footerHeight
 
   const ModBaseLayout({
     super.key,
@@ -37,6 +38,7 @@ class ModBaseLayout extends StatelessWidget {
     this.sidebarBackgroundColor,
     this.sidebarSelectedColor,
     this.sidebarUnselectedColor,
+    this.footerHeight = 50.0, // Default value for footerHeight
   });
 
   @override
@@ -83,7 +85,8 @@ class ModBaseLayout extends StatelessWidget {
                 child: Column(
                   children: [
                     Expanded(child: body),
-                    if (footer != null) ModFooter(child: footer)
+                    if (footer != null)
+                      ModFooter(height: footerHeight, child: footer)
                   ],
                 ),
               ),

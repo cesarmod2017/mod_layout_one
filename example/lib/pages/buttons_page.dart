@@ -30,6 +30,13 @@ class ButtonsPage extends StatelessWidget {
                     type: ModButtonType.primary,
                     onPressed: () async {},
                   ),
+                  const Text("Button with Autosize Disabled:"),
+                  ModButton(
+                    title: 'Simple Button',
+                    type: ModButtonType.primary,
+                    autosize: false,
+                    onPressed: () async {},
+                  ),
                   const SizedBox(height: 16),
                   const Text("Button with Icons:"),
                   ModButton(

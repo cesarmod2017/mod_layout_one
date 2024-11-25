@@ -8,12 +8,20 @@ class MenuItem {
   final IconData icon;
   final String route;
   final List<MenuItem>? subItems;
+  final String? type;
+  final String? value;
+  final String? url;
+  final VoidCallback? onTap; // Added onTap parameter
 
   const MenuItem({
     required this.title,
     required this.icon,
     required this.route,
     this.subItems,
+    this.type,
+    this.value,
+    this.url,
+    this.onTap, // Added onTap parameter
   });
 }
 
@@ -87,12 +95,14 @@ class ModSidebar extends StatelessWidget {
               )
             : null,
         selected: isSelected,
-        onTap: () {
-          controller.setSelectedRoute(item.route);
-          Get.offNamed(item.route); // Alterado de toNamed para offNamed
-          if (Get.isDialogOpen ?? false) Get.back();
-          if (Get.width < 768) Get.back();
-        },
+        onTap: item.onTap ??
+            () {
+              // Check if onTap is provided
+              controller.setSelectedRoute(item.route);
+              Get.offNamed(item.route); // Alterado de toNamed para offNamed
+              if (Get.isDialogOpen ?? false) Get.back();
+              if (Get.width < 768) Get.back();
+            },
       );
     });
   }

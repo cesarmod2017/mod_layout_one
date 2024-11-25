@@ -30,6 +30,8 @@ class ModButton extends StatefulWidget {
   final ModButtonType borderColor;
   final Color? textColor;
   final bool disabled;
+  final bool autosize;
+  final TextAlign textAlign;
 
   const ModButton({
     super.key,
@@ -46,6 +48,8 @@ class ModButton extends StatefulWidget {
     this.borderColor = ModButtonType.defaultType,
     this.textColor,
     this.disabled = false,
+    this.autosize = true,
+    this.textAlign = TextAlign.center,
   });
 
   @override
@@ -234,13 +238,14 @@ class _ModButtonState extends State<ModButton>
               },
         child: Container(
           padding: _getPadding(),
+          width: widget.autosize ? null : double.infinity,
           decoration: BoxDecoration(
             color: _getTypeColor(),
             borderRadius: BorderRadius.circular(widget.borderRadius),
             border: _getBorder(),
           ),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: widget.autosize ? MainAxisSize.min : MainAxisSize.max,
             children: [
               if (widget.leftIcon != null && !_isLoading)
                 Padding(
@@ -270,6 +275,7 @@ class _ModButtonState extends State<ModButton>
                     color: _getTextColor(),
                     fontSize: _getFontSize(),
                   ),
+                  textAlign: widget.textAlign,
                 )
               else if (widget.title != null)
                 Text(
@@ -278,6 +284,7 @@ class _ModButtonState extends State<ModButton>
                     color: _getTextColor(),
                     fontSize: _getFontSize(),
                   ),
+                  textAlign: widget.textAlign,
                 ),
               if (widget.rightIcon != null && !_isLoading)
                 Padding(

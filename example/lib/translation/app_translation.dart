@@ -11,15 +11,24 @@ class AppTranslations extends BaseTranslations {
     final customKeys = {
       'en_US': {
         'settings_content': 'Settings content here',
-        'welcome': 'Welcome'
+        'welcome': 'Welcome',
+        'language_english': 'English',
+        'language_portuguese': 'Portuguese',
+        'language_spanish': 'Spanish',
       },
       'pt_BR': {
         'settings_content': 'Conteúdo das configurações aqui',
-        'welcome': 'Bem-vindo'
+        'welcome': 'Bem-vindo',
+        'language_english': 'Inglês',
+        'language_portuguese': 'Português',
+        'language_spanish': 'Espanhol',
       },
       'es_ES': {
         'settings_content': 'Contenido de las configuraciones aquí',
-        'welcome': 'Bienvenido'
+        'welcome': 'Bienvenido',
+        'language_english': 'Inglés',
+        'language_portuguese': 'Portugués',
+        'language_spanish': 'Español',
       }
     };
 
