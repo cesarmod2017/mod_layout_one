@@ -4,14 +4,16 @@ import 'package:mod_layout_one/widgets/grid_system/grid_system.dart';
 class ModColumn extends StatelessWidget {
   final Widget child;
   final Map<ScreenSize, ColumnSize> columnSizes;
+  final EdgeInsets? padding;
 
   const ModColumn({
     super.key,
     required this.child,
     required this.columnSizes,
+    this.padding = EdgeInsets.zero,
   });
 
-  double _getColumnWidth(BuildContext context, BoxConstraints constraints) {
+  double? _getColumnWidth(BuildContext context, BoxConstraints constraints) {
     final width = MediaQuery.of(context).size.width;
     ScreenSize currentSize;
 
@@ -46,6 +48,11 @@ class ModColumn extends StatelessWidget {
     }
 
     colSize ??= ColumnSize.col12;
+
+    if (colSize == ColumnSize.none) {
+      return null;
+    }
+
     return ((colSize.index + 1) / 12);
   }
 
@@ -54,13 +61,18 @@ class ModColumn extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final percentage = _getColumnWidth(context, constraints);
+
+        if (percentage == null) {
+          return const SizedBox.shrink();
+        }
+
         final columnWidth = constraints.maxWidth * percentage;
 
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-          child: SizedBox(
-            width:
-                columnWidth, // Removido a subtração do padding já que agora é 0
+          padding: const EdgeInsets.all(0),
+          child: Container(
+            padding: padding ?? const EdgeInsets.all(0),
+            width: columnWidth,
             child: child,
           ),
         );

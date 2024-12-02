@@ -12,7 +12,7 @@ enum ModButtonType {
   defaultType
 }
 
-enum ModBorderType { none, solid, dashed, dotted }
+enum ModBorderType { none, solid }
 
 enum ModButtonSize { lg, md, sm, xs }
 
@@ -85,6 +85,58 @@ class _ModButtonState extends State<ModButton>
     super.dispose();
   }
 
+  double _getHeight() {
+    switch (widget.size) {
+      case ModButtonSize.lg:
+        return 48;
+      case ModButtonSize.md:
+        return 40;
+      case ModButtonSize.sm:
+        return 32;
+      case ModButtonSize.xs:
+        return 24;
+    }
+  }
+
+  EdgeInsets _getPadding() {
+    switch (widget.size) {
+      case ModButtonSize.lg:
+        return const EdgeInsets.symmetric(horizontal: 24, vertical: 12);
+      case ModButtonSize.md:
+        return const EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+      case ModButtonSize.sm:
+        return const EdgeInsets.symmetric(horizontal: 12, vertical: 6);
+      case ModButtonSize.xs:
+        return const EdgeInsets.symmetric(horizontal: 8, vertical: 4);
+    }
+  }
+
+  double _getIconSize() {
+    switch (widget.size) {
+      case ModButtonSize.lg:
+        return 24;
+      case ModButtonSize.md:
+        return 20;
+      case ModButtonSize.sm:
+        return 18;
+      case ModButtonSize.xs:
+        return 16;
+    }
+  }
+
+  double _getFontSize() {
+    switch (widget.size) {
+      case ModButtonSize.lg:
+        return 18;
+      case ModButtonSize.md:
+        return 16;
+      case ModButtonSize.sm:
+        return 14;
+      case ModButtonSize.xs:
+        return 12;
+    }
+  }
+
   Color _getTypeColor() {
     if (widget.disabled) {
       return Colors.grey.shade300;
@@ -146,14 +198,6 @@ class _ModButtonState extends State<ModButton>
       case ModBorderType.solid:
         borderStyle = BorderStyle.solid;
         break;
-      case ModBorderType.dashed:
-        borderStyle =
-            BorderStyle.solid; // Flutter doesn't support dashed directly
-        break;
-      case ModBorderType.dotted:
-        borderStyle =
-            BorderStyle.solid; // Flutter doesn't support dotted directly
-        break;
     }
 
     return Border.all(
@@ -178,47 +222,10 @@ class _ModButtonState extends State<ModButton>
     return Colors.white;
   }
 
-  EdgeInsets _getPadding() {
-    switch (widget.size) {
-      case ModButtonSize.lg:
-        return const EdgeInsets.symmetric(horizontal: 24, vertical: 12);
-      case ModButtonSize.md:
-        return const EdgeInsets.symmetric(horizontal: 16, vertical: 8);
-      case ModButtonSize.sm:
-        return const EdgeInsets.symmetric(horizontal: 12, vertical: 6);
-      case ModButtonSize.xs:
-        return const EdgeInsets.symmetric(horizontal: 8, vertical: 4);
-    }
-  }
-
-  double _getFontSize() {
-    switch (widget.size) {
-      case ModButtonSize.lg:
-        return 18;
-      case ModButtonSize.md:
-        return 16;
-      case ModButtonSize.sm:
-        return 14;
-      case ModButtonSize.xs:
-        return 12;
-    }
-  }
-
-  double _getIconSize() {
-    switch (widget.size) {
-      case ModButtonSize.lg:
-        return 24;
-      case ModButtonSize.md:
-        return 20;
-      case ModButtonSize.sm:
-        return 18;
-      case ModButtonSize.xs:
-        return 16;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final height = _getHeight();
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -237,6 +244,7 @@ class _ModButtonState extends State<ModButton>
                 }
               },
         child: Container(
+          height: height,
           padding: _getPadding(),
           width: widget.autosize ? null : double.infinity,
           decoration: BoxDecoration(
@@ -246,6 +254,7 @@ class _ModButtonState extends State<ModButton>
           ),
           child: Row(
             mainAxisSize: widget.autosize ? MainAxisSize.min : MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (widget.leftIcon != null && !_isLoading)
                 Padding(

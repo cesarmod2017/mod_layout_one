@@ -34,7 +34,7 @@ class HomePage extends StatelessWidget {
                     ),
                     ModColumn(
                       columnSizes: const {
-                        ScreenSize.xs: ColumnSize.col12,
+                        ScreenSize.xs: ColumnSize.none,
                         ScreenSize.md: ColumnSize.col4,
                       },
                       child: Container(
@@ -52,6 +52,19 @@ class HomePage extends StatelessWidget {
                         color: Colors.red.withOpacity(0.2),
                         padding: const EdgeInsets.all(16),
                         child: const Text('Column 2'),
+                      ),
+                    ),
+                    ModColumn(
+                      columnSizes: const {
+                        ScreenSize.xs: ColumnSize.col12,
+                        ScreenSize.md: ColumnSize.none,
+                        ScreenSize.lg: ColumnSize.none,
+                      },
+                      child: Container(
+                        color: const Color.fromARGB(255, 168, 8, 120)
+                            .withOpacity(0.2),
+                        padding: const EdgeInsets.all(16),
+                        child: const Text('Column 4'),
                       ),
                     ),
                   ],

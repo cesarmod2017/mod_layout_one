@@ -35,9 +35,12 @@ export 'translations/en_us.dart';
 export 'translations/es_es.dart';
 export 'translations/pt_br.dart';
 export 'widgets/buttons/buttons.dart';
+export 'widgets/buttons/icon_buttom.dart';
 // Cards
 export 'widgets/cards/card_default.dart';
+export 'widgets/datatable/datatable.dart';
 export 'widgets/dialogs/dialog.dart';
+export 'widgets/dropdown/dropdown.dart';
 // Grid
 export 'widgets/grid/mod_grid.dart';
 // Grid System

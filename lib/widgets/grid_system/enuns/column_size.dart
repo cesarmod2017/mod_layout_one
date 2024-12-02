@@ -10,5 +10,6 @@ enum ColumnSize {
   col9,
   col10,
   col11,
-  col12
+  col12,
+  none,
 }

@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:example/main.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mod_layout_one/mod_layout_one.dart';
 
 class TablesPage extends StatefulWidget {
@@ -213,6 +216,84 @@ class _TablesPageState extends State<TablesPage> {
                 }).toList(),
               ),
             ),
+
+            const SizedBox(height: 20),
+
+            ModCard(
+              header: const Text(
+                "Custom ModDataTable Example",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: ModDataTable(
+                paginationBorderRadius: 50,
+                headers: [
+                  ModDataHeader(
+                    child: SelectableText(
+                      'Name',
+                      style: Theme.of(Get.context!).textTheme.titleSmall,
+                    ),
+                    widthType: WidthType.fixed,
+                    width: 150,
+                    sortable: true,
+                    field: 'name', // Adicione o campo correspondente
+                  ),
+                  ModDataHeader(
+                    child: SelectableText(
+                      'Age',
+                      style: Theme.of(Get.context!).textTheme.titleSmall,
+                    ),
+                    widthType: WidthType.fixed,
+                    width: 150,
+                    sortable: true,
+                    field: 'age', // Adicione o campo correspondente
+                  ),
+                  ModDataHeader(
+                    child: const SelectableText('City'),
+                    widthType: WidthType.fixed,
+                    width: 150,
+                    sortable: true,
+                    field: 'city', // Adicione o campo correspondente
+                  ),
+                ],
+                data: _sortedData,
+                source: _DataSource(_sortedData),
+                currentPage: 0,
+                rowsPerPage: 5,
+                totalRecords: _sortedData.length,
+                oddRowColor:
+                    Theme.of(context).colorScheme.surfaceContainerHighest,
+                evenRowColor: Theme.of(context).colorScheme.surfaceContainer,
+                onPageChanged: (page) {
+                  // Handle page change
+                  log('Page changed: $page');
+                },
+                onSort: (field, direction) {
+                  // Handle sorting
+                  log('Sorting by $field in $direction direction');
+                },
+                paginationText: 'of', // Adicione se necessário
+                rowsPerPageText: 'Linhas por página',
+                paginationBackgroundColor:
+                    Theme.of(context).colorScheme.surface,
+                headerColor: Theme.of(context).colorScheme.surface,
+                onRowsPerPageChanged: (rowsPerPage) {
+                  // Handle rows per page change
+                  log('Rows per page changed: $rowsPerPage');
+                },
+                availableRowsPerPage: const [
+                  5,
+                  10,
+                  15,
+                  20,
+                  50,
+                  100,
+                  200
+                ], // Adicione se necessário
+              ),
+            ),
           ],
         ),
       ),
@@ -229,9 +310,9 @@ class _DataSource extends DataTableSource {
   DataRow getRow(int index) {
     return DataRow(
       cells: [
-        DataCell(Text(_data[index]['name'].toString())),
-        DataCell(Text(_data[index]['age'].toString())),
-        DataCell(Text(_data[index]['city'].toString())),
+        DataCell(SelectableText(_data[index]['name'].toString())),
+        DataCell(SelectableText(_data[index]['age'].toString())),
+        DataCell(SelectableText(_data[index]['city'].toString())),
       ],
     );
   }

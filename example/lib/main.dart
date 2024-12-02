@@ -5,6 +5,7 @@ import 'package:example/pages/card_page.dart';
 import 'package:example/pages/dialogs_page.dart';
 import 'package:example/pages/home_page.dart';
 import 'package:example/pages/modal_page.dart';
+import 'package:example/pages/tables_page.dart';
 import 'package:example/pages/textbox_page.dart';
 import 'package:example/services/auth_service.dart';
 import 'package:example/services/storage_service.dart';
@@ -78,6 +79,11 @@ void main() async {
           icon: Icons.text_fields,
           route: '/textboxes',
         ),
+        MenuItem(
+          title: 'tables'.tr,
+          icon: Icons.table_chart,
+          route: '/tables',
+        ),
       ],
       customTranslations:
           AppTranslations().keys, // Pass the translations directly
@@ -149,6 +155,12 @@ class MyApp extends StatelessWidget {
               transition: Transition.noTransition,
               preventDuplicates: true,
             ),
+            GetPage(
+              name: '/tables',
+              page: () => const TablesPage(),
+              transition: Transition.noTransition,
+              preventDuplicates: true,
+            ),
           ],
           initialRoute: '/home',
         ));
@@ -211,6 +223,11 @@ class CustomLayout extends StatelessWidget {
           title: 'textboxes'.tr,
           icon: Icons.text_fields,
           route: '/textboxes',
+        ),
+        MenuItem(
+          title: 'tables'.tr,
+          icon: Icons.table_chart,
+          route: '/tables',
         ),
       ],
       body: body,

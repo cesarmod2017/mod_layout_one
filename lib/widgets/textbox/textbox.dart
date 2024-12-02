@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 
 enum ModTextBoxLabelPosition { top, left }
 
+enum ModTextBoxSize { lg, md, sm, xs }
+
 class ModTextBox extends StatefulWidget {
   final String? label;
   final String? hint;
@@ -14,6 +16,7 @@ class ModTextBox extends StatefulWidget {
   final bool readOnly;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
+  final Widget? suffixButton;
   final TextInputType? keyboardType;
   final TextStyle? style;
   final ModTextBoxLabelPosition labelPosition;
@@ -40,6 +43,8 @@ class ModTextBox extends StatefulWidget {
   final GestureTapCallback? onTap;
   final bool onTapAlwaysCalled;
   final ValueChanged<String>? onFieldSubmitted;
+  final ModTextBoxSize size;
+  final double? fixedHeight;
 
   const ModTextBox({
     super.key,
@@ -53,6 +58,7 @@ class ModTextBox extends StatefulWidget {
     this.readOnly = false,
     this.prefixIcon,
     this.suffixIcon,
+    this.suffixButton,
     this.keyboardType,
     this.style,
     this.labelPosition = ModTextBoxLabelPosition.top,
@@ -79,6 +85,8 @@ class ModTextBox extends StatefulWidget {
     this.onTap,
     this.onTapAlwaysCalled = false,
     this.onFieldSubmitted,
+    this.size = ModTextBoxSize.md,
+    this.fixedHeight,
   });
 
   @override
@@ -89,6 +97,7 @@ class _ModTextBoxState extends State<ModTextBox> {
   late TextEditingController _controller;
   bool _obscureText = true;
   bool _hasFocus = false;
+  bool _showValidationError = false;
 
   @override
   void initState() {
@@ -110,66 +119,173 @@ class _ModTextBoxState extends State<ModTextBox> {
     super.dispose();
   }
 
+  double _getHeight() {
+    if (widget.fixedHeight != null) {
+      return widget.fixedHeight!;
+    }
+    switch (widget.size) {
+      case ModTextBoxSize.lg:
+        return 56; // Matches ModButtonSize.lg
+      case ModTextBoxSize.md:
+        return 49; // Matches ModButtonSize.md
+      case ModTextBoxSize.sm:
+        return 42; // Matches ModButtonSize.sm
+      case ModTextBoxSize.xs:
+        return 33; // Matches ModButtonSize.xs
+    }
+  }
+
+  double _getFontSize() {
+    switch (widget.size) {
+      case ModTextBoxSize.lg:
+        return 18; // Matches ModButtonSize.lg
+      case ModTextBoxSize.md:
+        return 16; // Matches ModButtonSize.md
+      case ModTextBoxSize.sm:
+        return 14; // Matches ModButtonSize.sm
+      case ModTextBoxSize.xs:
+        return 12; // Matches ModButtonSize.xs
+    }
+  }
+
+  double _getIconSize() {
+    switch (widget.size) {
+      case ModTextBoxSize.lg:
+        return 24;
+      case ModTextBoxSize.md:
+        return 20;
+      case ModTextBoxSize.sm:
+        return 18;
+      case ModTextBoxSize.xs:
+        return 16;
+    }
+  }
+
+  EdgeInsets _getContentPadding() {
+    final height = _getHeight();
+    return EdgeInsets.symmetric(
+      horizontal: 12,
+      vertical: (height - _getFontSize() - 8) / 2,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    // Ensure that if the field is a password field, it cannot be multiline
     final maxLines = widget.isPassword ? 1 : widget.maxLines;
+    final height = _getHeight();
+    final hasError = _showValidationError &&
+        (widget.errorText != null ||
+            (widget.validator != null &&
+                widget.validator!(_controller.text) != null));
+    final errorMessage = _showValidationError
+        ? widget.errorText ??
+            (widget.validator != null
+                ? widget.validator!(_controller.text)
+                : null)
+        : null;
 
     Widget textField = Focus(
       onFocusChange: (hasFocus) {
         setState(() {
           _hasFocus = hasFocus;
+          if (!hasFocus) {
+            _showValidationError = true;
+          }
         });
       },
-      child: TextFormField(
-        controller: _controller,
-        obscureText: widget.isPassword && _obscureText,
-        readOnly: widget.readOnly,
-        keyboardType: widget.keyboardType ?? TextInputType.text,
-        style: widget.style ?? theme.textTheme.bodyMedium,
-        inputFormatters: widget.inputFormatters,
-        validator: widget.validator,
-        autovalidateMode: widget.autovalidateMode,
-        autocorrect: widget.autocorrect,
-        autofocus: widget.autofocus,
-        cursorColor: widget.cursorColor,
-        cursorHeight: widget.cursorHeight,
-        enabled: widget.enabled,
-        expands: widget.expands,
-        focusNode: widget.focusNode,
-        maxLength: widget.maxLength,
-        maxLines: maxLines,
-        minLines: widget.minLines,
-        textAlign: widget.textAlign,
-        onTapOutside: widget.onTapOutside as TapRegionCallback?,
-        onEditingComplete: widget.onEditingComplete,
-        onSaved: widget.onSaved,
-        onTap: widget.onTap,
-        onFieldSubmitted: widget.onFieldSubmitted,
-        decoration: InputDecoration(
-          hintText: widget.hint,
-          errorText: widget.errorText,
-          prefixIcon: widget.prefixIcon,
-          suffixIcon: widget.isPassword
-              ? IconButton(
-                  icon: Icon(
-                    _obscureText ? Icons.visibility : Icons.visibility_off,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _obscureText = !_obscureText;
-                    });
-                  },
-                )
-              : widget.suffixIcon,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(widget.borderRadius),
+      child: SizedBox(
+        height: height,
+        child: Tooltip(
+          message: hasError ? errorMessage ?? '' : '',
+          textStyle: const TextStyle(
+            fontSize: 12,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
-          floatingLabelBehavior: widget.floatingLabel
-              ? FloatingLabelBehavior.auto
-              : FloatingLabelBehavior.never,
+          decoration: BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: TextFormField(
+            controller: _controller,
+            obscureText: widget.isPassword && _obscureText,
+            readOnly: widget.readOnly,
+            keyboardType: widget.keyboardType ?? TextInputType.text,
+            style: widget.style?.copyWith(fontSize: _getFontSize()) ??
+                TextStyle(fontSize: _getFontSize()),
+            inputFormatters: widget.inputFormatters,
+            validator: widget.validator,
+            autovalidateMode: widget.autovalidateMode,
+            autocorrect: widget.autocorrect,
+            autofocus: widget.autofocus,
+            cursorColor: widget.cursorColor,
+            cursorHeight: widget.cursorHeight,
+            enabled: widget.enabled,
+            expands: widget.expands,
+            focusNode: widget.focusNode,
+            maxLength: widget.maxLength,
+            maxLines: maxLines ?? 1,
+            minLines: widget.minLines,
+            textAlign: widget.textAlign,
+            onTapOutside: widget.onTapOutside as TapRegionCallback?,
+            onEditingComplete: widget.onEditingComplete,
+            onSaved: widget.onSaved,
+            onTap: widget.onTap,
+            onFieldSubmitted: widget.onFieldSubmitted,
+            decoration: InputDecoration(
+              isDense: true,
+              contentPadding: _getContentPadding(),
+              hintText: widget.hint,
+              errorStyle: const TextStyle(height: 0, fontSize: 0),
+              prefixIcon: widget.prefixIcon != null
+                  ? IconTheme(
+                      data: IconThemeData(size: _getIconSize()),
+                      child: widget.prefixIcon!,
+                    )
+                  : null,
+              suffixIcon: widget.isPassword
+                  ? IconButton(
+                      icon: Icon(
+                        _obscureText ? Icons.visibility : Icons.visibility_off,
+                        size: _getIconSize(),
+                      ),
+                      onPressed: () =>
+                          setState(() => _obscureText = !_obscureText),
+                    )
+                  : widget.suffixButton ??
+                      (widget.suffixIcon != null
+                          ? IconTheme(
+                              data: IconThemeData(size: _getIconSize()),
+                              child: widget.suffixIcon!,
+                            )
+                          : null),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(widget.borderRadius),
+                borderSide: BorderSide(
+                  color:
+                      hasError ? theme.colorScheme.error : theme.dividerColor,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(widget.borderRadius),
+                borderSide: BorderSide(
+                  color:
+                      hasError ? theme.colorScheme.error : theme.dividerColor,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(widget.borderRadius),
+                borderSide: BorderSide(
+                  color:
+                      hasError ? theme.colorScheme.error : theme.dividerColor,
+                ),
+              ),
+              floatingLabelBehavior: widget.floatingLabel
+                  ? FloatingLabelBehavior.auto
+                  : FloatingLabelBehavior.never,
+            ),
+          ),
         ),
       ),
     );

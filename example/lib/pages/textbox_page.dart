@@ -1,9 +1,20 @@
 import 'package:example/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mod_layout_one/mod_layout_one.dart' as mod;
+import 'package:mod_layout_one/mod_layout_one.dart';
 
-class TextBoxPage extends StatelessWidget {
+class TextBoxPage extends StatefulWidget {
   const TextBoxPage({super.key});
+
+  @override
+  State<TextBoxPage> createState() => _TextBoxPageState();
+}
+
+class _TextBoxPageState extends State<TextBoxPage> {
+  late String? selectedCountry = 'USA';
+
+  List<String> countries = ['USA', 'Canada', 'Mexico', 'Brazil'];
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +82,123 @@ class TextBoxPage extends StatelessWidget {
                 onChange: (text) {
                   print("Email: $text");
                 },
+              ),
+            ),
+            const SizedBox(height: 16),
+            mod.ModCard(
+              header: const Text(
+                "TextBox Size Examples",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                children: [
+                  mod.ModTextBox(
+                    label: "Large TextBox",
+                    hint: "Enter text",
+                    size: ModTextBoxSize.lg,
+                    controller: TextEditingController(),
+                    onChange: (text) {
+                      print("Large TextBox: $text");
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  mod.ModTextBox(
+                    label: "Medium TextBox",
+                    hint: "Enter text",
+                    size: ModTextBoxSize.md,
+                    controller: TextEditingController(),
+                    onChange: (text) {
+                      print("Medium TextBox: $text");
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Flexible(
+                        child: mod.ModTextBox(
+                          //label: "Small TextBox",
+                          hint: "Enter text",
+                          size: ModTextBoxSize.xs,
+                          controller: TextEditingController(),
+                          onChange: (text) {
+                            print("Small TextBox: $text");
+                          },
+                          suffixButton: ModButton(
+                            title: 'Large Button',
+                            type: ModButtonType.danger,
+                            borderRadius: 16,
+                            size: ModButtonSize.xs,
+                            onPressed: () async {},
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      ModButton(
+                        title: 'Large Button',
+                        type: ModButtonType.primary,
+                        size: ModButtonSize.lg,
+                        onPressed: () async {},
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Flexible(
+                        child: mod.ModTextBox(
+                          label: "Extra Small TextBox",
+                          hint: "Enter text",
+                          size: ModTextBoxSize.sm,
+                          controller: TextEditingController(),
+                          onChange: (text) {
+                            print("Extra Small TextBox: $text");
+                          },
+                          keyboardType: TextInputType.emailAddress,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.deny(
+                                RegExp(r'[^a-zA-Z0-9@.]'))
+                          ],
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'email_required';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Flexible(
+                        child: ModDropDown<String>(
+                          label: 'Select Country',
+                          hint: 'Choose a country',
+                          value: selectedCountry,
+                          // isSearch: true,
+                          items: countries
+                              .map(
+                                (country) => DropdownMenuItem(
+                                  value: country,
+                                  child: Text(country),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) =>
+                              setState(() => selectedCountry = value),
+                          size: ModDropDownSize.sm,
+                          borderRadius: 6,
+                          validator: (value) =>
+                              value == null ? 'Please select a country' : null,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ],

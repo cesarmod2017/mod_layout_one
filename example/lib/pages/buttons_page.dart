@@ -173,7 +173,7 @@ class ButtonsPage extends StatelessWidget {
                       ModButton(
                         title: 'Primary Border',
                         type: ModButtonType.none,
-                        borderType: ModBorderType.dotted,
+                        borderType: ModBorderType.solid,
                         borderColor: ModButtonType.primary,
                         textColor: Colors.blue,
                         onPressed: () async {},

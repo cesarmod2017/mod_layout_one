@@ -25,7 +25,7 @@ class ModalPage extends StatelessWidget {
                 child: mod.ModButton(
                   title: "Open Basic Modal",
                   type: mod.ModButtonType.none,
-                  borderType: mod.ModBorderType.dashed,
+                  borderType: mod.ModBorderType.solid,
                   borderColor: mod.ModButtonType.primary,
                   onPressed: () async {
                     await mod.ModModal.show(
@@ -42,7 +42,7 @@ class ModalPage extends StatelessWidget {
                           mod.ModButton(
                             title: 'Close',
                             type: mod.ModButtonType.none,
-                            borderType: mod.ModBorderType.dashed,
+                            borderType: mod.ModBorderType.solid,
                             borderColor: mod.ModButtonType.primary,
                             onPressed: () async => Navigator.pop(context),
                           ),
@@ -69,7 +69,7 @@ class ModalPage extends StatelessWidget {
                   mod.ModButton(
                     title: "Top Modal",
                     type: mod.ModButtonType.none,
-                    borderType: mod.ModBorderType.dashed,
+                    borderType: mod.ModBorderType.solid,
                     borderColor: mod.ModButtonType.primary,
                     onPressed: () async {
                       await mod.ModModal.show(
@@ -83,7 +83,7 @@ class ModalPage extends StatelessWidget {
                             mod.ModButton(
                               title: 'Close',
                               type: mod.ModButtonType.none,
-                              borderType: mod.ModBorderType.dashed,
+                              borderType: mod.ModBorderType.solid,
                               borderColor: mod.ModButtonType.primary,
                               onPressed: () async => Navigator.pop(context),
                             ),
@@ -95,7 +95,7 @@ class ModalPage extends StatelessWidget {
                   mod.ModButton(
                     title: "Bottom Modal",
                     type: mod.ModButtonType.none,
-                    borderType: mod.ModBorderType.dashed,
+                    borderType: mod.ModBorderType.solid,
                     borderColor: mod.ModButtonType.primary,
                     onPressed: () async {
                       await mod.ModModal.show(
@@ -109,7 +109,7 @@ class ModalPage extends StatelessWidget {
                             mod.ModButton(
                               title: 'Close',
                               type: mod.ModButtonType.none,
-                              borderType: mod.ModBorderType.dashed,
+                              borderType: mod.ModBorderType.solid,
                               borderColor: mod.ModButtonType.primary,
                               onPressed: () async => Navigator.pop(context),
                             ),
@@ -134,7 +134,7 @@ class ModalPage extends StatelessWidget {
                 child: mod.ModButton(
                   title: "Open Styled Modal",
                   type: mod.ModButtonType.none,
-                  borderType: mod.ModBorderType.dashed,
+                  borderType: mod.ModBorderType.solid,
                   borderColor: mod.ModButtonType.primary,
                   onPressed: () async {
                     await mod.ModModal.show(
@@ -159,14 +159,14 @@ class ModalPage extends StatelessWidget {
                         children: [
                           mod.ModButton(
                             type: mod.ModButtonType.none,
-                            borderType: mod.ModBorderType.dashed,
+                            borderType: mod.ModBorderType.solid,
                             borderColor: mod.ModButtonType.danger,
                             title: 'Cancel',
                             onPressed: () async => Navigator.pop(context),
                           ),
                           mod.ModButton(
                             type: mod.ModButtonType.none,
-                            borderType: mod.ModBorderType.dashed,
+                            borderType: mod.ModBorderType.solid,
                             borderColor: mod.ModButtonType.primary,
                             title: 'Confirm',
                             onPressed: () async => Navigator.pop(context),
@@ -194,7 +194,7 @@ class ModalPage extends StatelessWidget {
                   mod.ModButton(
                     title: "Top Modal",
                     type: mod.ModButtonType.none,
-                    borderType: mod.ModBorderType.dashed,
+                    borderType: mod.ModBorderType.solid,
                     borderColor: mod.ModButtonType.primary,
                     onPressed: () async {
                       await mod.ModModal.show(
@@ -209,7 +209,7 @@ class ModalPage extends StatelessWidget {
                             mod.ModButton(
                               title: 'Close',
                               type: mod.ModButtonType.none,
-                              borderType: mod.ModBorderType.dashed,
+                              borderType: mod.ModBorderType.solid,
                               borderColor: mod.ModButtonType.primary,
                               onPressed: () async => Navigator.pop(context),
                             ),
@@ -221,7 +221,7 @@ class ModalPage extends StatelessWidget {
                   mod.ModButton(
                     title: "Center Modal",
                     type: mod.ModButtonType.none,
-                    borderType: mod.ModBorderType.dashed,
+                    borderType: mod.ModBorderType.solid,
                     borderColor: mod.ModButtonType.primary,
                     onPressed: () async {
                       await mod.ModModal.show(
@@ -236,7 +236,7 @@ class ModalPage extends StatelessWidget {
                             mod.ModButton(
                               title: 'Close',
                               type: mod.ModButtonType.none,
-                              borderType: mod.ModBorderType.dashed,
+                              borderType: mod.ModBorderType.solid,
                               borderColor: mod.ModButtonType.primary,
                               onPressed: () async => Navigator.pop(context),
                             ),
@@ -248,7 +248,7 @@ class ModalPage extends StatelessWidget {
                   mod.ModButton(
                     title: "Bottom Modal",
                     type: mod.ModButtonType.none,
-                    borderType: mod.ModBorderType.dashed,
+                    borderType: mod.ModBorderType.solid,
                     borderColor: mod.ModButtonType.primary,
                     onPressed: () async {
                       await mod.ModModal.show(
@@ -263,7 +263,7 @@ class ModalPage extends StatelessWidget {
                             mod.ModButton(
                               title: 'Close',
                               type: mod.ModButtonType.none,
-                              borderType: mod.ModBorderType.dashed,
+                              borderType: mod.ModBorderType.solid,
                               borderColor: mod.ModButtonType.primary,
                               onPressed: () async => Navigator.pop(context),
                             ),
@@ -291,7 +291,7 @@ class ModalPage extends StatelessWidget {
                   mod.ModButton(
                     title: "Extra Small Modal",
                     type: mod.ModButtonType.none,
-                    borderType: mod.ModBorderType.dashed,
+                    borderType: mod.ModBorderType.solid,
                     borderColor: mod.ModButtonType.primary,
                     onPressed: () async {
                       await mod.ModModal.show(
@@ -305,7 +305,7 @@ class ModalPage extends StatelessWidget {
                             mod.ModButton(
                               title: 'Close',
                               type: mod.ModButtonType.none,
-                              borderType: mod.ModBorderType.dashed,
+                              borderType: mod.ModBorderType.solid,
                               borderColor: mod.ModButtonType.primary,
                               onPressed: () async => Navigator.pop(context),
                             ),
@@ -317,7 +317,7 @@ class ModalPage extends StatelessWidget {
                   mod.ModButton(
                     title: "Small Modal",
                     type: mod.ModButtonType.none,
-                    borderType: mod.ModBorderType.dashed,
+                    borderType: mod.ModBorderType.solid,
                     borderColor: mod.ModButtonType.primary,
                     onPressed: () async {
                       await mod.ModModal.show(
@@ -331,7 +331,7 @@ class ModalPage extends StatelessWidget {
                             mod.ModButton(
                               title: 'Close',
                               type: mod.ModButtonType.none,
-                              borderType: mod.ModBorderType.dashed,
+                              borderType: mod.ModBorderType.solid,
                               borderColor: mod.ModButtonType.primary,
                               onPressed: () async => Navigator.pop(context),
                             ),
@@ -343,7 +343,7 @@ class ModalPage extends StatelessWidget {
                   mod.ModButton(
                     title: "Medium Modal",
                     type: mod.ModButtonType.none,
-                    borderType: mod.ModBorderType.dashed,
+                    borderType: mod.ModBorderType.solid,
                     borderColor: mod.ModButtonType.primary,
                     onPressed: () async {
                       await mod.ModModal.show(
@@ -357,7 +357,7 @@ class ModalPage extends StatelessWidget {
                             mod.ModButton(
                               title: 'Close',
                               type: mod.ModButtonType.none,
-                              borderType: mod.ModBorderType.dashed,
+                              borderType: mod.ModBorderType.solid,
                               borderColor: mod.ModButtonType.primary,
                               onPressed: () async => Navigator.pop(context),
                             ),
@@ -369,7 +369,7 @@ class ModalPage extends StatelessWidget {
                   mod.ModButton(
                     title: "Large Modal",
                     type: mod.ModButtonType.none,
-                    borderType: mod.ModBorderType.dashed,
+                    borderType: mod.ModBorderType.solid,
                     borderColor: mod.ModButtonType.primary,
                     onPressed: () async {
                       await mod.ModModal.show(
@@ -383,7 +383,7 @@ class ModalPage extends StatelessWidget {
                             mod.ModButton(
                               title: 'Close',
                               type: mod.ModButtonType.none,
-                              borderType: mod.ModBorderType.dashed,
+                              borderType: mod.ModBorderType.solid,
                               borderColor: mod.ModButtonType.primary,
                               onPressed: () async => Navigator.pop(context),
                             ),
@@ -411,7 +411,7 @@ class ModalPage extends StatelessWidget {
                   mod.ModButton(
                     title: "Normal Height",
                     type: mod.ModButtonType.none,
-                    borderType: mod.ModBorderType.dashed,
+                    borderType: mod.ModBorderType.solid,
                     borderColor: mod.ModButtonType.primary,
                     onPressed: () async {
                       await mod.ModModal.show(
@@ -425,7 +425,7 @@ class ModalPage extends StatelessWidget {
                             mod.ModButton(
                               title: 'Close',
                               type: mod.ModButtonType.none,
-                              borderType: mod.ModBorderType.dashed,
+                              borderType: mod.ModBorderType.solid,
                               borderColor: mod.ModButtonType.primary,
                               onPressed: () async => Navigator.pop(context),
                             ),
@@ -437,7 +437,7 @@ class ModalPage extends StatelessWidget {
                   mod.ModButton(
                     title: "Full Height",
                     type: mod.ModButtonType.none,
-                    borderType: mod.ModBorderType.dashed,
+                    borderType: mod.ModBorderType.solid,
                     borderColor: mod.ModButtonType.primary,
                     onPressed: () async {
                       await mod.ModModal.show(
@@ -451,7 +451,7 @@ class ModalPage extends StatelessWidget {
                             mod.ModButton(
                               title: 'Close',
                               type: mod.ModButtonType.none,
-                              borderType: mod.ModBorderType.dashed,
+                              borderType: mod.ModBorderType.solid,
                               borderColor: mod.ModButtonType.primary,
                               onPressed: () async => Navigator.pop(context),
                             ),
@@ -463,7 +463,7 @@ class ModalPage extends StatelessWidget {
                   mod.ModButton(
                     title: "Full Screen",
                     type: mod.ModButtonType.none,
-                    borderType: mod.ModBorderType.dashed,
+                    borderType: mod.ModBorderType.solid,
                     borderColor: mod.ModButtonType.primary,
                     onPressed: () async {
                       await mod.ModModal.show(
@@ -478,7 +478,7 @@ class ModalPage extends StatelessWidget {
                             mod.ModButton(
                               title: 'Close',
                               type: mod.ModButtonType.none,
-                              borderType: mod.ModBorderType.dashed,
+                              borderType: mod.ModBorderType.solid,
                               borderColor: mod.ModButtonType.primary,
                               onPressed: () async => Navigator.pop(context),
                             ),
