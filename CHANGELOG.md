@@ -1,3 +1,26 @@
+## 1.0.22
+
+* Added searchHint to ModDropdownSearch:
+  * New property to customize the hint text displayed in the search box
+  * Allows for better user guidance and improved UX
+  * Supports dynamic hint text based on context
+  * Seamless integration with existing search functionality
+  * Maintains backwards compatibility with default 'Search...' hint
+  * Customizable through widget properties
+  * Consistent behavior across single and multi-select modes
+
+## 1.0.21
+
+* Added displayStringForOption to ModDropdownSearch:
+  * New property to customize string representation of selected items
+  * Supports both widget-level and item-level customization
+  * Allows dynamic string formatting based on item properties
+  * Improves display flexibility for complex objects
+  * Maintains backwards compatibility with toString() fallback
+  * Seamless integration with existing dropdown features
+  * Enhanced type safety with generic support
+  * Consistent behavior across single and multi-select modes
+
 ## 1.0.20
 
 * Added ModDropdownSearch widget:

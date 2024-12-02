@@ -246,6 +246,7 @@ class _TextBoxPageState extends State<TextBoxPage> {
                           label: 'Items',
                           size: mod.ModDropdownSearchSize.sm,
                           onChanged: (value) => print(value),
+                          searchHint: "Pesquise por um item",
                           dropdownBackgroundColor:
                               Theme.of(context).appBarTheme.backgroundColor,
                           searchBoxPadding: const EdgeInsets.all(16),

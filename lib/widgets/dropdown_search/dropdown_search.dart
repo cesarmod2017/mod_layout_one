@@ -7,12 +7,14 @@ enum ModDropdownSearchLabelPosition { top, inside }
 class ModDropdownSearchMenuItem<T> extends DropdownMenuItem<T> {
   final IconData? icon;
   final String? imageUrl;
+  final String Function(T)? displayStringForOption;
 
   const ModDropdownSearchMenuItem({
     required super.value,
     required super.child,
     this.icon,
     this.imageUrl,
+    this.displayStringForOption,
     super.key,
     super.enabled,
     super.alignment,
@@ -27,6 +29,7 @@ class ModDropdownSearch<T> extends StatefulWidget {
   final ModDropdownSearchLabelPosition labelPosition;
   final String? label;
   final String? hint;
+  final String? searchHint;
   final double borderRadius;
   final bool multiSelect;
   final Function(T?)? onChanged;
@@ -46,6 +49,7 @@ class ModDropdownSearch<T> extends StatefulWidget {
   final EdgeInsetsGeometry? searchBoxPadding;
   final InputDecoration? searchDecoration;
   final double? dropdownHeight;
+  final String Function(T)? displayStringForOption;
 
   const ModDropdownSearch({
     super.key,
@@ -55,6 +59,7 @@ class ModDropdownSearch<T> extends StatefulWidget {
     this.labelPosition = ModDropdownSearchLabelPosition.top,
     this.label,
     this.hint,
+    this.searchHint,
     this.borderRadius = 8.0,
     this.multiSelect = false,
     this.onChanged,
@@ -74,6 +79,7 @@ class ModDropdownSearch<T> extends StatefulWidget {
     this.searchBoxPadding,
     this.searchDecoration,
     this.dropdownHeight,
+    this.displayStringForOption,
   });
 
   @override
@@ -87,6 +93,23 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
   List<T> _selectedItems = [];
   OverlayEntry? _overlayEntry;
   List<ModDropdownSearchMenuItem<T>> _filteredItems = [];
+
+  String _getDisplayString(T value) {
+    if (widget.displayStringForOption != null) {
+      return widget.displayStringForOption!(value);
+    }
+
+    final item = widget.items.firstWhere(
+      (item) => item.value == value,
+      orElse: () => widget.items.first,
+    );
+
+    if (item.displayStringForOption != null) {
+      return item.displayStringForOption!(value);
+    }
+
+    return value.toString();
+  }
 
   @override
   void initState() {
@@ -196,8 +219,9 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
   void _updateSearch(String value) {
     setState(() {
       _filteredItems = widget.items
-          .where((item) =>
-              item.value.toString().toLowerCase().contains(value.toLowerCase()))
+          .where((item) => _getDisplayString(item.value as T)
+              .toLowerCase()
+              .contains(value.toLowerCase()))
           .toList();
     });
     _updateOverlay();
@@ -224,7 +248,8 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
             borderRadius: BorderRadius.circular(widget.borderRadius),
             child: Container(
               decoration: BoxDecoration(
-                color: widget.dropdownBackgroundColor ?? Colors.transparent,
+                color: widget.dropdownBackgroundColor ??
+                    Theme.of(context).appBarTheme.backgroundColor,
                 borderRadius: BorderRadius.circular(widget.borderRadius),
               ),
               child: Column(
@@ -238,7 +263,7 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
                       controller: _searchController,
                       decoration: widget.searchDecoration ??
                           InputDecoration(
-                            hintText: 'Search...',
+                            hintText: widget.searchHint ?? 'Search...',
                             prefixIcon: const Icon(Icons.search),
                             suffixIcon: IconButton(
                               icon: const Icon(Icons.clear),
@@ -350,7 +375,7 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
                           _selectedItems.isEmpty
                               ? widget.hint ?? ''
                               : _selectedItems
-                                  .map((e) => e.toString())
+                                  .map((e) => _getDisplayString(e))
                                   .join(', '),
                           style: TextStyle(
                             fontSize: _getFontSize(),
@@ -391,97 +416,3 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
     );
   }
 }
-
-/*
-Exemplo de uso do ModDropdownSearch:
-
-// Exemplo básico com strings e ícones
-ModDropdownSearch<String>(
-  items: [
-    ModDropdownSearchMenuItem(
-      value: 'Item 1',
-      child: Text('Item 1'),
-      icon: Icons.person
-    ),
-    ModDropdownSearchMenuItem(
-      value: 'Item 2',
-      child: Text('Item 2'),
-      imageUrl: 'https://example.com/image.jpg'
-    ),
-    ModDropdownSearchMenuItem(
-      value: 'Item 3',
-      child: Text('Item 3')
-    ),
-  ],
-  hint: 'Selecione um item',
-  label: 'Items',
-  onChanged: (value) => print(value),
-)
-
-// Exemplo com objetos customizados
-class User {
-  final int id;
-  final String name;
-
-  User(this.id, this.name);
-
-  @override
-  String toString() => name;
-}
-
-ModDropdownSearch<User>(
-  items: [
-    ModDropdownSearchMenuItem(
-      value: User(1, 'João'),
-      child: Text('João'),
-      icon: Icons.person
-    ),
-    ModDropdownSearchMenuItem(
-      value: User(2, 'Maria'),
-      child: Text('Maria'),
-      imageUrl: 'https://example.com/maria.jpg'
-    ),
-    ModDropdownSearchMenuItem(
-      value: User(3, 'Pedro'),
-      child: Text('Pedro')
-    ),
-  ],
-  hint: 'Selecione um usuário',
-  label: 'Usuários',
-  size: ModDropdownSearchSize.lg,
-  labelPosition: ModDropDownLabelPosition.inside,
-  multiSelect: true,
-  prefixIcon: Icon(Icons.person),
-  validator: (value) {
-    if (value == null) return 'Selecione um usuário';
-    return null;
-  },
-  backgroundColor: Colors.grey[100],
-  borderRadius: 12.0,
-  onChanged: (user) => print(user?.name),
-)
-
-// Exemplo com validação em um Form
-Form(
-  child: ModDropdownSearch<String>(
-    items: [
-      ModDropdownSearchMenuItem(
-        value: 'Item 1',
-        child: Text('Item 1'),
-        icon: Icons.star
-      ),
-      ModDropdownSearchMenuItem(
-        value: 'Item 2',
-        child: Text('Item 2'),
-        imageUrl: 'https://example.com/item2.jpg'
-      ),
-    ],
-    validator: (value) {
-      if (value == null) return 'Campo obrigatório';
-      return null;
-    },
-    hint: 'Selecione',
-    label: 'Campo obrigatório',
-  ),
-)
-*/
