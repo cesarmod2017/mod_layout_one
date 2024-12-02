@@ -41,6 +41,7 @@ export 'widgets/cards/card_default.dart';
 export 'widgets/datatable/datatable.dart';
 export 'widgets/dialogs/dialog.dart';
 export 'widgets/dropdown/dropdown.dart';
+export 'widgets/dropdown_search/dropdown_search.dart';
 // Grid
 export 'widgets/grid/mod_grid.dart';
 // Grid System

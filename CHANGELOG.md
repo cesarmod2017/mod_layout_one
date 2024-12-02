@@ -1,3 +1,27 @@
+## 1.0.20
+
+* Added ModDropdownSearch widget:
+  * Customizable dropdown with search functionality
+  * Supports single and multi-select modes
+  * Built-in search filtering with customizable search box
+  * Supports icons and images for dropdown items
+  * Configurable dropdown height and max height
+  * Custom styling options for background, text and borders
+  * Supports disabled state and validation
+  * Prefix and suffix icons with customizable colors
+  * Error text display with validation support
+  * Responsive overlay positioning
+  * Smooth animations for dropdown open/close
+  * Customizable item rendering and selection indicators
+  * Supports keyboard navigation and accessibility
+  * Flexible label positioning (top or inside)
+  * Multiple size options (lg, md, sm, xs)
+  * Support for custom objects with toString override
+  * Built-in clear button in search box
+  * Optional close button for multi-select mode
+  * Maintains selected items state
+  * Seamless integration with form validation
+
 ## 1.0.19
 
 * Added ModDropDown widget:

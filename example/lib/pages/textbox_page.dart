@@ -190,10 +190,67 @@ class _TextBoxPageState extends State<TextBoxPage> {
                               .toList(),
                           onChanged: (value) =>
                               setState(() => selectedCountry = value),
-                          size: ModDropDownSize.sm,
+                          size: mod.ModDropDownSize.sm,
                           borderRadius: 6,
                           validator: (value) =>
                               value == null ? 'Please select a country' : null,
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      Flexible(
+                        child: mod.ModDropdownSearch<String>(
+                          items: const [
+                            mod.ModDropdownSearchMenuItem(
+                                value: 'Alice',
+                                icon: Icons.face,
+                                child: Text('Alice')),
+                            mod.ModDropdownSearchMenuItem(
+                                value: 'Bob',
+                                icon: Icons.sports_basketball,
+                                child: Text('Bob')),
+                            mod.ModDropdownSearchMenuItem(
+                                value: 'Carol',
+                                icon: Icons.music_note,
+                                child: Text('Carol')),
+                            mod.ModDropdownSearchMenuItem(
+                                value: 'David',
+                                icon: Icons.computer,
+                                child: Text('David')),
+                            mod.ModDropdownSearchMenuItem(
+                                value: 'Emma',
+                                icon: Icons.brush,
+                                child: Text('Emma')),
+                            mod.ModDropdownSearchMenuItem(
+                                value: 'Frank',
+                                icon: Icons.restaurant,
+                                child: Text('Frank')),
+                            mod.ModDropdownSearchMenuItem(
+                                value: 'Grace',
+                                icon: Icons.pets,
+                                child: Text('Grace')),
+                            mod.ModDropdownSearchMenuItem(
+                                value: 'Henry',
+                                icon: Icons.sports_soccer,
+                                child: Text('Henry')),
+                            mod.ModDropdownSearchMenuItem(
+                                value: 'Iris',
+                                icon: Icons.camera_alt,
+                                child: Text('Iris')),
+                            mod.ModDropdownSearchMenuItem(
+                                value: 'Jack',
+                                icon: Icons.directions_bike,
+                                child: Text('Jack')),
+                          ],
+                          multiSelect: false,
+                          hint: 'Selecione um item',
+                          label: 'Items',
+                          size: mod.ModDropdownSearchSize.sm,
+                          onChanged: (value) => print(value),
+                          dropdownBackgroundColor:
+                              Theme.of(context).appBarTheme.backgroundColor,
+                          searchBoxPadding: const EdgeInsets.all(16),
+                          borderRadius: 16,
+                          backgroundColor: Colors.transparent,
                         ),
                       ),
                     ],

@@ -114,13 +114,13 @@ class MyAppTheme {
         fontWeight: FontWeight.bold,
       ),
       bodyLarge: TextStyle(
-        color: Color.fromARGB(255, 160, 159, 159),
+        color: Color.fromARGB(255, 218, 214, 214),
       ),
       bodyMedium: TextStyle(
-        color: Color.fromARGB(255, 160, 159, 159),
+        color: Color.fromARGB(255, 218, 214, 214),
       ),
       bodySmall: TextStyle(
-        color: Color.fromARGB(255, 160, 159, 159),
+        color: Color.fromARGB(255, 218, 214, 214),
       ),
     ),
     dividerTheme: const DividerThemeData(
