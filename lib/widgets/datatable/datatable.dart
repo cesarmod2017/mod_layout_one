@@ -112,8 +112,6 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final screenWidth = constraints.maxWidth;
-
-          // Calculate total fixed width and percentage width
           double totalFixedWidth = 0;
           double totalPercentage = 0;
 
@@ -125,21 +123,15 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
             }
           }
 
-          // Calculate remaining width for percentage columns
           final remainingWidth = max(0.0, screenWidth - totalFixedWidth);
-
-          // Calculate actual widths for each column
           final columnWidths = widget.headers.map((header) {
-            if (header.widthType == WidthType.fixed) {
-              return header.width;
-            } else {
-              return remainingWidth * (header.width / totalPercentage);
-            }
+            return header.widthType == WidthType.fixed
+                ? header.width
+                : remainingWidth * (header.width / totalPercentage);
           }).toList();
 
           final totalWidth =
               columnWidths.fold(0.0, (sum, width) => sum + width);
-
           final visibleData = widget.data
               .take(min(widget.rowsPerPage, widget.source.rowCount))
               .toList();
@@ -201,14 +193,13 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
               child: Row(
                 children: [
                   Expanded(child: header.child),
-                  if (header.sortable && _sortField == header.field) ...[
+                  if (header.sortable && _sortField == header.field)
                     Icon(
                       _sortDirection == SortDirection.asc
                           ? Icons.arrow_upward
                           : Icons.arrow_downward,
                       size: 16,
                     ),
-                  ]
                 ],
               ),
             ),
@@ -220,28 +211,22 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
 
   Widget _buildRows(List<T> visibleData, List<double> columnWidths) {
     return Column(
-      children: List.generate(
-        visibleData.length,
-        (index) {
-          final row = widget.source.getRow(index);
-          return Container(
-            color: index % 2 == 0 ? widget.evenRowColor : widget.oddRowColor,
-            child: Row(
-              children: List.generate(
-                widget.headers.length,
-                (cellIndex) {
-                  return Container(
-                    width: columnWidths[cellIndex],
-                    decoration: _getBorderDecoration(),
-                    padding: const EdgeInsets.all(8),
-                    child: row?.cells[cellIndex].child ?? const SizedBox(),
-                  );
-                },
-              ),
-            ),
-          );
-        },
-      ),
+      children: List.generate(visibleData.length, (index) {
+        final row = widget.source.getRow(index);
+        return Container(
+          color: index % 2 == 0 ? widget.evenRowColor : widget.oddRowColor,
+          child: Row(
+            children: List.generate(widget.headers.length, (cellIndex) {
+              return Container(
+                width: columnWidths[cellIndex],
+                decoration: _getBorderDecoration(),
+                padding: const EdgeInsets.all(8),
+                child: row?.cells[cellIndex].child ?? const SizedBox(),
+              );
+            }),
+          ),
+        );
+      }),
     );
   }
 
@@ -250,9 +235,8 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
     final currentStart = (widget.currentPage * widget.rowsPerPage) + 1;
     final currentEnd =
         min((widget.currentPage + 1) * widget.rowsPerPage, widget.totalRecords);
-
-    // Generate page numbers to display
-    final pageNumbers = _generatePageNumbers(totalPages);
+    final width = MediaQuery.of(context).size.width;
+    final isMobile = width < 600;
 
     return Container(
       decoration: BoxDecoration(
@@ -263,88 +247,117 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          if (widget.onRowsPerPageChanged != null) ...[
-            Flexible(
-              flex: 1,
-              child: Row(
-                children: [
-                  Text('${widget.rowsPerPageText}: '),
-                  const SizedBox(width: 10),
-                  DropdownButton<int>(
-                    value: widget.rowsPerPage,
-                    items: widget.availableRowsPerPage
-                        .map((int value) => DropdownMenuItem<int>(
-                              value: value,
-                              child: Text(value.toString()),
-                            ))
-                        .toList(),
-                    onChanged: (int? value) {
-                      if (value != null) {
-                        widget.onRowsPerPageChanged?.call(value);
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
+          if (widget.onRowsPerPageChanged != null)
+            Flexible(child: _buildRowsPerPage(isMobile)),
           Flexible(
-            flex: 3,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                    '$currentStart-$currentEnd ${widget.paginationText} ${widget.totalRecords}'),
-                IconButton(
-                  icon: const Icon(Icons.chevron_left),
-                  onPressed: widget.currentPage > 0
-                      ? () => widget.onPageChanged(widget.currentPage - 1)
-                      : null,
-                ),
-                ...pageNumbers.map((pageNum) => TextButton(
-                      onPressed: () => widget.onPageChanged(pageNum - 1),
-                      child: Text(
-                        pageNum.toString(),
-                        style: TextStyle(
-                          fontWeight: pageNum == widget.currentPage + 1
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                        ),
-                      ),
-                    )),
-                IconButton(
-                  icon: const Icon(Icons.chevron_right),
-                  onPressed: currentEnd < widget.totalRecords
-                      ? () => widget.onPageChanged(widget.currentPage + 1)
-                      : null,
-                ),
-              ],
-            ),
+            flex: 2,
+            child: _buildPageNavigation(
+                totalPages, currentStart, currentEnd, false),
           ),
         ],
       ),
     );
   }
 
+  Widget _buildRowsPerPage(bool isMobile) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (!isMobile)
+          Flexible(
+            child: Text(
+              widget.rowsPerPageText,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        if (!isMobile) const SizedBox(width: 8),
+        DropdownButton<int>(
+          value: widget.rowsPerPage,
+          items: widget.availableRowsPerPage
+              .map((value) => DropdownMenuItem<int>(
+                    value: value,
+                    child: Text(value.toString()),
+                  ))
+              .toList(),
+          onChanged: (value) {
+            if (value != null) {
+              widget.onRowsPerPageChanged?.call(value);
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPageNavigation(
+      int totalPages, int currentStart, int currentEnd, bool isMobile) {
+    final pageNumbers = _generatePageNumbers(totalPages);
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (!isMobile)
+          Flexible(
+            child: Text(
+              '$currentStart-$currentEnd ${widget.paginationText} ${widget.totalRecords}',
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        IconButton(
+          icon: const Icon(Icons.chevron_left),
+          onPressed: widget.currentPage > 0
+              ? () => widget.onPageChanged(widget.currentPage - 1)
+              : null,
+        ),
+        if (isMobile)
+          Text('${widget.currentPage + 1} / $totalPages')
+        else
+          ...pageNumbers.map((pageNum) => SizedBox(
+                width: 40,
+                child: TextButton(
+                  onPressed: () => widget.onPageChanged(pageNum - 1),
+                  child: Text(
+                    pageNum.toString(),
+                    style: TextStyle(
+                      fontWeight: pageNum == widget.currentPage + 1
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                    ),
+                  ),
+                ),
+              )),
+        IconButton(
+          icon: const Icon(Icons.chevron_right),
+          onPressed: currentEnd < widget.totalRecords
+              ? () => widget.onPageChanged(widget.currentPage + 1)
+              : null,
+        ),
+      ],
+    );
+  }
+
   List<int> _generatePageNumbers(int totalPages) {
     const maxVisiblePages = 5;
     final currentPage = widget.currentPage + 1;
+    final width = MediaQuery.of(context).size.width;
+    final visiblePages = width < 960 ? 3 : maxVisiblePages;
 
-    if (totalPages <= maxVisiblePages) {
+    if (totalPages <= visiblePages) {
       return List.generate(totalPages, (i) => i + 1);
     }
 
-    var start = currentPage - (maxVisiblePages ~/ 2);
-    var end = currentPage + (maxVisiblePages ~/ 2);
+    var start = currentPage - (visiblePages ~/ 2);
+    var end = currentPage + (visiblePages ~/ 2);
 
     if (start < 1) {
       start = 1;
-      end = maxVisiblePages;
+      end = visiblePages;
     }
 
     if (end > totalPages) {
       end = totalPages;
-      start = totalPages - maxVisiblePages + 1;
+      start = totalPages - visiblePages + 1;
     }
 
     return List.generate(end - start + 1, (i) => start + i);

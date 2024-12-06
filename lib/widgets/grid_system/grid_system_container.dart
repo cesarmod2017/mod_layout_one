@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 
 class ModContainer extends StatelessWidget {
   final Widget child;
-  final bool fluid;
   final EdgeInsetsGeometry? padding;
+  final Color? backgroundColor;
+  final double? maxHeight;
 
   const ModContainer({
     super.key,
     required this.child,
-    this.fluid = false,
     this.padding,
+    this.backgroundColor,
+    this.maxHeight,
   });
 
   @override
@@ -20,7 +22,9 @@ class ModContainer extends StatelessWidget {
         return Center(
           child: Container(
             width: maxWidth,
+            height: maxHeight,
             padding: padding,
+            color: backgroundColor,
             child: child,
           ),
         );

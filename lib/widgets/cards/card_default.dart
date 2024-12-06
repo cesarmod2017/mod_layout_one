@@ -13,6 +13,7 @@ class ModCard extends StatefulWidget {
   final EdgeInsets margin;
   final EdgeInsets padding;
   final double borderRadius;
+  final bool initiallyExpanded;
 
   const ModCard({
     super.key,
@@ -28,6 +29,7 @@ class ModCard extends StatefulWidget {
     this.margin = const EdgeInsets.all(8.0),
     this.padding = const EdgeInsets.all(16.0),
     this.borderRadius = 8.0,
+    this.initiallyExpanded = false,
   });
 
   @override
@@ -35,7 +37,13 @@ class ModCard extends StatefulWidget {
 }
 
 class ModCardState extends State<ModCard> {
-  bool _isExpanded = false;
+  late bool _isExpanded;
+
+  @override
+  void initState() {
+    super.initState();
+    _isExpanded = widget.initiallyExpanded;
+  }
 
   @override
   Widget build(BuildContext context) {

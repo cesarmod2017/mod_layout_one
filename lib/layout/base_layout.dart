@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mod_layout_one/layout/components/mobile_drawer.dart';
 import 'package:mod_layout_one/layout/widgets/user_profile.dart';
 
 import '../../controllers/layout_controller.dart';
@@ -7,11 +8,12 @@ import 'components/footer.dart';
 import 'components/header.dart';
 import 'components/sidebar.dart';
 
-class ModBaseLayout extends StatelessWidget {
+class ModBaseLayout extends StatefulWidget {
   final String title;
   final Widget? logo;
   final Widget body;
-  final List<MenuItem> menuItems;
+  final List<String>? claims;
+  final List<MenuGroup> menuGroups;
   final UserProfile? userProfile;
   final List<Widget>? appBarActions;
   final bool showDefaultActions;
@@ -21,14 +23,16 @@ class ModBaseLayout extends StatelessWidget {
   final Color? sidebarBackgroundColor;
   final Color? sidebarSelectedColor;
   final Color? sidebarUnselectedColor;
-  final double footerHeight; // Created footerHeight
+  final double footerHeight;
+  final Widget? drawerHeader;
 
   const ModBaseLayout({
     super.key,
     required this.title,
     this.logo,
     required this.body,
-    required this.menuItems,
+    this.claims,
+    required this.menuGroups,
     this.userProfile,
     this.appBarActions,
     this.showDefaultActions = true,
@@ -38,60 +42,84 @@ class ModBaseLayout extends StatelessWidget {
     this.sidebarBackgroundColor,
     this.sidebarSelectedColor,
     this.sidebarUnselectedColor,
-    this.footerHeight = 50.0, // Default value for footerHeight
+    this.footerHeight = 50.0,
+    this.drawerHeader,
   });
 
+  @override
+  State<ModBaseLayout> createState() => _ModBaseLayoutState();
+}
+
+class _ModBaseLayoutState extends State<ModBaseLayout> {
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  bool isDrawerOpen = false;
   @override
   Widget build(BuildContext context) {
     final LayoutController layoutController = Get.find();
     layoutController.checkScreenSize(context);
 
-    return Scaffold(
-      key: GlobalKey<ScaffoldState>(),
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: ModHeader(
-          title: title,
-          logo: logo,
-          userProfile: userProfile,
-          actions: appBarActions,
-          showDefaultActions: showDefaultActions,
+    // Add this line
+    if (layoutController.isMobile.value) {
+      layoutController.isMenuExpanded.value = true;
+    }
+
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) async {
+        if (isDrawerOpen) {
+          Navigator.of(context).pop();
+          setState(() => isDrawerOpen = false);
+          return;
+        }
+        return;
+      },
+      child: Scaffold(
+        key: scaffoldKey, // Use the key
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: ModHeader(
+            title: widget.title,
+            logo: widget.logo,
+            userProfile: widget.userProfile,
+            actions: widget.appBarActions,
+            showDefaultActions: widget.showDefaultActions,
+            scaffoldKey: scaffoldKey,
+          ),
         ),
+        drawer: layoutController.isMobile.value
+            ? MobileDrawer(
+                header: widget.drawerHeader,
+                menuGroups: widget.menuGroups,
+                claims: widget.claims,
+                backgroundColor: widget.sidebarBackgroundColor,
+                selectedColor: widget.sidebarSelectedColor,
+                unselectedColor: widget.sidebarUnselectedColor,
+              )
+            : null,
+        body: Obx(() => Row(
+              children: [
+                if (!layoutController.isMobile.value)
+                  ModSidebar(
+                    claims: widget.claims,
+                    menuGroups: widget.menuGroups,
+                    backgroundColor: widget.sidebarBackgroundColor,
+                    selectedColor: widget.sidebarSelectedColor,
+                    unselectedColor: widget.sidebarUnselectedColor,
+                    header: widget.sidebarHeader,
+                    footer: widget.sidebarFooter,
+                  ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Expanded(child: widget.body),
+                      if (widget.footer != null)
+                        ModFooter(
+                            height: widget.footerHeight, child: widget.footer)
+                    ],
+                  ),
+                ),
+              ],
+            )),
       ),
-      drawer: Obx(() => layoutController.isMobile.value
-          ? Drawer(
-              child: ModSidebar(
-                menuItems: menuItems,
-                backgroundColor: sidebarBackgroundColor,
-                selectedColor: sidebarSelectedColor,
-                unselectedColor: sidebarUnselectedColor,
-                header: sidebarHeader,
-                footer: sidebarFooter,
-              ),
-            )
-          : const SizedBox.shrink()),
-      body: Obx(() => Row(
-            children: [
-              if (!layoutController.isMobile.value)
-                ModSidebar(
-                  menuItems: menuItems,
-                  backgroundColor: sidebarBackgroundColor,
-                  selectedColor: sidebarSelectedColor,
-                  unselectedColor: sidebarUnselectedColor,
-                  header: sidebarHeader,
-                  footer: sidebarFooter,
-                ),
-              Expanded(
-                child: Column(
-                  children: [
-                    Expanded(child: body),
-                    if (footer != null)
-                      ModFooter(height: footerHeight, child: footer)
-                  ],
-                ),
-              ),
-            ],
-          )),
     );
   }
 }

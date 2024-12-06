@@ -230,7 +230,6 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
   OverlayEntry _createOverlayEntry() {
     RenderBox renderBox = context.findRenderObject() as RenderBox;
     var size = renderBox.size;
-    var offset = renderBox.localToGlobal(Offset.zero);
 
     // Calculate item height based on ListTile default height
     double itemHeight = 48.0; // Default ListTile height

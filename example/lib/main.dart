@@ -6,6 +6,7 @@ import 'package:example/pages/dialogs_page.dart';
 import 'package:example/pages/home_page.dart';
 import 'package:example/pages/modal_page.dart';
 import 'package:example/pages/tables_page.dart';
+import 'package:example/pages/tabs_page.dart';
 import 'package:example/pages/textbox_page.dart';
 import 'package:example/services/auth_service.dart';
 import 'package:example/services/storage_service.dart';
@@ -161,6 +162,12 @@ class MyApp extends StatelessWidget {
               transition: Transition.noTransition,
               preventDuplicates: true,
             ),
+            GetPage(
+              name: '/tabs',
+              page: () => const TabsPage(),
+              transition: Transition.noTransition,
+              preventDuplicates: true,
+            ),
           ],
           initialRoute: '/home',
         ));
@@ -183,51 +190,212 @@ class CustomLayout extends StatelessWidget {
           showFullProfile: true,
         )
       ],
-      menuItems: [
-        MenuItem(
-          title: 'avatars'.tr,
-          icon: Icons.account_circle,
-          route: '/avatars',
+      drawerHeader: Container(
+        padding: const EdgeInsets.all(16),
+        child: const Column(
+          children: [
+            CircularProgressIndicator(),
+            Text('User Name'),
+            Text('user@email.com'),
+          ],
         ),
-        MenuItem(
-          title: 'buttons'.tr,
-          icon: Icons.smart_button,
-          route: '/buttons',
-        ),
-        MenuItem(
-          title: 'cards'.tr,
-          icon: Icons.style,
-          route: '/cards',
-        ),
-        MenuItem(
-          title: 'dialogs'.tr,
-          icon: Icons.chat_bubble_outline,
-          route: '/dialogs',
-        ),
-        MenuItem(
-          title: 'home'.tr,
-          icon: Icons.home,
-          route: '/home',
-        ),
-        MenuItem(
-          title: 'tabs'.tr,
-          icon: Icons.tab,
-          route: '/tabs',
-        ),
-        MenuItem(
-          title: 'modals'.tr,
-          icon: Icons.window,
-          route: '/modals',
-        ),
-        MenuItem(
-          title: 'textboxes'.tr,
-          icon: Icons.text_fields,
-          route: '/textboxes',
-        ),
-        MenuItem(
-          title: 'tables'.tr,
-          icon: Icons.table_chart,
-          route: '/tables',
+      ),
+      claims: const [
+        'menu:avatars',
+        'menu:buttons',
+        'menu:cards',
+        'menu:dialogs',
+        'menu:home',
+        'menu:tabs',
+        'menu:modals',
+        'menu:textboxes',
+        'menu:tables'
+      ],
+      // menuItems: [
+      //   MenuItem(
+      //     title: 'avatars'.tr,
+      //     icon: Icons.account_circle,
+      //     route: '/avatars',
+      //     type: 'menu',
+      //     value: 'avatars',
+      //   ),
+      //   MenuItem(
+      //     title: 'buttons'.tr,
+      //     icon: Icons.smart_button,
+      //     route: '/buttons',
+      //     type: 'menu',
+      //     value: 'buttons',
+      //   ),
+      //   MenuItem(
+      //     title: 'cards'.tr,
+      //     icon: Icons.style,
+      //     route: '/cards',
+      //     type: 'menu',
+      //     value: 'cards',
+      //   ),
+      //   MenuItem(
+      //     title: 'dialogs'.tr,
+      //     icon: Icons.chat_bubble_outline,
+      //     route: '/dialogs',
+      //     type: 'menu',
+      //     value: 'dialogs',
+      //   ),
+      //   MenuItem(
+      //     title: 'home'.tr,
+      //     icon: Icons.home,
+      //     route: '/home',
+      //     type: 'menu',
+      //     value: 'home',
+      //   ),
+      //   MenuItem(
+      //     title: 'tabs'.tr,
+      //     icon: Icons.tab,
+      //     route: '/tabs',
+      //     type: 'menu',
+      //     value: 'tabs',
+      //   ),
+      //   MenuItem(
+      //     title: 'modals'.tr,
+      //     icon: Icons.window,
+      //     route: '/modals',
+      //     type: 'menu',
+      //     value: 'modals',
+      //   ),
+      //   MenuItem(
+      //     title: 'textboxes'.tr,
+      //     icon: Icons.text_fields,
+      //     route: '/textboxes',
+      //     type: 'menu',
+      //     value: 'textboxes',
+      //   ),
+      //   MenuItem(
+      //     title: 'tables'.tr,
+      //     icon: Icons.table_chart,
+      //     route: '/tables',
+      //     type: 'menu',
+      //     value: 'tables',
+      //   ),
+      // ],
+      menuGroups: const [
+        MenuGroup(
+          title: Text('Components'),
+          items: [
+            MenuItem(
+              title: 'Corporate',
+              icon: Icons.business,
+              //route: '/avatars',
+              type: 'menu',
+              value: 'avatars',
+              subItems: [
+                MenuItem(
+                  title: 'avatars',
+                  icon: Icons.telegram,
+                  type: 'menu',
+                  value: 'avatars',
+                  subItems: [
+                    MenuItem(
+                      title: 'avatars',
+                      icon: Icons.account_circle,
+                      route: '/avatars',
+                      type: 'menu',
+                      value: 'avatars',
+                    ),
+                    MenuItem(
+                      title: 'avatars',
+                      icon: Icons.account_circle,
+                      route: '/avatars',
+                      type: 'menu',
+                      value: 'avatars',
+                    ),
+                    MenuItem(
+                      title: 'avatars',
+                      icon: Icons.account_circle,
+                      route: '/avatars',
+                      type: 'menu',
+                      value: 'avatars',
+                    ),
+                    MenuItem(
+                      title: 'avatars 4',
+                      icon: Icons.account_circle,
+                      route: '/avatars',
+                      type: 'menu',
+                      value: 'avatars',
+                    ),
+                  ],
+                ),
+                MenuItem(
+                  title: 'buttons',
+                  icon: Icons.smart_button,
+                  route: '/buttons',
+                  type: 'menu',
+                  value: 'buttons',
+                ),
+              ],
+            ),
+            MenuItem(
+              title: 'avatars',
+              icon: Icons.account_circle,
+              route: '/avatars',
+              type: 'menu',
+              value: 'avatars',
+            ),
+            MenuItem(
+              title: 'buttons',
+              icon: Icons.smart_button,
+              route: '/buttons',
+              type: 'menu',
+              value: 'buttons',
+            ),
+            MenuItem(
+              title: 'cards',
+              icon: Icons.style,
+              route: '/cards',
+              type: 'menu',
+              value: 'cards',
+            ),
+            MenuItem(
+              title: 'dialogs',
+              icon: Icons.chat_bubble_outline,
+              route: '/dialogs',
+              type: 'menu',
+              value: 'dialogs',
+            ),
+            MenuItem(
+              title: 'home',
+              icon: Icons.home,
+              route: '/home',
+              type: 'menu',
+              value: 'home',
+            ),
+            MenuItem(
+              title: 'tabs',
+              icon: Icons.tab,
+              route: '/tabs',
+              type: 'menu',
+              value: 'tabs',
+            ),
+            MenuItem(
+              title: 'modals',
+              icon: Icons.window,
+              route: '/modals',
+              type: 'menu',
+              value: 'modals',
+            ),
+            MenuItem(
+              title: 'textboxes',
+              icon: Icons.text_fields,
+              route: '/textboxes',
+              type: 'menu',
+              value: 'textboxes',
+            ),
+            MenuItem(
+              title: 'tables',
+              icon: Icons.table_chart,
+              route: '/tables',
+              type: 'menu',
+              value: 'tables',
+            ),
+          ],
         ),
       ],
       body: body,

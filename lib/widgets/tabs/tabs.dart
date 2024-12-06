@@ -64,24 +64,6 @@ class _ModTabsState extends State<ModTabs> {
     _selectedIndex = widget.initialIndex;
   }
 
-  Border _getBorder() {
-    final borderSide = BorderSide(
-        color: _selectedIndex == _selectedIndex
-            ? widget.selectedTabColor
-            : Colors.transparent);
-    switch (widget.borderType) {
-      case TabBorderType.none:
-        return Border.all(color: Colors.transparent);
-      case TabBorderType.bottom:
-        return Border(bottom: borderSide);
-      case TabBorderType.all:
-        return Border.all(
-            color: _selectedIndex == _selectedIndex
-                ? widget.selectedTabColor
-                : Colors.transparent);
-    }
-  }
-
   Widget _buildTab(int index, Widget tab) {
     final isSelected = index == _selectedIndex;
 

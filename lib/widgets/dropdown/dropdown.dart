@@ -51,6 +51,7 @@ class ModDropDown<T> extends StatefulWidget {
 }
 
 class _ModDropDownState<T> extends State<ModDropDown<T>> {
+  // ignore: unused_field
   bool _hasFocus = false;
   bool _showValidationError = false;
 

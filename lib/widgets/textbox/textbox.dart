@@ -45,6 +45,8 @@ class ModTextBox extends StatefulWidget {
   final ValueChanged<String>? onFieldSubmitted;
   final ModTextBoxSize size;
   final double? fixedHeight;
+  final bool multiline;
+  final bool autoHeight;
 
   const ModTextBox({
     super.key,
@@ -87,6 +89,8 @@ class ModTextBox extends StatefulWidget {
     this.onFieldSubmitted,
     this.size = ModTextBoxSize.md,
     this.fixedHeight,
+    this.multiline = false,
+    this.autoHeight = false,
   });
 
   @override
@@ -123,28 +127,42 @@ class _ModTextBoxState extends State<ModTextBox> {
     if (widget.fixedHeight != null) {
       return widget.fixedHeight!;
     }
+
+    if (widget.multiline && !widget.autoHeight) {
+      switch (widget.size) {
+        case ModTextBoxSize.lg:
+          return 120;
+        case ModTextBoxSize.md:
+          return 100;
+        case ModTextBoxSize.sm:
+          return 80;
+        case ModTextBoxSize.xs:
+          return 60;
+      }
+    }
+
     switch (widget.size) {
       case ModTextBoxSize.lg:
-        return 56; // Matches ModButtonSize.lg
+        return 56;
       case ModTextBoxSize.md:
-        return 49; // Matches ModButtonSize.md
+        return 49;
       case ModTextBoxSize.sm:
-        return 42; // Matches ModButtonSize.sm
+        return 42;
       case ModTextBoxSize.xs:
-        return 33; // Matches ModButtonSize.xs
+        return 33;
     }
   }
 
   double _getFontSize() {
     switch (widget.size) {
       case ModTextBoxSize.lg:
-        return 18; // Matches ModButtonSize.lg
+        return 18;
       case ModTextBoxSize.md:
-        return 16; // Matches ModButtonSize.md
+        return 16;
       case ModTextBoxSize.sm:
-        return 14; // Matches ModButtonSize.sm
+        return 14;
       case ModTextBoxSize.xs:
-        return 12; // Matches ModButtonSize.xs
+        return 12;
     }
   }
 
@@ -165,15 +183,18 @@ class _ModTextBoxState extends State<ModTextBox> {
     final height = _getHeight();
     return EdgeInsets.symmetric(
       horizontal: 12,
-      vertical: (height - _getFontSize() - 8) / 2,
+      vertical: widget.multiline ? 12 : (height - _getFontSize() - 8) / 2,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final maxLines = widget.isPassword ? 1 : widget.maxLines;
-    final height = _getHeight();
+    final maxLines = widget.isPassword
+        ? 1
+        : (widget.multiline ? (widget.autoHeight ? null : 10) : 1);
+    final minLines = widget.multiline ? (widget.autoHeight ? 3 : null) : 1;
+    final height = widget.multiline && widget.autoHeight ? null : _getHeight();
     final hasError = _showValidationError &&
         (widget.errorText != null ||
             (widget.validator != null &&
@@ -211,7 +232,10 @@ class _ModTextBoxState extends State<ModTextBox> {
             controller: _controller,
             obscureText: widget.isPassword && _obscureText,
             readOnly: widget.readOnly,
-            keyboardType: widget.keyboardType ?? TextInputType.text,
+            keyboardType: widget.keyboardType ??
+                (widget.multiline
+                    ? TextInputType.multiline
+                    : TextInputType.text),
             style: widget.style?.copyWith(fontSize: _getFontSize()) ??
                 TextStyle(fontSize: _getFontSize()),
             inputFormatters: widget.inputFormatters,
@@ -225,8 +249,8 @@ class _ModTextBoxState extends State<ModTextBox> {
             expands: widget.expands,
             focusNode: widget.focusNode,
             maxLength: widget.maxLength,
-            maxLines: maxLines ?? 1,
-            minLines: widget.minLines,
+            maxLines: maxLines,
+            minLines: minLines,
             textAlign: widget.textAlign,
             onTapOutside: widget.onTapOutside as TapRegionCallback?,
             onEditingComplete: widget.onEditingComplete,

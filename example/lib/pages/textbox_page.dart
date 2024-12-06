@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:example/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -38,7 +40,7 @@ class _TextBoxPageState extends State<TextBoxPage> {
                 controller: TextEditingController(),
                 onChange: (text) {
                   // This ensures the text is updated in the TextBox
-                  print("Name: $text");
+                  log("Name: $text");
                 },
               ),
             ),
@@ -58,7 +60,7 @@ class _TextBoxPageState extends State<TextBoxPage> {
                 controller: TextEditingController(text: "dada"),
                 onChange: (text) {
                   // This ensures the text is updated in the TextBox
-                  print("Password: $text");
+                  log("Password: $text");
                 },
               ),
             ),
@@ -80,7 +82,7 @@ class _TextBoxPageState extends State<TextBoxPage> {
                 readOnly: false,
                 controller: TextEditingController(),
                 onChange: (text) {
-                  print("Email: $text");
+                  log("Email: $text");
                 },
               ),
             ),
@@ -101,7 +103,7 @@ class _TextBoxPageState extends State<TextBoxPage> {
                     size: ModTextBoxSize.lg,
                     controller: TextEditingController(),
                     onChange: (text) {
-                      print("Large TextBox: $text");
+                      log("Large TextBox: $text");
                     },
                   ),
                   const SizedBox(height: 16),
@@ -111,7 +113,7 @@ class _TextBoxPageState extends State<TextBoxPage> {
                     size: ModTextBoxSize.md,
                     controller: TextEditingController(),
                     onChange: (text) {
-                      print("Medium TextBox: $text");
+                      log("Medium TextBox: $text");
                     },
                   ),
                   const SizedBox(height: 16),
@@ -125,7 +127,7 @@ class _TextBoxPageState extends State<TextBoxPage> {
                           size: ModTextBoxSize.xs,
                           controller: TextEditingController(),
                           onChange: (text) {
-                            print("Small TextBox: $text");
+                            log("Small TextBox: $text");
                           },
                           suffixButton: ModButton(
                             title: 'Large Button',
@@ -158,7 +160,7 @@ class _TextBoxPageState extends State<TextBoxPage> {
                           size: ModTextBoxSize.sm,
                           controller: TextEditingController(),
                           onChange: (text) {
-                            print("Extra Small TextBox: $text");
+                            log("Extra Small TextBox: $text");
                           },
                           keyboardType: TextInputType.emailAddress,
                           inputFormatters: [
@@ -245,7 +247,7 @@ class _TextBoxPageState extends State<TextBoxPage> {
                           hint: 'Selecione um item',
                           label: 'Items',
                           size: mod.ModDropdownSearchSize.sm,
-                          onChanged: (value) => print(value),
+                          onChanged: (value) => log(value.toString()),
                           searchHint: "Pesquise por um item",
                           dropdownBackgroundColor:
                               Theme.of(context).appBarTheme.backgroundColor,
@@ -257,6 +259,26 @@ class _TextBoxPageState extends State<TextBoxPage> {
                     ],
                   ),
                 ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            mod.ModCard(
+              header: const Text(
+                "Simple TextBox Example",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: mod.ModTextBox(
+                label: "Input",
+                hint: "Enter text here",
+                multiline: true,
+                autoHeight: true,
+                controller: TextEditingController(),
+                onChange: (text) {
+                  log("Input: $text");
+                },
               ),
             ),
           ],

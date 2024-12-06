@@ -32,7 +32,6 @@ class LanguageController extends GetxController {
       'pt_BR': {'name': 'language_portuguese'.tr, 'flag': AppImages.flagBR},
       'es_ES': {'name': 'language_spanish'.tr, 'flag': AppImages.flagES},
     });
-    print(availableLanguages);
   }
 
   void loadLanguage() {

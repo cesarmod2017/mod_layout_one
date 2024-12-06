@@ -191,7 +191,7 @@ class _TablesPageState extends State<TablesPage> {
                 ),
               ),
               content: DataTable(
-                dataRowHeight: 40,
+                //dataRowHeight: 40,
                 headingRowHeight: 40,
                 horizontalMargin: 12,
                 columnSpacing: 24,

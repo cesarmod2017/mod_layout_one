@@ -1,5 +1,6 @@
 import 'package:example/main.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mod_layout_one/mod_layout_one.dart' as mod;
 
 class ModalPage extends StatelessWidget {
@@ -31,11 +32,141 @@ class ModalPage extends StatelessWidget {
                     await mod.ModModal.show(
                       context: context,
                       header: const Text('Basic Modal'),
-                      body: const Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Text(
-                            'This is a basic modal example with default styling.'),
+                      height: mod.ModModalHeight.normal,
+                      //height: mod.ModModalHeight.normal,
+                      body: SizedBox(
+                        height: 200,
+                        child: mod.ModContainer(
+                          child: mod.ModRow(
+                            columns: [
+                              mod.ModColumn(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                columnSizes: const {
+                                  mod.ScreenSize.xs: mod.ColumnSize.col12,
+                                  mod.ScreenSize.md: mod.ColumnSize.col8,
+                                  mod.ScreenSize.lg: mod.ColumnSize.col8,
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 20),
+                                  child: mod.ModContainer(
+                                    child: mod.ModRow(
+                                      columns: [
+                                        mod.ModColumn(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          columnSizes: const {
+                                            mod.ScreenSize.xs:
+                                                mod.ColumnSize.col12,
+                                            mod.ScreenSize.md:
+                                                mod.ColumnSize.col6,
+                                          },
+                                          child: mod.ModTextBox(
+                                            label:
+                                                'subscriptionsUsers_userId'.tr,
+                                            hint:
+                                                'subscriptionsUsers_enter_userId'
+                                                    .tr,
+                                            size: mod.ModTextBoxSize.sm,
+                                            autovalidateMode:
+                                                AutovalidateMode.disabled,
+                                            borderRadius: 6,
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'userId_required'.tr;
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                        ),
+                                        mod.ModColumn(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          columnSizes: const {
+                                            mod.ScreenSize.xs:
+                                                mod.ColumnSize.col12,
+                                            mod.ScreenSize.md:
+                                                mod.ColumnSize.col6,
+                                          },
+                                          child: mod.ModTextBox(
+                                            label:
+                                                'subscriptionsUsers_roleId'.tr,
+                                            hint:
+                                                'subscriptionsUsers_enter_roleId'
+                                                    .tr,
+                                            size: mod.ModTextBoxSize.sm,
+                                            autovalidateMode:
+                                                AutovalidateMode.disabled,
+                                            borderRadius: 6,
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'roleId_required'.tr;
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                        ),
+                                        mod.ModColumn(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          columnSizes: const {
+                                            mod.ScreenSize.xs:
+                                                mod.ColumnSize.col12,
+                                          },
+                                          child: Column(
+                                            children: [
+                                              const Divider(thickness: 2),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  mod.ModButton(
+                                                    title: 'save'.tr,
+                                                    onPressed: () async {},
+                                                    borderType:
+                                                        mod.ModBorderType.solid,
+                                                    borderColor: mod
+                                                        .ModButtonType.primary,
+                                                    type:
+                                                        mod.ModButtonType.none,
+                                                    size: mod.ModButtonSize.md,
+                                                    leftIcon: Icons.save,
+                                                  ),
+                                                  mod.ModButton(
+                                                    title: 'cancel',
+                                                    onPressed: () async =>
+                                                        Get.back(),
+                                                    borderType:
+                                                        mod.ModBorderType.solid,
+                                                    borderColor: mod
+                                                        .ModButtonType
+                                                        .secondary,
+                                                    type:
+                                                        mod.ModButtonType.none,
+                                                    size: mod.ModButtonSize.md,
+                                                    leftIcon: Icons.arrow_back,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
+                      // body: const Padding(
+                      //   padding: EdgeInsets.all(16),
+                      //   child: Text(
+                      //       'This is a basic modal example with default styling.'),
+                      // ),
                       footer: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [

@@ -39,6 +39,7 @@ class CardPage extends StatelessWidget {
               footer: Text("Footer is hidden when collapsed"),
               borderRadius: 16,
               isAccordion: true,
+              initiallyExpanded: true,
             ),
             SizedBox(height: 16),
             ModCard(

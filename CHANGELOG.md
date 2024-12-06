@@ -1,3 +1,106 @@
+## 1.0.30
+
+* Adjusted pagination in ModDataTable:
+  * Improved page navigation logic for better user experience
+  * Enhanced visibility of page numbers on different screen sizes
+  * Optimized layout for mobile and desktop views
+  * Ensured consistent behavior across various devices
+  * Fixed issues with page number generation and display
+  * Improved accessibility for pagination controls
+
+* Maintained menu open state for submenus:
+  * Enhanced _ExpandableMenuItem to keep submenus open
+  * Improved user experience by preserving submenu state
+  * Ensured consistent behavior across navigation interactions
+  * Optimized layout and transitions for submenu items
+  * Enhanced accessibility for nested menu items
+  * Better handling of submenu state across screen sizes
+  * Improved integration with existing menu functionality
+
+## 1.0.29
+
+* Changed MenuGroup title property to widget:
+  * Replaced title string property with Widget type
+  * Allows for more flexible title customization
+  * Supports rich text, icons, and custom widgets
+  * Maintains backwards compatibility through Text widget
+  * Enhanced visual customization options
+  * Better integration with design systems
+  * Consistent with other widget-based components
+  * Improved flexibility for menu headers
+
+## 1.0.28
+
+* Enhanced menu functionality and responsiveness:
+  * Improved mobile drawer behavior and animations
+  * Added automatic menu collapse on mobile devices
+  * Enhanced theme switching controls in mobile drawer
+  * Optimized sidebar layout and spacing
+  * Better handling of menu state across screen sizes
+  * Improved menu expansion/collapse transitions
+  * More consistent menu behavior across platforms
+  * Enhanced accessibility for navigation elements
+
+## 1.0.27
+
+* Added initiallyExpanded property to ModExpansionPanel:
+  * New property to control initial expansion state of panels
+  * Allows panels to be expanded by default when rendered
+  * Seamless integration with existing expansion behavior
+  * Maintains backwards compatibility with default collapsed state
+  * Customizable through widget properties
+  * Consistent behavior across panel instances
+  * Enhanced user experience with configurable initial states
+  * Useful for displaying important content immediately
+
+## 1.0.26
+
+* Added multiline property to ModTextBox:
+  * New property to enable multi-line text input
+  * Supports dynamic height adjustment with autoHeight property
+  * Allows for longer text entries and text areas
+  * Seamless integration with existing ModTextBox features
+  * Maintains backwards compatibility with single-line mode
+  * Customizable through widget properties
+  * Consistent behavior across different screen sizes
+  * Enhanced text input flexibility for various use cases
+
+## 1.0.25
+
+* Added maxHeight property to ModContainer:
+  * New property to set the maximum height of the container
+  * Supports dynamic height adjustments based on content
+  * Allows for better layout control and flexibility
+  * Seamless integration with existing ModContainer features
+  * Maintains backwards compatibility with default unlimited height
+  * Customizable through widget properties
+  * Consistent behavior across different screen sizes and orientations
+  * Enhanced visual appeal with flexible height options
+
+## 1.0.24
+
+* Added claims property to ModBaseLayout:
+  * New property to manage user claims and permissions
+  * Supports dynamic claim-based UI rendering
+  * Allows for conditional display of menu items and actions
+  * Seamless integration with existing ModBaseLayout features
+  * Maintains backwards compatibility with default null claims
+  * Customizable through widget properties
+  * Consistent behavior across different screen sizes and orientations
+  * Enhanced security with claim-based access control
+
+## 1.0.23
+
+* Added background property to ModContainer:
+  * New property to customize the background color of the container
+  * Supports solid colors, gradients, and images
+  * Allows for dynamic background changes based on state
+  * Seamless integration with existing ModContainer features
+  * Maintains backwards compatibility with default transparent background
+  * Customizable through widget properties
+  * Consistent behavior across different screen sizes and orientations
+  * Enhanced visual appeal with flexible styling options
+
 ## 1.0.22
 
 * Added searchHint to ModDropdownSearch:

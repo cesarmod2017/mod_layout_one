@@ -4,7 +4,7 @@ enum ModModalPosition { top, center, bottom }
 
 enum ModModalSize { xs, sm, md, lg }
 
-enum ModModalHeight { normal, full }
+enum ModModalHeight { normal, full, auto }
 
 class ModModal extends StatelessWidget {
   final Widget header;
@@ -58,9 +58,16 @@ class ModModal extends StatelessWidget {
     if (fullScreen) return MediaQuery.of(context).size.height;
 
     final screenHeight = MediaQuery.of(context).size.height;
-    return height == ModModalHeight.full
-        ? screenHeight * 0.9
-        : screenHeight * 0.6;
+    switch (height) {
+      case ModModalHeight.full:
+        return screenHeight * 0.9;
+      case ModModalHeight.auto:
+        return double
+            .infinity; // Allow the modal to take the height of its content
+      case ModModalHeight.normal:
+      default:
+        return screenHeight * 0.6;
+    }
   }
 
   @override

@@ -141,11 +141,126 @@ void main() {
         const GetMaterialApp(
           home: ModBaseLayout(
             title: 'Test',
-            menuItems: [
-              MenuItem(
-                title: 'Home',
-                icon: Icons.home,
-                route: '/home',
+            menuGroups: [
+              MenuGroup(
+                title: Text('Components'),
+                items: [
+                  MenuItem(
+                    title: 'Corporate',
+                    icon: Icons.business,
+                    //route: '/avatars',
+                    type: 'menu',
+                    value: 'avatars',
+                    subItems: [
+                      MenuItem(
+                        title: 'avatars',
+                        icon: Icons.telegram,
+                        type: 'menu',
+                        value: 'avatars',
+                        subItems: [
+                          MenuItem(
+                            title: 'avatars',
+                            icon: Icons.account_circle,
+                            route: '/avatars',
+                            type: 'menu',
+                            value: 'avatars',
+                          ),
+                          MenuItem(
+                            title: 'avatars',
+                            icon: Icons.account_circle,
+                            route: '/avatars',
+                            type: 'menu',
+                            value: 'avatars',
+                          ),
+                          MenuItem(
+                            title: 'avatars',
+                            icon: Icons.account_circle,
+                            route: '/avatars',
+                            type: 'menu',
+                            value: 'avatars',
+                          ),
+                          MenuItem(
+                            title: 'avatars 4',
+                            icon: Icons.account_circle,
+                            route: '/avatars',
+                            type: 'menu',
+                            value: 'avatars',
+                          ),
+                        ],
+                      ),
+                      MenuItem(
+                        title: 'buttons',
+                        icon: Icons.smart_button,
+                        route: '/buttons',
+                        type: 'menu',
+                        value: 'buttons',
+                      ),
+                    ],
+                  ),
+                  MenuItem(
+                    title: 'avatars',
+                    icon: Icons.account_circle,
+                    route: '/avatars',
+                    type: 'menu',
+                    value: 'avatars',
+                  ),
+                  MenuItem(
+                    title: 'buttons',
+                    icon: Icons.smart_button,
+                    route: '/buttons',
+                    type: 'menu',
+                    value: 'buttons',
+                  ),
+                  MenuItem(
+                    title: 'cards',
+                    icon: Icons.style,
+                    route: '/cards',
+                    type: 'menu',
+                    value: 'cards',
+                  ),
+                  MenuItem(
+                    title: 'dialogs',
+                    icon: Icons.chat_bubble_outline,
+                    route: '/dialogs',
+                    type: 'menu',
+                    value: 'dialogs',
+                  ),
+                  MenuItem(
+                    title: 'home',
+                    icon: Icons.home,
+                    route: '/home',
+                    type: 'menu',
+                    value: 'home',
+                  ),
+                  MenuItem(
+                    title: 'tabs',
+                    icon: Icons.tab,
+                    route: '/tabs',
+                    type: 'menu',
+                    value: 'tabs',
+                  ),
+                  MenuItem(
+                    title: 'modals',
+                    icon: Icons.window,
+                    route: '/modals',
+                    type: 'menu',
+                    value: 'modals',
+                  ),
+                  MenuItem(
+                    title: 'textboxes',
+                    icon: Icons.text_fields,
+                    route: '/textboxes',
+                    type: 'menu',
+                    value: 'textboxes',
+                  ),
+                  MenuItem(
+                    title: 'tables',
+                    icon: Icons.table_chart,
+                    route: '/tables',
+                    type: 'menu',
+                    value: 'tables',
+                  ),
+                ],
               ),
             ],
             body: Center(
@@ -233,7 +348,7 @@ void main() {
         const GetMaterialApp(
           home: ModBaseLayout(
             title: 'Test',
-            menuItems: [],
+            menuGroups: [],
             body: Center(
               child: Text('Test Body'),
             ),
