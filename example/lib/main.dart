@@ -4,6 +4,7 @@ import 'package:example/pages/buttons_page.dart';
 import 'package:example/pages/card_page.dart';
 import 'package:example/pages/dialogs_page.dart';
 import 'package:example/pages/home_page.dart';
+import 'package:example/pages/loading_page.dart';
 import 'package:example/pages/modal_page.dart';
 import 'package:example/pages/tables_page.dart';
 import 'package:example/pages/tabs_page.dart';
@@ -110,7 +111,18 @@ class MyApp extends StatelessWidget {
               ? ThemeMode.dark
               : ThemeMode.light,
           translations: AppTranslations(),
-          locale: Get.deviceLocale,
+          locale: Get.find<LanguageController>().currentLocale.value.isNotEmpty
+              ? Locale(
+                  Get.find<LanguageController>()
+                      .currentLocale
+                      .value
+                      .split('_')[0],
+                  Get.find<LanguageController>()
+                      .currentLocale
+                      .value
+                      .split('_')[1],
+                )
+              : const Locale('en', 'US'),
           fallbackLocale: const Locale('en', 'US'),
           debugShowCheckedModeBanner: false,
           getPages: [
@@ -168,6 +180,12 @@ class MyApp extends StatelessWidget {
               transition: Transition.noTransition,
               preventDuplicates: true,
             ),
+            GetPage(
+              name: '/loading',
+              page: () => const LoadingPage(),
+              transition: Transition.noTransition,
+              preventDuplicates: true,
+            ),
           ],
           initialRoute: '/home',
         ));
@@ -209,7 +227,8 @@ class CustomLayout extends StatelessWidget {
         'menu:tabs',
         'menu:modals',
         'menu:textboxes',
-        'menu:tables'
+        'menu:tables',
+        'menu:loading',
       ],
       // menuItems: [
       //   MenuItem(
@@ -394,6 +413,13 @@ class CustomLayout extends StatelessWidget {
               route: '/tables',
               type: 'menu',
               value: 'tables',
+            ),
+            MenuItem(
+              title: 'loading',
+              icon: Icons.hourglass_empty,
+              route: '/loading',
+              type: 'menu',
+              value: 'loading',
             ),
           ],
         ),

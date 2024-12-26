@@ -5,19 +5,21 @@ class ModRow extends StatelessWidget {
   final List<ModColumn> columns;
   final MainAxisAlignment mainAxisAlignment;
   final CrossAxisAlignment crossAxisAlignment;
+  final double? height;
 
   const ModRow({
     super.key,
     required this.columns,
     this.mainAxisAlignment = MainAxisAlignment.start,
     this.crossAxisAlignment = CrossAxisAlignment.start,
+    this.height,
   });
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return SizedBox(
+        final content = SizedBox(
           width: constraints.maxWidth,
           child: Wrap(
             spacing: 0,
@@ -26,6 +28,17 @@ class ModRow extends StatelessWidget {
             children: columns,
           ),
         );
+
+        if (height != null) {
+          return SizedBox(
+            height: height,
+            child: SingleChildScrollView(
+              child: content,
+            ),
+          );
+        }
+
+        return content;
       },
     );
   }

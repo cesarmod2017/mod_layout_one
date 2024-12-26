@@ -36,17 +36,30 @@ class LanguageController extends GetxController {
 
   void loadLanguage() {
     final savedLanguage = _prefs.getString(languageKey);
+
+    // Se existe um idioma salvo e ele é válido, use-o
     if (savedLanguage != null &&
         availableLanguages.containsKey(savedLanguage)) {
       currentLocale.value = savedLanguage;
     } else {
+      // Se não há idioma salvo, tente usar o idioma do dispositivo
       final deviceLocale = Get.deviceLocale;
       final localeKey =
           '${deviceLocale?.languageCode}_${deviceLocale?.countryCode}';
-      currentLocale.value =
-          availableLanguages.containsKey(localeKey) ? localeKey : 'en_US';
+
+      // Se o idioma do dispositivo está disponível, use-o
+      if (availableLanguages.containsKey(localeKey)) {
+        currentLocale.value = localeKey;
+      } else {
+        // Caso contrário, use inglês como fallback
+        currentLocale.value = 'en_US';
+      }
     }
 
+    // Salva o idioma escolhido
+    _prefs.setString(languageKey, currentLocale.value);
+
+    // Atualiza o locale
     _onLanguageChanged();
   }
 

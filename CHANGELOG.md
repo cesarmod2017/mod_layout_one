@@ -1,3 +1,47 @@
+
+## 1.0.34
+
+* Enhanced language handling and localization:
+  * Improved language switching mechanism for smoother transitions
+  * Added support for dynamic language updates without app restart
+  * Enhanced fallback language handling when preferred locale is unavailable
+  * Optimized language resource loading and caching
+  * Better handling of regional variants for languages
+  * Improved persistence of language preferences
+  * Added support for RTL languages and layouts
+  * Enhanced accessibility for language selection controls
+  * Better integration with system locale changes
+  * Improved error handling for missing translations
+
+## 1.0.33
+
+* Fixed ModLoading to use Get.context for better context handling
+  * Ensures that the loading indicator is displayed correctly in the overlay
+  * Improved error handling when no overlay context is found
+
+## 1.0.32
+
+* Created ModLoading widget:
+  * A customizable loading indicator for Flutter applications
+  * Supports various loading positions (center, left, right, etc.)
+  * Allows for custom icons and images
+  * Provides animation options for a smooth loading experience
+  * Configurable background color and border radius
+  * Integrates with Overlay for displaying loading indicators on top of other widgets
+  * Supports both vertical and horizontal orientations
+  * Enhanced accessibility features for better user experience
+
+## 1.0.31
+
+* Added ModRow widget:
+  * New widget to create a row layout with ModColumn children
+  * Supports custom alignment with MainAxisAlignment and CrossAxisAlignment
+  * Optional height property to set the row height
+  * Automatically wraps columns within the available width
+  * Integrates seamlessly with ModContainer for flexible layouts
+  * Ensures consistent behavior across different screen sizes
+  * Enhanced accessibility for row and column layouts
+
 ## 1.0.30
 
 * Adjusted pagination in ModDataTable:

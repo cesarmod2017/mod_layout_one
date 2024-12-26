@@ -263,7 +263,7 @@ class DialogsPage extends StatelessWidget {
                         builder: (context) => ModDialog(
                           title: 'Information',
                           onClose: () {
-                            debugPrint('Dialog was closed');
+                            //debugPrint('Dialog was closed');
                           },
                           content: const Column(
                             children: [
