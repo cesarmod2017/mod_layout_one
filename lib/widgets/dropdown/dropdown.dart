@@ -213,7 +213,7 @@ class _ModDropDownState<T> extends State<ModDropDown<T>> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(widget.label!, style: theme.textTheme.bodyMedium),
-          const SizedBox(height: 8),
+          const SizedBox(height: 2),
           dropDown,
         ],
       ),

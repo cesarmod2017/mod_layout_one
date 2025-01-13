@@ -1,3 +1,80 @@
+## 1.0.40
+
+* Added minWidthTabs property to ModTabs:
+  * Introduced new minWidthTabs parameter to control minimum tab width
+  * Allows setting consistent tab widths across the component
+  * Improves layout control for both horizontal and vertical orientations
+  * Works seamlessly with TabAlignment.justify for equal width distribution
+  * Enables better space utilization in tab layouts
+  * Provides more flexibility in tab sizing and spacing
+  * Maintains responsive behavior while enforcing minimum widths
+  * Enhances visual consistency across different screen sizes
+  * Better handling of tabs with varying content lengths
+  * Improved overall tab layout customization options
+
+## 1.0.39
+
+* Improved ModDataTable header functionality:
+  * Enhanced header alignment and positioning
+  * Fixed header width calculation issues
+  * Improved header cell padding consistency
+  * Better handling of sortable column indicators
+  * Optimized header rendering performance
+  * Fixed header text overflow issues
+  * Enhanced header border styling
+  * Improved header click response for sorting
+  * Better visual feedback on header interactions
+  * More consistent header appearance across themes
+
+## 1.0.38
+
+* Adjusted spacing between label and input fields:
+  * Increased vertical spacing between label and ModTextBox from 2px to 8px
+  * Increased vertical spacing between label and ModDropDown from 2px to 8px
+  * Increased vertical spacing between label and ModDropdownSearch from 2px to 8px
+  * Improved visual hierarchy and readability of form elements
+  * Enhanced overall form layout consistency
+  * Better alignment with material design spacing guidelines
+  * Standardized spacing across all input components
+  * Improved visual separation between label and input fields
+  * Better visual balance in form layouts
+  * Enhanced accessibility with clearer visual grouping
+
+## 1.0.37
+
+* Changed hint text fontWeight in ModTextBox:
+  * Updated hint text style to use FontWeight.w400 for better readability
+  * Improved visual consistency with other form elements
+  * Enhanced text appearance in input fields
+  * Standardized hint text presentation across the widget
+
+## 1.0.36
+
+* Fixed issues with ModDataTable fixed header:
+  * Resolved header alignment problems when scrolling horizontally
+  * Fixed z-index stacking issues with fixed header
+  * Improved header shadow rendering during scroll
+  * Enhanced header positioning calculation
+  * Fixed header width synchronization with table columns
+  * Resolved flickering issues during rapid scrolling
+  * Improved performance of fixed header rendering
+  * Fixed header background color consistency
+  * Enhanced scroll event handling for smoother experience
+  * Resolved edge cases with dynamic column resizing
+
+## 1.0.35
+
+* Added fixed header support to ModDataTable:
+  * Implemented sticky header functionality for better table navigation
+  * Header remains visible while scrolling through table content
+  * Improved user experience when viewing large datasets
+  * Maintains column alignment when scrolling horizontally
+  * Added fixedHeader property to control header behavior
+  * Enhanced performance for large tables with fixed headers
+  * Proper handling of header styles and colors in fixed position
+  * Seamless integration with existing table features
+  * Maintains responsive behavior with fixed header
+  * Compatible with all table customization options
 
 ## 1.0.34
 

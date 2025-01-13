@@ -46,6 +46,7 @@ class ModDataTable<T> extends StatefulWidget {
   final String? currentSortField;
   final SortDirection currentSortDirection;
   final double rowHeight;
+  final bool fixedHeader;
 
   const ModDataTable({
     super.key,
@@ -70,6 +71,7 @@ class ModDataTable<T> extends StatefulWidget {
     this.currentSortField,
     this.currentSortDirection = SortDirection.none,
     this.rowHeight = 35.0,
+    this.fixedHeader = false,
   });
 
   @override
@@ -79,12 +81,33 @@ class ModDataTable<T> extends StatefulWidget {
 class _ModDataTableState<T> extends State<ModDataTable<T>> {
   late String? _sortField;
   late SortDirection _sortDirection;
+  final ScrollController _headerScrollController = ScrollController();
+  final ScrollController _bodyScrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _sortField = widget.currentSortField;
     _sortDirection = widget.currentSortDirection;
+
+    // Synchronize the scroll of header and body
+    _headerScrollController.addListener(() {
+      if (_bodyScrollController.hasClients) {
+        _bodyScrollController.jumpTo(_headerScrollController.offset);
+      }
+    });
+    _bodyScrollController.addListener(() {
+      if (_headerScrollController.hasClients) {
+        _headerScrollController.jumpTo(_bodyScrollController.offset);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _headerScrollController.dispose();
+    _bodyScrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -138,16 +161,26 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
 
           return Column(
             children: [
+              if (widget.fixedHeader)
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  controller: _headerScrollController,
+                  child: SizedBox(
+                    width: max(totalWidth, screenWidth),
+                    child: _buildHeader(columnWidths),
+                  ),
+                ),
               Expanded(
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
+                    controller: _bodyScrollController,
                     child: SizedBox(
                       width: max(totalWidth, screenWidth),
                       child: Column(
                         children: [
-                          _buildHeader(columnWidths),
+                          if (!widget.fixedHeader) _buildHeader(columnWidths),
                           _buildRows(visibleData, columnWidths),
                         ],
                       ),
@@ -167,6 +200,7 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
     return Container(
       color: widget.headerColor,
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: List.generate(widget.headers.length, (index) {
           final header = widget.headers[index];
           final width = columnWidths[index];

@@ -13,9 +13,9 @@ class TablesPage extends StatefulWidget {
 }
 
 class _TablesPageState extends State<TablesPage> {
-  bool _sortAscending = true;
-  int _sortColumnIndex = 0;
-  int _rowsPerPage = 3;
+  final bool _sortAscending = true;
+  final int _sortColumnIndex = 0;
+  final int _rowsPerPage = 5;
 
   final List<Map<String, dynamic>> _data = [
     {'name': 'John Doe', 'age': 30, 'city': 'New York'},
@@ -24,6 +24,40 @@ class _TablesPageState extends State<TablesPage> {
     {'name': 'Alice Brown', 'age': 28, 'city': 'Houston'},
     {'name': 'Charlie Wilson', 'age': 42, 'city': 'Phoenix'},
     {'name': 'David Lee', 'age': 33, 'city': 'Boston'},
+    {'name': 'Emma Davis', 'age': 29, 'city': 'Seattle'},
+    {'name': 'Frank Miller', 'age': 45, 'city': 'Miami'},
+    {'name': 'Grace Taylor', 'age': 31, 'city': 'Denver'},
+    {'name': 'Henry Wilson', 'age': 38, 'city': 'Austin'},
+    {'name': 'Ivy Clark', 'age': 27, 'city': 'Portland'},
+    {'name': 'Jack Adams', 'age': 36, 'city': 'Atlanta'},
+    {'name': 'Kelly White', 'age': 34, 'city': 'Dallas'},
+    {'name': 'Liam Moore', 'age': 41, 'city': 'San Diego'},
+    {'name': 'Mia Garcia', 'age': 26, 'city': 'San Francisco'},
+    {'name': 'Noah Martin', 'age': 39, 'city': 'Philadelphia'},
+    {'name': 'Olivia Lopez', 'age': 32, 'city': 'Detroit'},
+    {'name': 'Peter King', 'age': 44, 'city': 'Minneapolis'},
+    {'name': 'Quinn Evans', 'age': 37, 'city': 'Baltimore'},
+    {'name': 'Rachel Green', 'age': 29, 'city': 'Las Vegas'},
+    {'name': 'Samuel Cooper', 'age': 43, 'city': 'Nashville'},
+    {'name': 'Tara Murphy', 'age': 30, 'city': 'Cleveland'},
+    {'name': 'Uma Patel', 'age': 35, 'city': 'Pittsburgh'},
+    {'name': 'Victor Reed', 'age': 40, 'city': 'St. Louis'},
+    {'name': 'Wendy Hill', 'age': 28, 'city': 'Kansas City'},
+    {'name': 'Xavier Long', 'age': 46, 'city': 'Sacramento'},
+    {'name': 'Yara Ross', 'age': 33, 'city': 'Orlando'},
+    {'name': 'Zack Baker', 'age': 31, 'city': 'Charlotte'},
+    {'name': 'Amy Chen', 'age': 36, 'city': 'Tampa'},
+    {'name': 'Ben Wright', 'age': 42, 'city': 'Indianapolis'},
+    {'name': 'Cara Young', 'age': 27, 'city': 'Columbus'},
+    {'name': 'Dan Hall', 'age': 39, 'city': 'Cincinnati'},
+    {'name': 'Eva Wood', 'age': 34, 'city': 'Milwaukee'},
+    {'name': 'Fred Cox', 'age': 45, 'city': 'Memphis'},
+    {'name': 'Gina Park', 'age': 29, 'city': 'Louisville'},
+    {'name': 'Hans Berg', 'age': 41, 'city': 'Buffalo'},
+    {'name': 'Ida Shaw', 'age': 32, 'city': 'Richmond'},
+    {'name': 'Jay Cole', 'age': 38, 'city': 'Jacksonville'},
+    {'name': 'Kim Lee', 'age': 30, 'city': 'Salt Lake City'},
+    {'name': 'Leo Fox', 'age': 37, 'city': 'Oklahoma City'}
   ];
 
   List<Map<String, dynamic>> get _sortedData {
@@ -52,172 +86,8 @@ class _TablesPageState extends State<TablesPage> {
         child: Column(
           children: [
             // Basic DataTable with sorting
-            ModCard(
-              header: const Text(
-                "Basic DataTable with Sorting",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              content: DataTable(
-                sortColumnIndex: _sortColumnIndex,
-                sortAscending: _sortAscending,
-                columns: [
-                  DataColumn(
-                    label: const Text('Name'),
-                    onSort: (columnIndex, ascending) {
-                      setState(() {
-                        _sortColumnIndex = columnIndex;
-                        _sortAscending = ascending;
-                      });
-                    },
-                  ),
-                  DataColumn(
-                    label: const Text('Age'),
-                    numeric: true,
-                    onSort: (columnIndex, ascending) {
-                      setState(() {
-                        _sortColumnIndex = columnIndex;
-                        _sortAscending = ascending;
-                      });
-                    },
-                  ),
-                  DataColumn(
-                    label: const Text('City'),
-                    onSort: (columnIndex, ascending) {
-                      setState(() {
-                        _sortColumnIndex = columnIndex;
-                        _sortAscending = ascending;
-                      });
-                    },
-                  ),
-                ],
-                rows: _sortedData.map((item) {
-                  return DataRow(
-                    cells: [
-                      DataCell(Text(item['name'].toString())),
-                      DataCell(Text(item['age'].toString())),
-                      DataCell(Text(item['city'].toString())),
-                    ],
-                  );
-                }).toList(),
-              ),
-            ),
-            const SizedBox(height: 20),
 
             // Styled DataTable with pagination
-            ModCard(
-              header: const Text(
-                "Styled DataTable with Pagination",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              content: Theme(
-                data: Theme.of(context).copyWith(
-                  dataTableTheme: DataTableThemeData(
-                    // headingRowColor:
-                    //     WidgetStateProperty.all(Colors.blue.shade50),
-                    dataRowColor: WidgetStateProperty.resolveWith((states) {
-                      if (states.contains(WidgetState.selected)) {
-                        return Colors.grey.shade200;
-                      }
-                      return null;
-                    }),
-                    headingTextStyle: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      // color: Colors.blue.shade900,
-                    ),
-                    dividerThickness: 2,
-                  ),
-                ),
-                child: PaginatedDataTable(
-                  availableRowsPerPage: const [3, 5, 10, 15, 25],
-                  source: _DataSource(_sortedData),
-                  header: const Text('Employees'),
-                  sortColumnIndex: _sortColumnIndex,
-                  sortAscending: _sortAscending,
-                  columns: [
-                    DataColumn(
-                      label: const Text('Name'),
-                      onSort: (columnIndex, ascending) {
-                        setState(() {
-                          _sortColumnIndex = columnIndex;
-                          _sortAscending = ascending;
-                        });
-                      },
-                    ),
-                    DataColumn(
-                      label: const Text('Age'),
-                      numeric: true,
-                      onSort: (columnIndex, ascending) {
-                        setState(() {
-                          _sortColumnIndex = columnIndex;
-                          _sortAscending = ascending;
-                        });
-                      },
-                    ),
-                    DataColumn(
-                      label: const Text('City'),
-                      onSort: (columnIndex, ascending) {
-                        setState(() {
-                          _sortColumnIndex = columnIndex;
-                          _sortAscending = ascending;
-                        });
-                      },
-                    ),
-                  ],
-                  rowsPerPage: _rowsPerPage,
-                  onRowsPerPageChanged: (value) {
-                    setState(() {
-                      _rowsPerPage = value!;
-                    });
-                  },
-                  showCheckboxColumn: false,
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Compact DataTable with selection
-            ModCard(
-              header: const Text(
-                "Compact DataTable with Selection",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              content: DataTable(
-                //dataRowHeight: 40,
-                headingRowHeight: 40,
-                horizontalMargin: 12,
-                columnSpacing: 24,
-                showCheckboxColumn: true,
-                columns: const [
-                  DataColumn(label: Text('Name')),
-                  DataColumn(label: Text('Age'), numeric: true),
-                  DataColumn(label: Text('City')),
-                ],
-                rows: _sortedData.map((item) {
-                  return DataRow(
-                    selected: false,
-                    onSelectChanged: (selected) {
-                      // Handle selection
-                    },
-                    cells: [
-                      DataCell(Text(item['name'].toString())),
-                      DataCell(Text(item['age'].toString())),
-                      DataCell(Text(item['city'].toString())),
-                    ],
-                  );
-                }).toList(),
-              ),
-            ),
-
-            const SizedBox(height: 20),
 
             ModCard(
               header: const Text(
@@ -229,6 +99,7 @@ class _TablesPageState extends State<TablesPage> {
               ),
               content: ModDataTable(
                 paginationBorderRadius: 50,
+                fixedHeader: true,
                 headers: [
                   ModDataHeader(
                     child: SelectableText(
@@ -261,7 +132,7 @@ class _TablesPageState extends State<TablesPage> {
                 data: _sortedData,
                 source: _DataSource(_sortedData),
                 currentPage: 0,
-                rowsPerPage: 5,
+                rowsPerPage: 20,
                 totalRecords: _sortedData.length,
                 oddRowColor:
                     Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -274,6 +145,7 @@ class _TablesPageState extends State<TablesPage> {
                   // Handle sorting
                   log('Sorting by $field in $direction direction');
                 },
+                rowHeight: 10,
                 paginationText: 'of', // Adicione se necessário
                 rowsPerPageText: 'Linhas por página',
                 paginationBackgroundColor:
@@ -292,6 +164,254 @@ class _TablesPageState extends State<TablesPage> {
                   100,
                   200
                 ], // Adicione se necessário
+              ),
+            ),
+            const SizedBox(height: 20),
+            ModCard(
+              header: const Text(
+                "Wide Table with Horizontal Scroll",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: ModDataTable(
+                fixedHeader: true,
+                headers: [
+                  ModDataHeader(
+                    child: const SelectableText('ID'),
+                    widthType: WidthType.fixed,
+                    width: 80,
+                    sortable: true,
+                    field: 'id',
+                  ),
+                  ModDataHeader(
+                    child: const SelectableText('Name'),
+                    widthType: WidthType.fixed,
+                    width: 150,
+                    sortable: true,
+                    field: 'name',
+                  ),
+                  ModDataHeader(
+                    child: const SelectableText('Department'),
+                    widthType: WidthType.fixed,
+                    width: 150,
+                    sortable: true,
+                    field: 'department',
+                  ),
+                  ModDataHeader(
+                    child: const SelectableText('Position'),
+                    widthType: WidthType.fixed,
+                    width: 150,
+                    sortable: true,
+                    field: 'position',
+                  ),
+                  ModDataHeader(
+                    child: const SelectableText('Salary'),
+                    widthType: WidthType.fixed,
+                    width: 120,
+                    sortable: true,
+                    field: 'salary',
+                  ),
+                  ModDataHeader(
+                    child: const SelectableText('Start Date'),
+                    widthType: WidthType.fixed,
+                    width: 120,
+                    sortable: true,
+                    field: 'startDate',
+                  ),
+                  ModDataHeader(
+                    child: const SelectableText('Location'),
+                    widthType: WidthType.fixed,
+                    width: 150,
+                    sortable: true,
+                    field: 'location',
+                  ),
+                  ModDataHeader(
+                    child: const SelectableText('Email'),
+                    widthType: WidthType.fixed,
+                    width: 200,
+                    sortable: true,
+                    field: 'email',
+                  ),
+                  ModDataHeader(
+                    child: const SelectableText('Phone'),
+                    widthType: WidthType.fixed,
+                    width: 150,
+                    sortable: true,
+                    field: 'phone',
+                  ),
+                  ModDataHeader(
+                    child: const SelectableText('Status'),
+                    widthType: WidthType.fixed,
+                    width: 120,
+                    sortable: true,
+                    field: 'status',
+                  ),
+                  ModDataHeader(
+                    child: const SelectableText('Projects'),
+                    widthType: WidthType.fixed,
+                    width: 150,
+                    sortable: true,
+                    field: 'projects',
+                  ),
+                  ModDataHeader(
+                    child: const SelectableText('Performance'),
+                    widthType: WidthType.fixed,
+                    width: 120,
+                    sortable: true,
+                    field: 'performance',
+                  ),
+                  ModDataHeader(
+                    child: const SelectableText('Training'),
+                    widthType: WidthType.fixed,
+                    width: 150,
+                    sortable: true,
+                    field: 'training',
+                  ),
+                  ModDataHeader(
+                    child: const SelectableText('Certifications'),
+                    widthType: WidthType.fixed,
+                    width: 200,
+                    sortable: true,
+                    field: 'certifications',
+                  ),
+                  ModDataHeader(
+                    child: const SelectableText('Notes'),
+                    widthType: WidthType.fixed,
+                    width: 200,
+                    sortable: true,
+                    field: 'notes',
+                  ),
+                ],
+                data: const [
+                  {
+                    'id': 'EMP001',
+                    'name': 'John Smith',
+                    'department': 'Engineering',
+                    'position': 'Senior Developer',
+                    'salary': '\$95,000',
+                    'startDate': '2020-01-15',
+                    'location': 'New York',
+                    'email': 'john.smith@company.com',
+                    'phone': '(555) 123-4567',
+                    'status': 'Active',
+                    'projects': 'Project A, B',
+                    'performance': 'Excellent',
+                    'training': 'Completed',
+                    'certifications': 'AWS, Azure',
+                    'notes': 'Team lead for Project X'
+                  },
+                  {
+                    'id': 'EMP002',
+                    'name': 'Sarah Johnson',
+                    'department': 'Marketing',
+                    'position': 'Marketing Manager',
+                    'salary': '\$85,000',
+                    'startDate': '2019-06-20',
+                    'location': 'Chicago',
+                    'email': 'sarah.j@company.com',
+                    'phone': '(555) 234-5678',
+                    'status': 'Active',
+                    'projects': 'Campaign Y',
+                    'performance': 'Good',
+                    'training': 'In Progress',
+                    'certifications': 'Google Ads',
+                    'notes': 'Leading Q4 campaign'
+                  },
+                  {
+                    'id': 'EMP003',
+                    'name': 'Michael Chen',
+                    'department': 'Finance',
+                    'position': 'Financial Analyst',
+                    'salary': '\$78,000',
+                    'startDate': '2021-03-10',
+                    'location': 'Boston',
+                    'email': 'm.chen@company.com',
+                    'phone': '(555) 345-6789',
+                    'status': 'Active',
+                    'projects': 'Budget 2023',
+                    'performance': 'Very Good',
+                    'training': 'Completed',
+                    'certifications': 'CFA Level 2',
+                    'notes': 'Q2 analysis pending'
+                  },
+                ],
+                source: _WideDataSource(const [
+                  {
+                    'id': 'EMP001',
+                    'name': 'John Smith',
+                    'department': 'Engineering',
+                    'position': 'Senior Developer',
+                    'salary': '\$95,000',
+                    'startDate': '2020-01-15',
+                    'location': 'New York',
+                    'email': 'john.smith@company.com',
+                    'phone': '(555) 123-4567',
+                    'status': 'Active',
+                    'projects': 'Project A, B',
+                    'performance': 'Excellent',
+                    'training': 'Completed',
+                    'certifications': 'AWS, Azure',
+                    'notes': 'Team lead for Project X'
+                  },
+                  {
+                    'id': 'EMP002',
+                    'name': 'Sarah Johnson',
+                    'department': 'Marketing',
+                    'position': 'Marketing Manager',
+                    'salary': '\$85,000',
+                    'startDate': '2019-06-20',
+                    'location': 'Chicago',
+                    'email': 'sarah.j@company.com',
+                    'phone': '(555) 234-5678',
+                    'status': 'Active',
+                    'projects': 'Campaign Y',
+                    'performance': 'Good',
+                    'training': 'In Progress',
+                    'certifications': 'Google Ads',
+                    'notes': 'Leading Q4 campaign'
+                  },
+                  {
+                    'id': 'EMP003',
+                    'name': 'Michael Chen',
+                    'department': 'Finance',
+                    'position': 'Financial Analyst',
+                    'salary': '\$78,000',
+                    'startDate': '2021-03-10',
+                    'location': 'Boston',
+                    'email': 'm.chen@company.com',
+                    'phone': '(555) 345-6789',
+                    'status': 'Active',
+                    'projects': 'Budget 2023',
+                    'performance': 'Very Good',
+                    'training': 'Completed',
+                    'certifications': 'CFA Level 2',
+                    'notes': 'Q2 analysis pending'
+                  },
+                ]),
+                currentPage: 0,
+                rowsPerPage: 10,
+                totalRecords: 3,
+                oddRowColor:
+                    Theme.of(context).colorScheme.surfaceContainerHighest,
+                evenRowColor: Theme.of(context).colorScheme.surfaceContainer,
+                onPageChanged: (page) {
+                  log('Page changed: $page');
+                },
+                onSort: (field, direction) {
+                  log('Sorting by $field in $direction direction');
+                },
+                rowHeight: 40,
+                paginationText: 'of',
+                rowsPerPageText: 'Rows per page',
+                paginationBackgroundColor:
+                    Theme.of(context).colorScheme.surface,
+                headerColor: Theme.of(context).colorScheme.surface,
+                onRowsPerPageChanged: (rowsPerPage) {
+                  log('Rows per page changed: $rowsPerPage');
+                },
+                availableRowsPerPage: const [5, 10, 15, 20],
               ),
             ),
           ],
@@ -313,6 +433,45 @@ class _DataSource extends DataTableSource {
         DataCell(SelectableText(_data[index]['name'].toString())),
         DataCell(SelectableText(_data[index]['age'].toString())),
         DataCell(SelectableText(_data[index]['city'].toString())),
+      ],
+    );
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => _data.length;
+
+  @override
+  int get selectedRowCount => 0;
+}
+
+class _WideDataSource extends DataTableSource {
+  final List<Map<String, dynamic>> _data;
+
+  _WideDataSource(this._data);
+
+  @override
+  DataRow getRow(int index) {
+    final row = _data[index];
+    return DataRow(
+      cells: [
+        DataCell(SelectableText(row['id']?.toString() ?? '')),
+        DataCell(SelectableText(row['name']?.toString() ?? '')),
+        DataCell(SelectableText(row['department']?.toString() ?? '')),
+        DataCell(SelectableText(row['position']?.toString() ?? '')),
+        DataCell(SelectableText(row['salary']?.toString() ?? '')),
+        DataCell(SelectableText(row['startDate']?.toString() ?? '')),
+        DataCell(SelectableText(row['location']?.toString() ?? '')),
+        DataCell(SelectableText(row['email']?.toString() ?? '')),
+        DataCell(SelectableText(row['phone']?.toString() ?? '')),
+        DataCell(SelectableText(row['status']?.toString() ?? '')),
+        DataCell(SelectableText(row['projects']?.toString() ?? '')),
+        DataCell(SelectableText(row['performance']?.toString() ?? '')),
+        DataCell(SelectableText(row['training']?.toString() ?? '')),
+        DataCell(SelectableText(row['certifications']?.toString() ?? '')),
+        DataCell(SelectableText(row['notes']?.toString() ?? '')),
       ],
     );
   }

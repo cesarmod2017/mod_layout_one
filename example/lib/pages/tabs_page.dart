@@ -176,13 +176,34 @@ class TabsPage extends StatelessWidget {
                   selectedBackgroundColor: Colors.black45,
                   alignment: mod.TabAlignment.justify,
                   orientation: mod.TabOrientation.horizontalTop,
+                  minWidthTabs: 200,
                   tabs: const [
                     Text('Tab 1'),
                     Text('Tab 2'),
                     Text('Tab 3'),
                     Text('Tab 4'),
+                    Text('Tab 5'),
+                    Text('Tab 6'),
+                    Text('Tab 7'),
+                    Text('Tab 8'),
                   ],
                   children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      child: const Text('Custom Content 1'),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      child: const Text('Custom Content 2'),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      child: const Text('Custom Content 1'),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      child: const Text('Custom Content 2'),
+                    ),
                     Container(
                       padding: const EdgeInsets.all(16),
                       child: const Text('Custom Content 1'),

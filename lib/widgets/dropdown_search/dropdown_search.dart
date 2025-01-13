@@ -338,7 +338,7 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
             if (widget.label != null &&
                 widget.labelPosition == ModDropdownSearchLabelPosition.top)
               Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
+                padding: const EdgeInsets.only(bottom: 2.0),
                 child: Text(
                   widget.label!,
                   style: theme.textTheme.bodyMedium,

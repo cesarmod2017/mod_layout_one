@@ -33,6 +33,7 @@ class ModTabs extends StatefulWidget {
   final TabOrientation orientation;
   final int initialIndex;
   final void Function(int)? onTabSelected;
+  final double? minWidthTabs;
 
   const ModTabs({
     super.key,
@@ -48,6 +49,7 @@ class ModTabs extends StatefulWidget {
     this.orientation = TabOrientation.horizontalTop,
     this.initialIndex = 0,
     this.onTabSelected,
+    this.minWidthTabs,
   }) : assert(children.length == tabs.length,
             'Children and tabs must have the same length');
 
@@ -98,6 +100,9 @@ class _ModTabsState extends State<ModTabs> {
             ),
           ),
         ),
+        constraints: BoxConstraints(
+          minWidth: widget.minWidthTabs ?? 0,
+        ),
         child: DefaultTextStyle(
           style: TextStyle(
             color: isSelected
@@ -121,15 +126,20 @@ class _ModTabsState extends State<ModTabs> {
     );
 
     if (widget.alignment == TabAlignment.justify) {
-      return Row(
-        children: tabList.map((tab) => Expanded(child: tab)).toList(),
+      return Wrap(
+        children: tabList
+            .map((tab) => SizedBox(
+                width: widget.minWidthTabs ??
+                    MediaQuery.of(context).size.width / widget.tabs.length,
+                child: tab))
+            .toList(),
       );
     }
 
     if (widget.orientation == TabOrientation.horizontalTop ||
         widget.orientation == TabOrientation.horizontalBottom) {
-      return Row(
-        mainAxisAlignment: _getMainAxisAlignment(),
+      return Wrap(
+        alignment: _getWrapAlignment(),
         children: tabList,
       );
     }
@@ -139,6 +149,19 @@ class _ModTabsState extends State<ModTabs> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: tabList,
     );
+  }
+
+  WrapAlignment _getWrapAlignment() {
+    switch (widget.alignment) {
+      case TabAlignment.left:
+        return WrapAlignment.start;
+      case TabAlignment.center:
+        return WrapAlignment.center;
+      case TabAlignment.right:
+        return WrapAlignment.end;
+      case TabAlignment.justify:
+        return WrapAlignment.spaceBetween;
+    }
   }
 
   MainAxisAlignment _getMainAxisAlignment() {

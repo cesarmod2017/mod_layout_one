@@ -261,6 +261,7 @@ class _ModTextBoxState extends State<ModTextBox> {
               isDense: true,
               contentPadding: _getContentPadding(),
               hintText: widget.hint,
+              hintStyle: const TextStyle(fontWeight: FontWeight.normal),
               errorStyle: const TextStyle(height: 0, fontSize: 0),
               prefixIcon: widget.prefixIcon != null
                   ? IconTheme(
@@ -338,7 +339,7 @@ class _ModTextBoxState extends State<ModTextBox> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(widget.label!, style: theme.textTheme.bodyMedium),
-          const SizedBox(height: 8),
+          const SizedBox(height: 2),
           textField,
         ],
       ),
