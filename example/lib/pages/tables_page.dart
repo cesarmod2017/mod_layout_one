@@ -391,8 +391,9 @@ class _TablesPageState extends State<TablesPage> {
                   },
                 ]),
                 currentPage: 0,
-                rowsPerPage: 10,
-                totalRecords: 3,
+                rowsPerPage: 1,
+                totalRecords: 0,
+                enableSimplePagination: true,
                 oddRowColor:
                     Theme.of(context).colorScheme.surfaceContainerHighest,
                 evenRowColor: Theme.of(context).colorScheme.surfaceContainer,
@@ -411,7 +412,7 @@ class _TablesPageState extends State<TablesPage> {
                 onRowsPerPageChanged: (rowsPerPage) {
                   log('Rows per page changed: $rowsPerPage');
                 },
-                availableRowsPerPage: const [5, 10, 15, 20],
+                availableRowsPerPage: const [1, 5, 10, 15, 20],
               ),
             ),
           ],

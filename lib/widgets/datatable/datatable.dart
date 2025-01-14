@@ -47,6 +47,7 @@ class ModDataTable<T> extends StatefulWidget {
   final SortDirection currentSortDirection;
   final double rowHeight;
   final bool fixedHeader;
+  final bool enableSimplePagination;
 
   const ModDataTable({
     super.key,
@@ -72,6 +73,7 @@ class ModDataTable<T> extends StatefulWidget {
     this.currentSortDirection = SortDirection.none,
     this.rowHeight = 35.0,
     this.fixedHeader = false,
+    this.enableSimplePagination = false,
   });
 
   @override
@@ -286,7 +288,7 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
           Flexible(
             flex: 2,
             child: _buildPageNavigation(
-                totalPages, currentStart, currentEnd, false),
+                totalPages, currentStart, currentEnd, isMobile),
           ),
         ],
       ),
@@ -331,7 +333,8 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
       mainAxisAlignment: MainAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (!isMobile)
+        if (!isMobile &&
+            !(widget.enableSimplePagination && widget.totalRecords == 0))
           Flexible(
             child: Text(
               '$currentStart-$currentEnd ${widget.paginationText} ${widget.totalRecords}',
@@ -344,7 +347,9 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
               ? () => widget.onPageChanged(widget.currentPage - 1)
               : null,
         ),
-        if (isMobile)
+        if (widget.enableSimplePagination && widget.totalRecords == 0)
+          Text('${widget.currentPage + 1}')
+        else if (isMobile)
           Text('${widget.currentPage + 1} / $totalPages')
         else
           ...pageNumbers.map((pageNum) => SizedBox(
@@ -363,7 +368,8 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
               )),
         IconButton(
           icon: const Icon(Icons.chevron_right),
-          onPressed: currentEnd < widget.totalRecords
+          onPressed: currentEnd < widget.totalRecords ||
+                  (widget.enableSimplePagination && widget.totalRecords == 0)
               ? () => widget.onPageChanged(widget.currentPage + 1)
               : null,
         ),

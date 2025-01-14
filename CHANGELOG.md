@@ -1,3 +1,17 @@
+## 1.0.41
+
+* Added enableSimplePagination property to ModDataTable:
+  * Introduced new enableSimplePagination parameter for simplified pagination controls
+  * Provides basic previous/next navigation buttons for page traversal
+  * Reduces visual complexity compared to full pagination controls
+  * Ideal for scenarios requiring minimal pagination interface
+  * Maintains current page indicator for user reference
+  * Streamlines user interaction with paginated data
+  * Offers lightweight alternative to standard pagination
+  * Improves usability for simple data sets
+  * Reduces screen space usage for pagination controls
+  * Better suited for mobile and space-constrained interfaces
+
 ## 1.0.40
 
 * Added minWidthTabs property to ModTabs:
