@@ -208,12 +208,14 @@ class _ModTextBoxState extends State<ModTextBox> {
 
     Widget textField = Focus(
       onFocusChange: (hasFocus) {
-        setState(() {
-          _hasFocus = hasFocus;
-          if (!hasFocus) {
-            _showValidationError = true;
-          }
-        });
+        if (mounted) {
+          setState(() {
+            _hasFocus = hasFocus;
+            if (!hasFocus) {
+              _showValidationError = true;
+            }
+          });
+        }
       },
       child: SizedBox(
         height: height,
@@ -275,9 +277,11 @@ class _ModTextBoxState extends State<ModTextBox> {
                         _obscureText ? Icons.visibility : Icons.visibility_off,
                         size: _getIconSize(),
                       ),
-                      onPressed: () =>
-                          setState(() => _obscureText = !_obscureText),
-                    )
+                      onPressed: () {
+                        if (mounted) {
+                          setState(() => _obscureText = !_obscureText);
+                        }
+                      })
                   : widget.suffixButton ??
                       (widget.suffixIcon != null
                           ? IconTheme(

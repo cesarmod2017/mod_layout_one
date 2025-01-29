@@ -178,33 +178,37 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
     _isOpen = true;
     _overlayEntry = _createOverlayEntry();
     Overlay.of(context).insert(_overlayEntry!);
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   void _closeDropdown() {
     _isOpen = false;
     _overlayEntry?.remove();
     _overlayEntry = null;
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   void _onItemSelected(T? value) {
     if (value == null) return;
 
     if (widget.multiSelect) {
-      setState(() {
-        if (_selectedItems.contains(value)) {
-          _selectedItems.remove(value);
-        } else {
-          _selectedItems.add(value);
-        }
-      });
+      if (mounted) {
+        setState(() {
+          if (_selectedItems.contains(value)) {
+            _selectedItems.remove(value);
+          } else {
+            _selectedItems.add(value);
+          }
+        });
+      }
       widget.onChanged?.call(value);
       _updateOverlay();
     } else {
-      setState(() {
-        _selectedItems = [value];
-      });
+      if (mounted) {
+        setState(() {
+          _selectedItems = [value];
+        });
+      }
       widget.onChanged?.call(value);
       _closeDropdown();
     }
@@ -217,14 +221,16 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
   }
 
   void _updateSearch(String value) {
-    setState(() {
-      _filteredItems = widget.items
-          .where((item) => _getDisplayString(item.value as T)
-              .toLowerCase()
-              .contains(value.toLowerCase()))
-          .toList();
-    });
-    _updateOverlay();
+    if (mounted) {
+      setState(() {
+        _filteredItems = widget.items
+            .where((item) => _getDisplayString(item.value as T)
+                .toLowerCase()
+                .contains(value.toLowerCase()))
+            .toList();
+      });
+      _updateOverlay();
+    }
   }
 
   OverlayEntry _createOverlayEntry() {

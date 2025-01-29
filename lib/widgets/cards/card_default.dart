@@ -63,9 +63,7 @@ class ModCardState extends State<ModCard> {
             InkWell(
               onTap: widget.isAccordion
                   ? () {
-                      setState(() {
-                        _isExpanded = !_isExpanded;
-                      });
+                      if (mounted) setState(() => _isExpanded = !_isExpanded);
                     }
                   : null,
               child: Container(

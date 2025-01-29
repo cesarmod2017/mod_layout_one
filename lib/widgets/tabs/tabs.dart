@@ -83,7 +83,7 @@ class _ModTabsState extends State<ModTabs> {
 
     return GestureDetector(
       onTap: () {
-        setState(() => _selectedIndex = index);
+        if (mounted) setState(() => _selectedIndex = index);
         if (widget.onTabSelected != null) {
           widget.onTabSelected!(index);
         }

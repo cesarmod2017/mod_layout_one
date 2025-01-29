@@ -117,12 +117,14 @@ class _ModDropDownState<T> extends State<ModDropDown<T>> {
 
     Widget dropDown = Focus(
       onFocusChange: (hasFocus) {
-        setState(() {
-          _hasFocus = hasFocus;
-          if (!hasFocus) {
-            _showValidationError = true;
-          }
-        });
+        if (mounted) {
+          setState(() {
+            _hasFocus = hasFocus;
+            if (!hasFocus) {
+              _showValidationError = true;
+            }
+          });
+        }
       },
       child: SizedBox(
         height: height,

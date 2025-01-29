@@ -1,3 +1,17 @@
+## 1.0.42
+
+* Added mounted check to prevent state updates after unmounting:
+  * Introduced mounted flag to track component lifecycle state
+  * Prevents setState calls after component unmounting
+  * Reduces memory leaks and React warnings
+  * Improves component cleanup and disposal
+  * Better handling of asynchronous operations
+  * Enhanced component lifecycle management
+  * Prevents unnecessary state updates
+  * Follows React best practices
+  * Improves application stability
+  * More robust error prevention
+
 ## 1.0.41
 
 * Added enableSimplePagination property to ModDataTable:

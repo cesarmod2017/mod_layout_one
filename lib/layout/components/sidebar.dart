@@ -330,7 +330,7 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
                 if (!isMenuExpanded && !Get.isDialogOpen!) {
                   _showSubmenuPopup(context, widget.item.subItems!);
                 } else {
-                  setState(() => _isExpanded = !_isExpanded);
+                  if (mounted) setState(() => _isExpanded = !_isExpanded);
                 }
               } else if (widget.item.route != null) {
                 controller.setSelectedRoute(widget.item.route!);

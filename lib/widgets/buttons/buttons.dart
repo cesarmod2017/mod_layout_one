@@ -233,12 +233,12 @@ class _ModButtonState extends State<ModButton>
             ? null
             : () async {
                 if (widget.onPressed != null) {
-                  setState(() => _isLoading = true);
+                  if (mounted) setState(() => _isLoading = true);
                   try {
                     await widget.onPressed!();
                   } finally {
                     if (mounted) {
-                      setState(() => _isLoading = false);
+                      if (mounted) setState(() => _isLoading = false);
                     }
                   }
                 }

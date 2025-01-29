@@ -67,7 +67,7 @@ class _ModBaseLayoutState extends State<ModBaseLayout> {
       onPopInvokedWithResult: (didPop, result) async {
         if (isDrawerOpen) {
           Navigator.of(context).pop();
-          setState(() => isDrawerOpen = false);
+          if (mounted) setState(() => isDrawerOpen = false);
           return;
         }
         return;

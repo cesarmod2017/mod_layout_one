@@ -79,15 +79,11 @@ class ModIconButtonState extends State<ModIconButton>
   }
 
   Future<void> _handlePress() async {
-    setState(() {
-      _isLoading = true;
-    });
+    if (mounted) setState(() => _isLoading = true);
     try {
       await widget.onPressed();
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 

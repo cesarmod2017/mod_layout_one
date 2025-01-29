@@ -219,7 +219,7 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
                     }
                     _sortField = header.field;
                     widget.onSort?.call(_sortField!, _sortDirection);
-                    setState(() {});
+                    if (mounted) setState(() {});
                   }
                 : null,
             child: Container(
