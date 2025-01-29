@@ -1,3 +1,17 @@
+## 1.0.44
+
+* Fixed column width calculation in ModDataTable:
+  * Corrected width calculation logic for fixed and percentage-based columns
+  * Fixed issue with column widths not properly scaling with container size
+  * Improved handling of remaining width distribution for percentage columns
+  * Ensured consistent column sizing across table updates
+  * Maintains proper column proportions during resizing
+  * Better respects minimum width constraints
+  * More accurate total width calculations
+  * Enhanced layout stability
+  * Fixed width preservation during sorting/filtering
+  * Improved overall table appearance and usability
+
 ## 1.0.43
 
 * Added column resize functionality to ModDataTable:

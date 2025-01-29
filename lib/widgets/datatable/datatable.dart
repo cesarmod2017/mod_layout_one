@@ -162,10 +162,7 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
           }).toList();
 
           final totalWidth =
-              columnWidths.fold(0.0, (sum, width) => sum + width);
-          final visibleData = widget.data
-              .take(min(widget.rowsPerPage, widget.source.rowCount))
-              .toList();
+              _columnWidths.fold(0.0, (sum, width) => sum + width);
 
           return Column(
             children: [
@@ -189,7 +186,7 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
                       child: Column(
                         children: [
                           if (!widget.fixedHeader) _buildHeader(columnWidths),
-                          _buildRows(visibleData, columnWidths),
+                          _buildRows(widget.data, columnWidths),
                         ],
                       ),
                     ),
@@ -208,7 +205,6 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
     return Container(
       color: widget.headerColor,
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: List.generate(widget.headers.length, (index) {
           final header = widget.headers[index];
           final width = _columnWidths[index];
@@ -256,11 +252,11 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
             headerContent = GestureDetector(
               onHorizontalDragUpdate: (details) {
                 setState(() {
-                  _columnWidths[index] =
+                  final newWidth =
                       max(50.0, _columnWidths[index] + details.delta.dx);
+                  _columnWidths[index] = newWidth;
                   if (widget.onColumnWidthChanged != null) {
-                    widget.onColumnWidthChanged!(
-                        header.field, _columnWidths[index]);
+                    widget.onColumnWidthChanged!(header.field, newWidth);
                   }
                 });
               },
