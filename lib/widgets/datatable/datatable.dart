@@ -48,6 +48,8 @@ class ModDataTable<T> extends StatefulWidget {
   final double rowHeight;
   final bool fixedHeader;
   final bool enableSimplePagination;
+  final Function(String field, double newWidth)? onColumnWidthChanged;
+  final bool enableColumnResize;
 
   const ModDataTable({
     super.key,
@@ -74,6 +76,8 @@ class ModDataTable<T> extends StatefulWidget {
     this.rowHeight = 35.0,
     this.fixedHeader = false,
     this.enableSimplePagination = false,
+    this.onColumnWidthChanged,
+    this.enableColumnResize = false,
   });
 
   @override
@@ -85,12 +89,14 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
   late SortDirection _sortDirection;
   final ScrollController _headerScrollController = ScrollController();
   final ScrollController _bodyScrollController = ScrollController();
+  List<double> _columnWidths = [];
 
   @override
   void initState() {
     super.initState();
     _sortField = widget.currentSortField;
     _sortDirection = widget.currentSortDirection;
+    _columnWidths = widget.headers.map((header) => header.width).toList();
 
     // Synchronize the scroll of header and body
     _headerScrollController.addListener(() {
@@ -205,41 +211,67 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: List.generate(widget.headers.length, (index) {
           final header = widget.headers[index];
-          final width = columnWidths[index];
+          final width = _columnWidths[index];
 
-          return InkWell(
-            onTap: header.sortable
-                ? () {
-                    if (_sortField != header.field) {
-                      _sortDirection = SortDirection.asc;
-                    } else {
-                      _sortDirection = _sortDirection == SortDirection.asc
-                          ? SortDirection.desc
-                          : SortDirection.asc;
-                    }
+          Widget headerContent = GestureDetector(
+            onTap: () {
+              if (header.sortable && widget.onSort != null) {
+                setState(() {
+                  if (_sortField == header.field) {
+                    _sortDirection = _sortDirection == SortDirection.asc
+                        ? SortDirection.desc
+                        : SortDirection.asc;
+                  } else {
                     _sortField = header.field;
-                    widget.onSort?.call(_sortField!, _sortDirection);
-                    if (mounted) setState(() {});
+                    _sortDirection = SortDirection.asc;
                   }
-                : null,
+                  widget.onSort!(_sortField!, _sortDirection);
+                });
+              }
+            },
             child: Container(
               width: width,
               decoration: _getBorderDecoration(),
               padding: const EdgeInsets.all(8),
               child: Row(
                 children: [
-                  Expanded(child: header.child),
-                  if (header.sortable && _sortField == header.field)
+                  Expanded(
+                    child: header.child,
+                  ),
+                  if (header.sortable)
                     Icon(
-                      _sortDirection == SortDirection.asc
-                          ? Icons.arrow_upward
-                          : Icons.arrow_downward,
+                      _sortField == header.field
+                          ? (_sortDirection == SortDirection.asc
+                              ? Icons.arrow_upward
+                              : Icons.arrow_downward)
+                          : Icons.unfold_more,
                       size: 16,
                     ),
                 ],
               ),
             ),
           );
+
+          if (widget.enableColumnResize) {
+            headerContent = GestureDetector(
+              onHorizontalDragUpdate: (details) {
+                setState(() {
+                  _columnWidths[index] =
+                      max(50.0, _columnWidths[index] + details.delta.dx);
+                  if (widget.onColumnWidthChanged != null) {
+                    widget.onColumnWidthChanged!(
+                        header.field, _columnWidths[index]);
+                  }
+                });
+              },
+              child: MouseRegion(
+                cursor: SystemMouseCursors.resizeColumn,
+                child: headerContent,
+              ),
+            );
+          }
+
+          return headerContent;
         }),
       ),
     );
@@ -254,7 +286,7 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
           child: Row(
             children: List.generate(widget.headers.length, (cellIndex) {
               return Container(
-                width: columnWidths[cellIndex],
+                width: _columnWidths[cellIndex],
                 decoration: _getBorderDecoration(),
                 padding: const EdgeInsets.all(8),
                 child: row?.cells[cellIndex].child ?? const SizedBox(),

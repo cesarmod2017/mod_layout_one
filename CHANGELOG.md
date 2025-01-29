@@ -1,3 +1,17 @@
+## 1.0.43
+
+* Added column resize functionality to ModDataTable:
+  * Introduced enableColumnResize parameter to enable/disable column resizing
+  * Added drag handles to column headers for width adjustment
+  * Implemented smooth drag-based column width modification
+  * Added onColumnWidthChanged callback to track width changes
+  * Maintains minimum column width constraint of 50px
+  * Preserves column widths during table updates
+  * Cursor changes to indicate resizable columns
+  * Supports both fixed and percentage width columns
+  * Improves table customization capabilities
+  * Enhanced user control over column dimensions
+
 ## 1.0.42
 
 * Added mounted check to prevent state updates after unmounting:

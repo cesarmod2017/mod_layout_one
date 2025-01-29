@@ -100,6 +100,10 @@ class _TablesPageState extends State<TablesPage> {
               content: ModDataTable(
                 paginationBorderRadius: 50,
                 fixedHeader: true,
+                onColumnWidthChanged: (field, width) {
+                  log('Column width changed: $field to $width');
+                },
+                enableColumnResize: true,
                 headers: [
                   ModDataHeader(
                     child: SelectableText(
@@ -117,7 +121,7 @@ class _TablesPageState extends State<TablesPage> {
                       style: Theme.of(Get.context!).textTheme.titleSmall,
                     ),
                     widthType: WidthType.fixed,
-                    width: 150,
+                    width: 950,
                     sortable: true,
                     field: 'age', // Adicione o campo correspondente
                   ),
@@ -393,6 +397,9 @@ class _TablesPageState extends State<TablesPage> {
                 currentPage: 0,
                 rowsPerPage: 1,
                 totalRecords: 0,
+                onColumnWidthChanged: (field, width) {
+                  log('Column width changed: $field to $width');
+                },
                 enableSimplePagination: true,
                 oddRowColor:
                     Theme.of(context).colorScheme.surfaceContainerHighest,
