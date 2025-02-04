@@ -25,6 +25,10 @@ class ModBaseLayout extends StatefulWidget {
   final Color? sidebarUnselectedColor;
   final double footerHeight;
   final Widget? drawerHeader;
+  final Color? lightBackgroundColor;
+  final Color? darkBackgroundColor;
+  final Color? lightForegroundColor;
+  final Color? darkForegroundColor;
 
   const ModBaseLayout({
     super.key,
@@ -44,6 +48,10 @@ class ModBaseLayout extends StatefulWidget {
     this.sidebarUnselectedColor,
     this.footerHeight = 50.0,
     this.drawerHeader,
+    this.lightBackgroundColor,
+    this.darkBackgroundColor,
+    this.lightForegroundColor,
+    this.darkForegroundColor,
   });
 
   @override
@@ -83,6 +91,10 @@ class _ModBaseLayoutState extends State<ModBaseLayout> {
             actions: widget.appBarActions,
             showDefaultActions: widget.showDefaultActions,
             scaffoldKey: scaffoldKey,
+            lightBackgroundColor: widget.lightBackgroundColor,
+            darkBackgroundColor: widget.darkBackgroundColor,
+            lightForegroundColor: widget.lightForegroundColor,
+            darkForegroundColor: widget.darkForegroundColor,
           ),
         ),
         drawer: layoutController.isMobile.value

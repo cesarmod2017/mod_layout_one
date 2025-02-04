@@ -1,3 +1,17 @@
+## 1.0.45
+
+* Added ModHeader color customization options:
+  * Added lightBackgroundColor parameter for light theme header background
+  * Added lightForegroundColor parameter for light theme header text/icons
+  * Added darkBackgroundColor parameter for dark theme header background
+  * Added darkForegroundColor parameter for dark theme header text/icons
+  * Supports dynamic color changes based on theme mode
+  * Allows consistent header styling across theme changes
+  * Improves header visual customization flexibility
+  * Better theme integration capabilities
+  * Enhanced branding possibilities
+  * More control over header appearance
+
 ## 1.0.44
 
 * Fixed column width calculation in ModDataTable:

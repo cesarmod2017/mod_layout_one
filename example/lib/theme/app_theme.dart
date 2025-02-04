@@ -8,6 +8,11 @@ class MyAppTheme {
 
   static final light = ThemeData(
     brightness: Brightness.light,
+    useMaterial3: false,
+    colorSchemeSeed: Colors.blue,
+  );
+  static final light2 = ThemeData(
+    brightness: Brightness.light,
     primarySwatch: Colors.grey,
     scaffoldBackgroundColor: Colors.grey[50],
     appBarTheme: const AppBarTheme(

@@ -15,6 +15,11 @@ class ModHeader extends StatelessWidget {
   final List<Widget>? actions;
   final bool showDefaultActions;
   final GlobalKey<ScaffoldState> scaffoldKey;
+  final Color? lightBackgroundColor;
+  final Color? darkBackgroundColor;
+  final Color? lightForegroundColor;
+  final Color? darkForegroundColor;
+
   const ModHeader({
     super.key,
     required this.title,
@@ -25,14 +30,25 @@ class ModHeader extends StatelessWidget {
     this.actions,
     this.showDefaultActions = true,
     required this.scaffoldKey,
+    this.lightBackgroundColor,
+    this.darkBackgroundColor,
+    this.lightForegroundColor,
+    this.darkForegroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final LayoutController layoutController = Get.find<LayoutController>();
+    final brightness = Theme.of(context).brightness;
 
     return AppBar(
       title: logo ?? Text(title),
+      backgroundColor: brightness == Brightness.light
+          ? lightBackgroundColor
+          : darkBackgroundColor,
+      foregroundColor: brightness == Brightness.light
+          ? lightForegroundColor
+          : darkForegroundColor,
       leading: showMenuButton
           ? IconButton(
               icon: const Icon(Icons.menu),

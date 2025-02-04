@@ -203,6 +203,11 @@ class CustomLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return ModBaseLayout(
       title: title,
+      lightBackgroundColor: Colors.blue,
+      lightForegroundColor: Colors.white,
+      darkBackgroundColor: Colors.green,
+      darkForegroundColor: Colors.white,
+      sidebarSelectedColor: Colors.red,
       appBarActions: const [
         ProfileWidget(
           showFullProfile: true,
@@ -230,71 +235,6 @@ class CustomLayout extends StatelessWidget {
         'menu:tables',
         'menu:loading',
       ],
-      // menuItems: [
-      //   MenuItem(
-      //     title: 'avatars'.tr,
-      //     icon: Icons.account_circle,
-      //     route: '/avatars',
-      //     type: 'menu',
-      //     value: 'avatars',
-      //   ),
-      //   MenuItem(
-      //     title: 'buttons'.tr,
-      //     icon: Icons.smart_button,
-      //     route: '/buttons',
-      //     type: 'menu',
-      //     value: 'buttons',
-      //   ),
-      //   MenuItem(
-      //     title: 'cards'.tr,
-      //     icon: Icons.style,
-      //     route: '/cards',
-      //     type: 'menu',
-      //     value: 'cards',
-      //   ),
-      //   MenuItem(
-      //     title: 'dialogs'.tr,
-      //     icon: Icons.chat_bubble_outline,
-      //     route: '/dialogs',
-      //     type: 'menu',
-      //     value: 'dialogs',
-      //   ),
-      //   MenuItem(
-      //     title: 'home'.tr,
-      //     icon: Icons.home,
-      //     route: '/home',
-      //     type: 'menu',
-      //     value: 'home',
-      //   ),
-      //   MenuItem(
-      //     title: 'tabs'.tr,
-      //     icon: Icons.tab,
-      //     route: '/tabs',
-      //     type: 'menu',
-      //     value: 'tabs',
-      //   ),
-      //   MenuItem(
-      //     title: 'modals'.tr,
-      //     icon: Icons.window,
-      //     route: '/modals',
-      //     type: 'menu',
-      //     value: 'modals',
-      //   ),
-      //   MenuItem(
-      //     title: 'textboxes'.tr,
-      //     icon: Icons.text_fields,
-      //     route: '/textboxes',
-      //     type: 'menu',
-      //     value: 'textboxes',
-      //   ),
-      //   MenuItem(
-      //     title: 'tables'.tr,
-      //     icon: Icons.table_chart,
-      //     route: '/tables',
-      //     type: 'menu',
-      //     value: 'tables',
-      //   ),
-      // ],
       menuGroups: const [
         MenuGroup(
           title: Text('Components'),
