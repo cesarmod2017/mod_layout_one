@@ -9,6 +9,7 @@ import 'package:example/pages/modal_page.dart';
 import 'package:example/pages/tables_page.dart';
 import 'package:example/pages/tabs_page.dart';
 import 'package:example/pages/textbox_page.dart';
+import 'package:example/pages/textcopy_page.dart';
 import 'package:example/services/auth_service.dart';
 import 'package:example/services/storage_service.dart';
 import 'package:example/theme/app_theme.dart';
@@ -42,8 +43,13 @@ void main() async {
           route: '/avatars',
         ),
         MenuItem(
+          title: 'textCopy'.tr,
+          icon: Icons.text_decrease,
+          route: '/textCopy',
+        ),
+        MenuItem(
           title: 'buttons'.tr,
-          icon: Icons.smart_button,
+          icon: Icons.dangerous,
           route: '/buttons',
         ),
         MenuItem(
@@ -157,6 +163,12 @@ class MyApp extends StatelessWidget {
               preventDuplicates: true,
             ),
             GetPage(
+              name: '/textCopy',
+              page: () => const TextCopyPage(),
+              transition: Transition.noTransition,
+              preventDuplicates: true,
+            ),
+            GetPage(
               name: '/modals',
               page: () => const ModalPage(),
               transition: Transition.noTransition,
@@ -225,6 +237,7 @@ class CustomLayout extends StatelessWidget {
       ),
       claims: const [
         'menu:avatars',
+        'menu:textCopy',
         'menu:buttons',
         'menu:cards',
         'menu:dialogs',
@@ -259,27 +272,6 @@ class CustomLayout extends StatelessWidget {
                       type: 'menu',
                       value: 'avatars',
                     ),
-                    MenuItem(
-                      title: 'avatars',
-                      icon: Icons.account_circle,
-                      route: '/avatars',
-                      type: 'menu',
-                      value: 'avatars',
-                    ),
-                    MenuItem(
-                      title: 'avatars',
-                      icon: Icons.account_circle,
-                      route: '/avatars',
-                      type: 'menu',
-                      value: 'avatars',
-                    ),
-                    MenuItem(
-                      title: 'avatars 4',
-                      icon: Icons.account_circle,
-                      route: '/avatars',
-                      type: 'menu',
-                      value: 'avatars',
-                    ),
                   ],
                 ),
                 MenuItem(
@@ -290,6 +282,13 @@ class CustomLayout extends StatelessWidget {
                   value: 'buttons',
                 ),
               ],
+            ),
+            MenuItem(
+              title: 'textCopy',
+              icon: Icons.text_decrease,
+              route: '/textCopy',
+              type: 'menu',
+              value: 'textCopy',
             ),
             MenuItem(
               title: 'avatars',

@@ -54,6 +54,7 @@ export 'widgets/grid_system/grid_system_rows.dart';
 export 'widgets/loading/loading.dart';
 export 'widgets/modal/modal.dart';
 export 'widgets/tabs/tabs.dart';
+export 'widgets/text/text_copy.dart';
 export 'widgets/text/text_divider.dart';
 export 'widgets/textbox/textbox.dart';
 

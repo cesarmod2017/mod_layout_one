@@ -1,3 +1,25 @@
+## 1.0.47
+
+* Added ModTextCopy widget:
+  * New widget for displaying copyable text with a copy button
+  * Supports customizable copy button icon and tooltip
+  * Visual feedback on successful copy action
+  * Configurable text styles and button appearance
+  * Automatic clipboard integration
+  * Responsive layout that adapts to content width
+  * Accessible copy functionality
+  * Optional read-only mode
+  * Supports both single and multi-line text
+  * Maintains consistent styling with other Mod widgets
+
+## 1.0.46
+
+* Added ModFooter widget:
+  * New widget to create a footer layout with customizable height and border.
+  * Supports custom background color and border.
+  * Integrates seamlessly with existing ModBaseLayout features.
+  * Maintains backwards compatibility with default transparent background and no border.
+
 ## 1.0.45
 
 * Added ModHeader color customization options:

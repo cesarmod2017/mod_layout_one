@@ -20,6 +20,7 @@ class ModBaseLayout extends StatefulWidget {
   final Widget? sidebarHeader;
   final Widget? sidebarFooter;
   final Widget? footer;
+  final Border? footerBorder;
   final Color? sidebarBackgroundColor;
   final Color? sidebarSelectedColor;
   final Color? sidebarUnselectedColor;
@@ -43,6 +44,7 @@ class ModBaseLayout extends StatefulWidget {
     this.sidebarHeader,
     this.sidebarFooter,
     this.footer,
+    this.footerBorder,
     this.sidebarBackgroundColor,
     this.sidebarSelectedColor,
     this.sidebarUnselectedColor,
@@ -125,7 +127,9 @@ class _ModBaseLayoutState extends State<ModBaseLayout> {
                       Expanded(child: widget.body),
                       if (widget.footer != null)
                         ModFooter(
-                            height: widget.footerHeight, child: widget.footer)
+                            height: widget.footerHeight,
+                            border: widget.footerBorder,
+                            child: widget.footer)
                     ],
                   ),
                 ),
