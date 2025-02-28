@@ -1,3 +1,31 @@
+## 1.0.49
+
+* Enhanced ModLabel widget:
+  * Added markdown-like formatting support for bold text using asterisks
+  * Improved text rendering with RichText for mixed styling
+  * Better handling of text styles and inheritance
+  * Optimized parsing of formatted text
+  * Consistent styling between normal and bold text segments
+  * Maintains font characteristics across formatting
+  * Seamless integration with existing text style properties
+  * Preserves alignment and other text configurations
+  * Compatible with existing theme integration
+  * Simple syntax for content authors (e.g., "Hello *world*" renders "world" in bold)
+
+## 1.0.48
+
+* Added ModLabel widget:
+  * New widget for displaying text with consistent styling
+  * Supports customizable text styles and appearance
+  * Configurable font size, weight, and color
+  * Optional overflow handling with ellipsis
+  * Supports text alignment options
+  * Integrates with theme for automatic light/dark mode adaptation
+  * Maintains consistent styling with other Mod widgets
+  * Accessible text rendering
+  * Supports both single and multi-line text
+  * Optimized for performance in lists and grids
+
 ## 1.0.47
 
 * Added ModTextCopy widget:

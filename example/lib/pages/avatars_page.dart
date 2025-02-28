@@ -24,7 +24,7 @@ class AvatarsPage extends StatelessWidget {
               content: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Basic Avatar Examples:"),
+                  ModLabel(text: "Basic *Avatar* Examples:"),
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,

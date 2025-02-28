@@ -51,6 +51,7 @@ export 'widgets/grid_system/grid_system.dart';
 export 'widgets/grid_system/grid_system_colums.dart';
 export 'widgets/grid_system/grid_system_container.dart';
 export 'widgets/grid_system/grid_system_rows.dart';
+export 'widgets/labels/label.dart';
 export 'widgets/loading/loading.dart';
 export 'widgets/modal/modal.dart';
 export 'widgets/tabs/tabs.dart';
