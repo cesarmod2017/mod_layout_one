@@ -1,3 +1,31 @@
+## 1.0.51
+
+* Enhanced ModuleSelector widget:
+  * Added support for module grouping in popup menu
+  * Improved organization of modules with category headers
+  * Visual separation between different module groups
+  * Consistent styling with the rest of the module selector
+  * Better navigation for applications with many modules
+  * Maintains existing module selection behavior
+  * Supports both expanded and collapsed menu states
+  * Compatible with icon and image-based module representations
+  * Preserves module descriptions in grouped view
+  * Optimized for both desktop and mobile interfaces
+
+## 1.0.50
+
+* Enhanced ModTextBox widget:
+  * Added support for textInputAction property
+  * Allows specifying keyboard action button behavior
+  * Supports all standard TextInputAction values (next, done, search, etc.)
+  * Improves form navigation and submission workflows
+  * Enables better control over keyboard interaction
+  * Maintains consistent behavior with Flutter's TextFormField
+  * Seamless integration with existing form validation
+  * Compatible with both single-line and multiline text inputs
+  * Preserves all existing ModTextBox functionality
+  * Improves user experience on mobile keyboards
+
 ## 1.0.49
 
 * Enhanced ModLabel widget:

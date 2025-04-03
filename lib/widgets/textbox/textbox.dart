@@ -33,6 +33,7 @@ class ModTextBox extends StatefulWidget {
   final bool? enabled;
   final bool expands;
   final FocusNode? focusNode;
+  final TextInputAction? textInputAction;
   final int? maxLength;
   final int? maxLines;
   final int? minLines;
@@ -77,6 +78,7 @@ class ModTextBox extends StatefulWidget {
     this.enabled,
     this.expands = false,
     this.focusNode,
+    this.textInputAction,
     this.maxLength,
     this.maxLines,
     this.minLines,
@@ -249,6 +251,7 @@ class _ModTextBoxState extends State<ModTextBox> {
             cursorHeight: widget.cursorHeight,
             enabled: widget.enabled,
             expands: widget.expands,
+            textInputAction: widget.textInputAction,
             focusNode: widget.focusNode,
             maxLength: widget.maxLength,
             maxLines: maxLines,

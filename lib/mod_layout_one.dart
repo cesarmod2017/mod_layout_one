@@ -5,11 +5,14 @@ import 'package:get/get.dart';
 import 'package:mod_layout_one/controllers/language_controller.dart';
 import 'package:mod_layout_one/controllers/layout_controller.dart';
 import 'package:mod_layout_one/controllers/theme_controller.dart';
-import 'package:mod_layout_one/layout/components/sidebar.dart';
+import 'package:mod_layout_one/layout/models/menu_item.dart';
 import 'package:mod_layout_one/themes/app_theme.dart';
 import 'package:mod_layout_one/translations/base_translations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+export 'package:mod_layout_one/layout/models/menu_group.dart';
+export 'package:mod_layout_one/layout/models/menu_item.dart';
+export 'package:mod_layout_one/layout/models/module_model.dart';
 export 'package:mod_layout_one/widgets/avatars/avatars.dart';
 
 export 'controllers/language_controller.dart';

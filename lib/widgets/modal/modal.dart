@@ -65,7 +65,6 @@ class ModModal extends StatelessWidget {
         return double
             .infinity; // Allow the modal to take the height of its content
       case ModModalHeight.normal:
-      default:
         return screenHeight * 0.6;
     }
   }

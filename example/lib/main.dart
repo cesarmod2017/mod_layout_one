@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:example/controllers/app_controller.dart';
 import 'package:example/pages/avatars_page.dart';
 import 'package:example/pages/buttons_page.dart';
@@ -214,6 +216,7 @@ class CustomLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ModBaseLayout(
+      showAppBar: false,
       title: title,
       lightBackgroundColor: Colors.blue,
       lightForegroundColor: Colors.white,
@@ -248,31 +251,63 @@ class CustomLayout extends StatelessWidget {
         'menu:tables',
         'menu:loading',
       ],
-      menuGroups: const [
-        MenuGroup(
-          title: Text('Components'),
-          items: [
-            MenuItem(
-              title: 'Corporate',
-              icon: Icons.business,
-              //route: '/avatars',
-              type: 'menu',
-              value: 'avatars',
-              subItems: [
+      moduleMenuGroups: [
+        ModuleMenu(
+          name: 'Administrativo',
+          icon: Icons.admin_panel_settings,
+          description: 'Módulo de administração do sistema',
+          onSelect: (module) async {
+            // Ação a ser executada quando o módulo for selecionado
+            log('Module selected: ${module.name}');
+          },
+          menuGroups: [
+            const MenuGroup(
+              title: Text('Components Administrativo'),
+              items: [
                 MenuItem(
-                  title: 'avatars',
-                  icon: Icons.telegram,
+                  title: 'Corporate',
+                  icon: Icons.business,
+                  //route: '/avatars',
                   type: 'menu',
                   value: 'avatars',
                   subItems: [
                     MenuItem(
                       title: 'avatars',
-                      icon: Icons.account_circle,
-                      route: '/avatars',
+                      icon: Icons.telegram,
                       type: 'menu',
                       value: 'avatars',
+                      subItems: [
+                        MenuItem(
+                          title: 'avatars',
+                          icon: Icons.account_circle,
+                          route: '/avatars',
+                          type: 'menu',
+                          value: 'avatars',
+                        ),
+                      ],
+                    ),
+                    MenuItem(
+                      title: 'buttons',
+                      icon: Icons.smart_button,
+                      route: '/buttons',
+                      type: 'menu',
+                      value: 'buttons',
                     ),
                   ],
+                ),
+                MenuItem(
+                  title: 'textCopy',
+                  icon: Icons.text_decrease,
+                  route: '/textCopy',
+                  type: 'menu',
+                  value: 'textCopy',
+                ),
+                MenuItem(
+                  title: 'avatars',
+                  icon: Icons.account_circle,
+                  route: '/avatars',
+                  type: 'menu',
+                  value: 'avatars',
                 ),
                 MenuItem(
                   title: 'buttons',
@@ -281,84 +316,111 @@ class CustomLayout extends StatelessWidget {
                   type: 'menu',
                   value: 'buttons',
                 ),
+                MenuItem(
+                  title: 'cards',
+                  icon: Icons.style,
+                  route: '/cards',
+                  type: 'menu',
+                  value: 'cards',
+                ),
+                MenuItem(
+                  title: 'dialogs',
+                  icon: Icons.chat_bubble_outline,
+                  route: '/dialogs',
+                  type: 'menu',
+                  value: 'dialogs',
+                ),
+                MenuItem(
+                  title: 'home',
+                  icon: Icons.home,
+                  route: '/home',
+                  type: 'menu',
+                  value: 'home',
+                ),
+                MenuItem(
+                  title: 'tabs',
+                  icon: Icons.tab,
+                  route: '/tabs',
+                  type: 'menu',
+                  value: 'tabs',
+                ),
+                MenuItem(
+                  title: 'modals',
+                  icon: Icons.window,
+                  route: '/modals',
+                  type: 'menu',
+                  value: 'modals',
+                ),
+                MenuItem(
+                  title: 'textboxes',
+                  icon: Icons.text_fields,
+                  route: '/textboxes',
+                  type: 'menu',
+                  value: 'textboxes',
+                ),
+                MenuItem(
+                  title: 'tables',
+                  icon: Icons.table_chart,
+                  route: '/tables',
+                  type: 'menu',
+                  value: 'tables',
+                ),
+                MenuItem(
+                  title: 'loading',
+                  icon: Icons.hourglass_empty,
+                  route: '/loading',
+                  type: 'menu',
+                  value: 'loading',
+                ),
               ],
             ),
-            MenuItem(
-              title: 'textCopy',
-              icon: Icons.text_decrease,
-              route: '/textCopy',
-              type: 'menu',
-              value: 'textCopy',
-            ),
-            MenuItem(
-              title: 'avatars',
-              icon: Icons.account_circle,
-              route: '/avatars',
-              type: 'menu',
-              value: 'avatars',
-            ),
-            MenuItem(
-              title: 'buttons',
-              icon: Icons.smart_button,
-              route: '/buttons',
-              type: 'menu',
-              value: 'buttons',
-            ),
-            MenuItem(
-              title: 'cards',
-              icon: Icons.style,
-              route: '/cards',
-              type: 'menu',
-              value: 'cards',
-            ),
-            MenuItem(
-              title: 'dialogs',
-              icon: Icons.chat_bubble_outline,
-              route: '/dialogs',
-              type: 'menu',
-              value: 'dialogs',
-            ),
-            MenuItem(
-              title: 'home',
-              icon: Icons.home,
-              route: '/home',
-              type: 'menu',
-              value: 'home',
-            ),
-            MenuItem(
-              title: 'tabs',
-              icon: Icons.tab,
-              route: '/tabs',
-              type: 'menu',
-              value: 'tabs',
-            ),
-            MenuItem(
-              title: 'modals',
-              icon: Icons.window,
-              route: '/modals',
-              type: 'menu',
-              value: 'modals',
-            ),
-            MenuItem(
-              title: 'textboxes',
-              icon: Icons.text_fields,
-              route: '/textboxes',
-              type: 'menu',
-              value: 'textboxes',
-            ),
-            MenuItem(
-              title: 'tables',
-              icon: Icons.table_chart,
-              route: '/tables',
-              type: 'menu',
-              value: 'tables',
-            ),
-            MenuItem(
-              title: 'loading',
-              icon: Icons.hourglass_empty,
-              route: '/loading',
-              type: 'menu',
-              value: 'loading',
+          ],
+        ),
+        ModuleMenu(
+          name: 'Documentos',
+          icon: Icons.description,
+          description: 'Gestão de documentos',
+          onSelect: (module) async {
+            // Ação a ser executada quando o módulo for selecionado
+            log('Module selected: ${module.name}');
+            Get.offAllNamed('/home');
+          },
+          menuGroups: [
+            const MenuGroup(
+              title: Text('Components'),
+              items: [
+                MenuItem(
+                  title: 'Corporate',
+                  icon: Icons.business,
+                  //route: '/avatars',
+                  type: 'menu',
+                  value: 'avatars',
+                  subItems: [
+                    MenuItem(
+                      title: 'avatars',
+                      icon: Icons.telegram,
+                      type: 'menu',
+                      value: 'avatars',
+                      subItems: [
+                        MenuItem(
+                          title: 'avatars',
+                          icon: Icons.account_circle,
+                          route: '/avatars',
+                          type: 'menu',
+                          value: 'avatars',
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                MenuItem(
+                  title: 'textCopy',
+                  icon: Icons.text_decrease,
+                  route: '/textCopy',
+                  type: 'menu',
+                  value: 'textCopy',
+                ),
+              ],
             ),
           ],
         ),

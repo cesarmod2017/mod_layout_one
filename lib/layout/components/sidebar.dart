@@ -1,39 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mod_layout_one/layout/models/menu_group.dart';
+import 'package:mod_layout_one/layout/models/menu_item.dart';
 
 import '../../controllers/layout_controller.dart';
-
-class MenuGroup {
-  final Widget title;
-  final List<MenuItem> items;
-
-  const MenuGroup({
-    required this.title,
-    required this.items,
-  });
-}
-
-class MenuItem {
-  final String title;
-  final IconData icon;
-  final String? route;
-  final List<MenuItem>? subItems;
-  final String? type;
-  final String? value;
-  final String? url;
-  final VoidCallback? onTap;
-
-  const MenuItem({
-    required this.title,
-    required this.icon,
-    this.route,
-    this.subItems,
-    this.type,
-    this.value,
-    this.url,
-    this.onTap,
-  });
-}
 
 class ModSidebar extends StatelessWidget {
   final List<MenuGroup> menuGroups;
