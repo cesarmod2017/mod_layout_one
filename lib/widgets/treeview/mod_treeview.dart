@@ -317,17 +317,25 @@ class _ModTreeViewState extends State<ModTreeView> {
     // Só pode soltar em pastas
     if (!target.isFolder) return false;
     
-    // Não pode soltar um item em um de seus descendentes
-    return !_isDescendant(target, source);
+    // Verificar se o target é descendente do source (não pode soltar em seu próprio descendente)
+    if (_isDescendant(source, target)) return false;
+    
+    // Permitir soltar em qualquer outra pasta
+    return true;
   }
 
-  // Verifica se 'node' é descendente de 'potentialAncestor'
-  bool _isDescendant(TreeNode node, TreeNode potentialAncestor) {
-    if (node.children.isEmpty) return false;
+  // Verifica se 'descendant' é descendente de 'ancestor'
+  bool _isDescendant(TreeNode ancestor, TreeNode descendant) {
+    // Se o nó ancestral não tem filhos, não pode ter descendentes
+    if (ancestor.children.isEmpty) return false;
     
-    for (final child in node.children) {
-      if (child.id == potentialAncestor.id) return true;
-      if (_isDescendant(child, potentialAncestor)) return true;
+    // Verifica se o descendant é filho direto do ancestor
+    for (final child in ancestor.children) {
+      // Se encontrou o nó como filho direto
+      if (child.id == descendant.id) return true;
+      
+      // Verifica recursivamente nos filhos
+      if (_isDescendant(child, descendant)) return true;
     }
     
     return false;
