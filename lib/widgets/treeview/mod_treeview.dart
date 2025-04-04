@@ -171,11 +171,14 @@ class _ModTreeViewState extends State<ModTreeView> {
       return _buildNodeContent(node, level);
     }
 
-    return LongPressDraggable<TreeNode>(
+    return Draggable<TreeNode>(
       data: node,
       feedback: Material(
         elevation: 4.0,
-        child: _buildNodeContent(node, level, isPreview: true),
+        child: SizedBox(
+          width: 200, // Fixed width for the dragged item
+          child: _buildNodeContent(node, level, isPreview: true),
+        ),
       ),
       childWhenDragging: Opacity(
         opacity: 0.5,
@@ -189,11 +192,12 @@ class _ModTreeViewState extends State<ModTreeView> {
 
   Widget _buildDropTarget(TreeNode folder, int level) {
     return DragTarget<TreeNode>(
-      onWillAcceptWithDetails: (details) {
-        return _canAcceptDrop(details.data, folder);
+      onWillAccept: (draggedNode) {
+        if (draggedNode == null) return false;
+        return _canAcceptDrop(draggedNode, folder);
       },
-      onAcceptWithDetails: (details) {
-        widget.onNodeDropped?.call(details.data, folder);
+      onAccept: (draggedNode) {
+        widget.onNodeDropped?.call(draggedNode, folder);
       },
       builder: (context, candidateData, rejectedData) {
         return Container(
@@ -307,15 +311,26 @@ class _ModTreeViewState extends State<ModTreeView> {
   }
 
   bool _canAcceptDrop(TreeNode source, TreeNode target) {
+    // Não pode soltar um item em si mesmo
+    if (source.id == target.id) return false;
+    
+    // Só pode soltar em pastas
     if (!target.isFolder) return false;
-    if (source == target) return false;
-    return !_isAncestor(source, target);
+    
+    // Não pode soltar um item em um de seus descendentes
+    return !_isDescendant(target, source);
   }
 
-  bool _isAncestor(TreeNode potentialAncestor, TreeNode node) {
+  // Verifica se 'node' é descendente de 'potentialAncestor'
+  bool _isDescendant(TreeNode node, TreeNode potentialAncestor) {
     if (node.children.isEmpty) return false;
-    if (node.children.contains(potentialAncestor)) return true;
-    return node.children.any((child) => _isAncestor(potentialAncestor, child));
+    
+    for (final child in node.children) {
+      if (child.id == potentialAncestor.id) return true;
+      if (_isDescendant(child, potentialAncestor)) return true;
+    }
+    
+    return false;
   }
 
   /// Shows the context menu for a node

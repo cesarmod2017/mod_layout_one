@@ -299,6 +299,37 @@ class _TreeViewPageState extends State<TreeViewPage> {
     );
   }
 
+  /// Remove um nó da árvore
+  void _removeNode(TreeNode source) {
+    // Função recursiva para encontrar e remover o nó
+    bool removeNodeRecursive(List<TreeNode> nodeList, TreeNode nodeToRemove) {
+      // Verifica se o nó está na lista atual
+      for (int i = 0; i < nodeList.length; i++) {
+        if (nodeList[i].id == nodeToRemove.id) {
+          // Encontrou o nó, remove-o
+          nodeList.removeAt(i);
+          return true; // Indica que o nó foi removido
+        }
+
+        // Se o nó atual for uma pasta, busca recursivamente nos filhos
+        if (nodeList[i].isFolder && nodeList[i].children.isNotEmpty) {
+          bool removed =
+              removeNodeRecursive(nodeList[i].children, nodeToRemove);
+          if (removed) {
+            return true; // Propaga a informação de que o nó foi removido
+          }
+        }
+      }
+
+      return false; // Nó não encontrado nesta ramificação
+    }
+
+    // Inicia a busca recursiva a partir da raiz
+    setState(() {
+      removeNodeRecursive(nodes, source);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
@@ -386,6 +417,15 @@ class _TreeViewPageState extends State<TreeViewPage> {
                   lastAction = 'Movido: ${source.label} para ${target.label}';
                 });
                 log('Dropped ${source.label} into ${target.label}');
+                if (target.isFolder) {
+                  final newNode =
+                      source.copyWith(id: '${target.id}\\${source.label}');
+                  log('antes: ${source.id}');
+                  log('depois: ${newNode.id}');
+                  target.children.add(newNode);
+                  _removeNode(source);
+                }
+                //target.children.add(source);
                 // Implement your file system move operation here
               },
               onNodeRightClick: (node) {
