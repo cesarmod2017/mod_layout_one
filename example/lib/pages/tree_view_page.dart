@@ -15,6 +15,7 @@ class _TreeViewPageState extends State<TreeViewPage> {
   List<TreeNode> nodes = [];
   String? selectedNodeId;
   bool isLoading = true;
+  String? lastAction;
 
   @override
   void initState() {
@@ -154,6 +155,148 @@ class _TreeViewPageState extends State<TreeViewPage> {
         return Icons.insert_drive_file;
     }
   }
+  
+  /// Retorna os itens de menu de contexto para um nó
+  List<TreeViewMenuItem> _getContextMenuItems(TreeNode node) {
+    final List<TreeViewMenuItem> items = [];
+    
+    // Itens comuns para arquivos e pastas
+    items.add(
+      TreeViewMenuItem(
+        id: 'info',
+        label: 'Informações',
+        icon: Icons.info_outline,
+      ),
+    );
+    
+    // Itens específicos para pastas
+    if (node.isFolder) {
+      items.add(
+        TreeViewMenuItem(
+          id: 'expand',
+          label: node.isExpanded ? 'Recolher' : 'Expandir',
+          icon: node.isExpanded ? Icons.unfold_less : Icons.unfold_more,
+        ),
+      );
+      
+      items.add(
+        TreeViewMenuItem(
+          id: 'add_file',
+          label: 'Novo Arquivo',
+          icon: Icons.add_circle_outline,
+          dividerAfter: true,
+        ),
+      );
+    }
+    
+    // Itens para arquivos
+    else {
+      items.add(
+        TreeViewMenuItem(
+          id: 'open',
+          label: 'Abrir',
+          icon: Icons.open_in_new,
+          dividerAfter: true,
+        ),
+      );
+    }
+    
+    // Itens comuns no final
+    items.add(
+      TreeViewMenuItem(
+        id: 'rename',
+        label: 'Renomear',
+        icon: Icons.edit,
+      ),
+    );
+    
+    items.add(
+      TreeViewMenuItem(
+        id: 'delete',
+        label: 'Excluir',
+        icon: Icons.delete_outline,
+        enabled: true,
+      ),
+    );
+    
+    return items;
+  }
+  
+  /// Manipula a seleção de um item do menu de contexto
+  void _handleContextMenuItemSelected(TreeNode node, String itemId) {
+    setState(() {
+      lastAction = 'Menu: $itemId em ${node.label}';
+    });
+    
+    switch (itemId) {
+      case 'expand':
+        setState(() {
+          node.isExpanded = !node.isExpanded;
+        });
+        break;
+      case 'info':
+        _showNodeInfo(node);
+        break;
+      case 'delete':
+        _showDeleteConfirmation(node);
+        break;
+      default:
+        log('Ação do menu: $itemId para ${node.label}');
+    }
+  }
+  
+  /// Exibe informações sobre o nó
+  void _showNodeInfo(TreeNode node) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(node.label),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Tipo: ${node.isFolder ? "Pasta" : "Arquivo"}'),
+            Text('Caminho: ${node.id}'),
+            if (node.isFolder) Text('Itens: ${node.children.length}'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Fechar'),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  /// Exibe confirmação de exclusão
+  void _showDeleteConfirmation(TreeNode node) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmar exclusão'),
+        content: Text('Deseja realmente excluir "${node.label}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            child: const Text('Excluir'),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red,
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+              log('Simulando exclusão de ${node.label}');
+              // Aqui você implementaria a exclusão real
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -167,25 +310,38 @@ class _TreeViewPageState extends State<TreeViewPage> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _expandAllFolders(nodes[0]);
-                    });
-                  },
-                  child: const Text('Expandir Tudo'),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _expandAllFolders(nodes[0]);
+                        });
+                      },
+                      child: const Text('Expandir Tudo'),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _collapseAllFolders(nodes[0]);
+                        });
+                      },
+                      child: const Text('Recolher Tudo'),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _collapseAllFolders(nodes[0]);
-                    });
-                  },
-                  child: const Text('Recolher Tudo'),
-                ),
+                if (lastAction != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      'Última ação: $lastAction',
+                      style: const TextStyle(fontStyle: FontStyle.italic),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -206,29 +362,39 @@ class _TreeViewPageState extends State<TreeViewPage> {
               onNodeSelected: (node) {
                 setState(() {
                   selectedNodeId = node.id;
+                  lastAction = 'Selecionado: ${node.label}';
                 });
                 log('Selected: ${node.label}');
               },
               onNodeExpanded: (node) {
                 setState(() {
                   node.isExpanded = true;
+                  lastAction = 'Expandido: ${node.label}';
                 });
                 log('Expanded: ${node.label}');
               },
               onNodeCollapsed: (node) {
                 setState(() {
                   node.isExpanded = false;
+                  lastAction = 'Recolhido: ${node.label}';
                 });
                 log('Collapsed: ${node.label}');
               },
               onNodeDropped: (source, target) {
+                setState(() {
+                  lastAction = 'Movido: ${source.label} para ${target.label}';
+                });
                 log('Dropped ${source.label} into ${target.label}');
                 // Implement your file system move operation here
               },
               onNodeRightClick: (node) {
+                setState(() {
+                  lastAction = 'Clique direito: ${node.label}';
+                });
                 log('Right clicked: ${node.label}');
-                // Implement context menu here
               },
+              getContextMenuItems: _getContextMenuItems,
+              onContextMenuItemSelected: _handleContextMenuItemSelected,
             ),
           ),
         ],

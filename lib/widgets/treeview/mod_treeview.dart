@@ -74,6 +74,33 @@ enum ExpanderType {
   plusMinus,
 }
 
+/// Represents a menu item in the context menu for TreeView
+class TreeViewMenuItem {
+  /// Unique identifier for the menu item
+  final String id;
+  
+  /// Display text for the menu item
+  final String label;
+  
+  /// Optional icon to display with the menu item
+  final IconData? icon;
+  
+  /// Whether the menu item is enabled or disabled
+  final bool enabled;
+  
+  /// Whether to show a divider after this menu item
+  final bool dividerAfter;
+
+  /// Creates a new TreeViewMenuItem
+  const TreeViewMenuItem({
+    required this.id,
+    required this.label,
+    this.icon,
+    this.enabled = true,
+    this.dividerAfter = false,
+  });
+}
+
 // Main TreeView Widget
 class ModTreeView extends StatefulWidget {
   final List<TreeNode> nodes;
@@ -86,6 +113,13 @@ class ModTreeView extends StatefulWidget {
   final Function(TreeNode, TreeNode)? onNodeDropped;
   final Function(TreeNode)? onNodeRightClick;
   final int Function(TreeNode, TreeNode)? sortComparator;
+  
+  /// Callback to get context menu items for a node
+  /// Return a list of TreeViewMenuItem to show in the context menu
+  final List<TreeViewMenuItem> Function(TreeNode)? getContextMenuItems;
+  
+  /// Callback when a context menu item is selected
+  final Function(TreeNode, String)? onContextMenuItemSelected;
 
   const ModTreeView({
     super.key,
@@ -99,6 +133,8 @@ class ModTreeView extends StatefulWidget {
     this.onNodeDropped,
     this.onNodeRightClick,
     this.sortComparator,
+    this.getContextMenuItems,
+    this.onContextMenuItemSelected,
   });
 
   @override
@@ -178,7 +214,7 @@ class _ModTreeViewState extends State<ModTreeView> {
     
     return GestureDetector(
       onTap: () => _handleNodeTap(node),
-      onSecondaryTap: () => widget.onNodeRightClick?.call(node),
+      onSecondaryTap: () => _showContextMenu(context, node),
       child: Container(
         padding: EdgeInsets.only(left: widget.theme.indentation * level),
         height: 30, // Increased height for better touch target
@@ -277,5 +313,73 @@ class _ModTreeViewState extends State<ModTreeView> {
     if (node.children.isEmpty) return false;
     if (node.children.contains(potentialAncestor)) return true;
     return node.children.any((child) => _isAncestor(potentialAncestor, child));
+  }
+  
+  /// Shows the context menu for a node
+  void _showContextMenu(BuildContext context, TreeNode node) {
+    // Call the onNodeRightClick callback first
+    widget.onNodeRightClick?.call(node);
+    
+    // If no context menu items provider is set, don't show menu
+    if (widget.getContextMenuItems == null) return;
+    
+    // Get the menu items for this node
+    final items = widget.getContextMenuItems!(node);
+    if (items.isEmpty) return;
+    
+    // Select the node when right-clicking
+    setState(() {
+      _selectedNodeId = node.id;
+    });
+    
+    // Calculate position for the popup menu
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+    final RenderBox button = context.findRenderObject() as RenderBox;
+    final Offset position = button.localToGlobal(Offset.zero, ancestor: overlay);
+    
+    // Show the popup menu
+    showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        position.dx,
+        position.dy + button.size.height,
+        position.dx + button.size.width,
+        position.dy,
+      ),
+      items: _buildPopupMenuItems(items),
+    ).then((String? itemId) {
+      if (itemId != null && widget.onContextMenuItemSelected != null) {
+        widget.onContextMenuItemSelected!(node, itemId);
+      }
+    });
+  }
+  
+  /// Builds the popup menu items from TreeViewMenuItem list
+  List<PopupMenuEntry<String>> _buildPopupMenuItems(List<TreeViewMenuItem> items) {
+    final List<PopupMenuEntry<String>> menuItems = [];
+    
+    for (final item in items) {
+      menuItems.add(
+        PopupMenuItem<String>(
+          value: item.id,
+          enabled: item.enabled,
+          child: Row(
+            children: [
+              if (item.icon != null) ...[
+                Icon(item.icon, size: 18),
+                const SizedBox(width: 8),
+              ],
+              Text(item.label),
+            ],
+          ),
+        ),
+      );
+      
+      if (item.dividerAfter) {
+        menuItems.add(const PopupMenuDivider());
+      }
+    }
+    
+    return menuItems;
   }
 }
