@@ -12,6 +12,7 @@ import 'package:example/pages/tables_page.dart';
 import 'package:example/pages/tabs_page.dart';
 import 'package:example/pages/textbox_page.dart';
 import 'package:example/pages/textcopy_page.dart';
+import 'package:example/pages/tree_view_page.dart';
 import 'package:example/services/auth_service.dart';
 import 'package:example/services/storage_service.dart';
 import 'package:example/theme/app_theme.dart';
@@ -200,6 +201,12 @@ class MyApp extends StatelessWidget {
               transition: Transition.noTransition,
               preventDuplicates: true,
             ),
+            GetPage(
+              name: '/treeview',
+              page: () => const TreeViewPage(),
+              transition: Transition.noTransition,
+              preventDuplicates: true,
+            ),
           ],
           initialRoute: '/home',
         ));
@@ -250,6 +257,7 @@ class CustomLayout extends StatelessWidget {
         'menu:textboxes',
         'menu:tables',
         'menu:loading',
+        'menu:treeview',
       ],
       moduleMenuGroups: [
         ModuleMenu(
@@ -371,6 +379,13 @@ class CustomLayout extends StatelessWidget {
                   route: '/loading',
                   type: 'menu',
                   value: 'loading',
+                ),
+                MenuItem(
+                  title: 'treeview',
+                  icon: Icons.folder_open,
+                  route: '/treeview',
+                  type: 'menu',
+                  value: 'treeview',
                 ),
               ],
             ),

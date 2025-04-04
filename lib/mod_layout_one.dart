@@ -1,4 +1,4 @@
-library mod_layout_one;
+library;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -61,6 +61,7 @@ export 'widgets/tabs/tabs.dart';
 export 'widgets/text/text_copy.dart';
 export 'widgets/text/text_divider.dart';
 export 'widgets/textbox/textbox.dart';
+export 'widgets/treeview/mod_treeview.dart';
 
 // Configuration
 class ModLayoutConfig {

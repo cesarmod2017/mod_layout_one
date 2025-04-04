@@ -1,3 +1,17 @@
+## 1.0.52
+
+* Enhanced ModTabs widget:
+  * Added support for showing/hiding AppBar
+  * Improved tab navigation and interaction
+  * Better handling of tab content rendering
+  * Optimized tab switching performance
+  * More consistent tab styling and layout
+  * Enhanced tab overflow behavior
+  * Configurable tab header appearance
+  * Smoother animations during tab transitions
+  * Better support for dynamic tab content
+  * Improved accessibility for tab navigation
+
 ## 1.0.51
 
 * Enhanced ModuleSelector widget:

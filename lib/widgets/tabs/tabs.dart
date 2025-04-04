@@ -20,9 +20,27 @@ enum TabOrientation {
   verticalRight,
 }
 
+class ModTab {
+  final String text;
+  final TextStyle? style;
+  final Color? backgroundColor;
+  final VoidCallback? onClose;
+  final bool closeable;
+  final Future<bool> Function()? onClosing;
+
+  const ModTab({
+    required this.text,
+    this.style,
+    this.backgroundColor,
+    this.onClose,
+    this.closeable = false,
+    this.onClosing,
+  });
+}
+
 class ModTabs extends StatefulWidget {
   final List<Widget> children;
-  final List<Widget> tabs;
+  final List<ModTab> tabs;
   final Color selectedTabColor;
   final Color unselectedTabColor;
   final TabBorderType borderType;
@@ -33,7 +51,12 @@ class ModTabs extends StatefulWidget {
   final TabOrientation orientation;
   final int initialIndex;
   final void Function(int)? onTabSelected;
-  final double? minWidthTabs;
+  final double? minTabWidth;
+  final double? maxTabWidth;
+  final bool enableNewTab;
+  final VoidCallback? onNewTab;
+  final bool shrinkToFit;
+  final Widget? emptyWidget;
 
   const ModTabs({
     super.key,
@@ -49,7 +72,12 @@ class ModTabs extends StatefulWidget {
     this.orientation = TabOrientation.horizontalTop,
     this.initialIndex = 0,
     this.onTabSelected,
-    this.minWidthTabs,
+    this.minTabWidth = 60.0,
+    this.maxTabWidth,
+    this.enableNewTab = false,
+    this.onNewTab,
+    this.shrinkToFit = false,
+    this.emptyWidget,
   }) : assert(children.length == tabs.length,
             'Children and tabs must have the same length');
 
@@ -59,109 +87,177 @@ class ModTabs extends StatefulWidget {
 
 class _ModTabsState extends State<ModTabs> {
   late int _selectedIndex;
+  final ScrollController _scrollController = ScrollController();
+  late List<ModTab> _tabs;
+  late List<Widget> _children;
 
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.initialIndex;
+    _tabs = List.from(widget.tabs);
+    _children = List.from(widget.children);
   }
 
-  Widget _buildTab(int index, Widget tab) {
-    final isSelected = index == _selectedIndex;
+  @override
+  void didUpdateWidget(ModTabs oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.tabs != oldWidget.tabs ||
+        widget.children != oldWidget.children) {
+      setState(() {
+        _tabs = List.from(widget.tabs);
+        _children = List.from(widget.children);
+      });
+    }
+  }
 
-    // Make text bold if selected and tab is a Text widget
-    Widget finalTab = tab;
-    if (isSelected && tab is Text) {
-      finalTab = Text(
-        tab.data ?? '',
-        style: (tab.style ?? const TextStyle()).copyWith(
-          fontWeight: FontWeight.bold,
-          color: widget.selectedTextColor,
-        ),
-      );
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleTabClose(int index, ModTab tab) async {
+    bool canClose = true;
+
+    if (tab.onClosing != null) {
+      canClose = await tab.onClosing!();
     }
 
-    return GestureDetector(
-      onTap: () {
-        if (mounted) setState(() => _selectedIndex = index);
-        if (widget.onTabSelected != null) {
-          widget.onTabSelected!(index);
+    if (canClose && mounted) {
+      setState(() {
+        _tabs.removeAt(index);
+        _children.removeAt(index);
+        if (_selectedIndex >= _tabs.length) {
+          _selectedIndex = _tabs.isEmpty ? -1 : _tabs.length - 1;
         }
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color:
-              isSelected ? widget.selectedBackgroundColor : Colors.transparent,
-          border: Border(
-            bottom: BorderSide(
-              color: isSelected ? widget.selectedTabColor : Colors.transparent,
-              width: 2.0,
+      });
+
+      if (tab.onClose != null) {
+        tab.onClose!();
+      }
+    }
+  }
+
+  Widget _buildTab(int index, ModTab tab) {
+    final isSelected = index == _selectedIndex;
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: tab.text,
+        style: tab.style ?? const TextStyle(),
+      ),
+      maxLines: 1,
+      textDirection: TextDirection.ltr,
+    )..layout();
+
+    double calculatedWidth =
+        textPainter.width + 40; // Adiciona espaço para padding e ícone
+    if (tab.closeable) {
+      calculatedWidth += 24; // Espaço adicional para o botão de fechar
+    }
+
+    // Aplica os limites de min/max width se definidos
+    if (widget.minTabWidth != null && calculatedWidth < widget.minTabWidth!) {
+      calculatedWidth = widget.minTabWidth!;
+    }
+    if (widget.maxTabWidth != null && calculatedWidth > widget.maxTabWidth!) {
+      calculatedWidth = widget.maxTabWidth!;
+    }
+
+    return SizedBox(
+      width: calculatedWidth,
+      child: GestureDetector(
+        onTap: () {
+          if (mounted) setState(() => _selectedIndex = index);
+          if (widget.onTabSelected != null) {
+            widget.onTabSelected!(index);
+          }
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? widget.selectedBackgroundColor
+                : Colors.transparent,
+            border: Border(
+              bottom: BorderSide(
+                color:
+                    isSelected ? widget.selectedTabColor : Colors.transparent,
+                width: 2.0,
+              ),
             ),
           ),
-        ),
-        constraints: BoxConstraints(
-          minWidth: widget.minWidthTabs ?? 0,
-        ),
-        child: DefaultTextStyle(
-          style: TextStyle(
-            color: isSelected
-                ? widget.selectedTextColor
-                : widget.unselectedTextColor,
-            height: 1.4,
-            leadingDistribution: TextLeadingDistribution.even,
-            decoration: TextDecoration.none,
-            decorationColor: const Color(0xffe1e2e8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  tab.text,
+                  style: (tab.style ?? const TextStyle()).copyWith(
+                    color: isSelected
+                        ? widget.selectedTextColor
+                        : widget.unselectedTextColor,
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              if (tab.closeable)
+                IconButton(
+                  icon: const Icon(Icons.close, size: 16),
+                  onPressed: () => _handleTabClose(index, tab),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+            ],
           ),
-          child: finalTab,
         ),
+      ),
+    );
+  }
+
+  Widget _buildNewTabButton() {
+    return SizedBox(
+      width: 40,
+      child: IconButton(
+        icon: const Icon(Icons.add),
+        onPressed: widget.onNewTab,
       ),
     );
   }
 
   Widget _buildTabs() {
     final tabList = List.generate(
-      widget.tabs.length,
-      (index) => _buildTab(index, widget.tabs[index]),
+      _tabs.length,
+      (index) => _buildTab(index, _tabs[index]),
     );
 
-    if (widget.alignment == TabAlignment.justify) {
-      return Wrap(
-        children: tabList
-            .map((tab) => SizedBox(
-                width: widget.minWidthTabs ??
-                    MediaQuery.of(context).size.width / widget.tabs.length,
-                child: tab))
-            .toList(),
-      );
+    if (widget.enableNewTab) {
+      tabList.add(_buildNewTabButton());
     }
 
-    if (widget.orientation == TabOrientation.horizontalTop ||
-        widget.orientation == TabOrientation.horizontalBottom) {
-      return Wrap(
-        alignment: _getWrapAlignment(),
-        children: tabList,
-      );
-    }
+    final isVertical = widget.orientation == TabOrientation.verticalLeft ||
+        widget.orientation == TabOrientation.verticalRight;
 
-    return Column(
-      mainAxisAlignment: _getMainAxisAlignment(),
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: tabList,
+    return SingleChildScrollView(
+      controller: _scrollController,
+      scrollDirection: isVertical ? Axis.vertical : Axis.horizontal,
+      child: isVertical
+          ? Column(
+              mainAxisAlignment: widget.shrinkToFit
+                  ? MainAxisAlignment.start
+                  : _getMainAxisAlignment(),
+              children: tabList,
+            )
+          : Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: widget.shrinkToFit
+                  ? MainAxisAlignment.start
+                  : _getMainAxisAlignment(),
+              children: tabList,
+            ),
     );
-  }
-
-  WrapAlignment _getWrapAlignment() {
-    switch (widget.alignment) {
-      case TabAlignment.left:
-        return WrapAlignment.start;
-      case TabAlignment.center:
-        return WrapAlignment.center;
-      case TabAlignment.right:
-        return WrapAlignment.end;
-      case TabAlignment.justify:
-        return WrapAlignment.spaceBetween;
-    }
   }
 
   MainAxisAlignment _getMainAxisAlignment() {
@@ -179,15 +275,57 @@ class _ModTabsState extends State<ModTabs> {
 
   @override
   Widget build(BuildContext context) {
+    if (_tabs.isEmpty) {
+      return widget.emptyWidget ?? Container();
+    }
+
+    final content = _children[_selectedIndex];
+
     switch (widget.orientation) {
       case TabOrientation.horizontalTop:
         return Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildTabs(),
+            Stack(
+              children: [
+                _buildTabs(),
+                if (_scrollController.hasClients &&
+                    _scrollController.position.maxScrollExtent > 0)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.chevron_left),
+                          onPressed: () {
+                            _scrollController.animateTo(
+                              _scrollController.offset - 100,
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.chevron_right),
+                          onPressed: () {
+                            _scrollController.animateTo(
+                              _scrollController.offset + 100,
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
             Flexible(
               fit: FlexFit.loose,
-              child: widget.children[_selectedIndex],
+              child: content,
             ),
           ],
         );
@@ -198,7 +336,7 @@ class _ModTabsState extends State<ModTabs> {
           children: [
             Flexible(
               fit: FlexFit.loose,
-              child: widget.children[_selectedIndex],
+              child: content,
             ),
             _buildTabs(),
           ],
@@ -208,10 +346,11 @@ class _ModTabsState extends State<ModTabs> {
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildTabs(),
-            Expanded(
-              child: widget.children[_selectedIndex],
+            SizedBox(
+              width: 200,
+              child: _buildTabs(),
             ),
+            Expanded(child: content),
           ],
         );
 
@@ -219,10 +358,11 @@ class _ModTabsState extends State<ModTabs> {
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: widget.children[_selectedIndex],
+            Expanded(child: content),
+            SizedBox(
+              width: 200,
+              child: _buildTabs(),
             ),
-            _buildTabs(),
           ],
         );
     }
