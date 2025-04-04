@@ -38,7 +38,7 @@ class _TreeViewPageState extends State<TreeViewPage> {
 
       // Carrega a estrutura completa
       final rootNode = await _createNodeFromDirectory(directory);
-      
+
       // Não expandimos mais as pastas por padrão
       // As pastas começam fechadas e o usuário deve clicar para expandir
 
@@ -88,29 +88,31 @@ class _TreeViewPageState extends State<TreeViewPage> {
       await for (final child in dir.list(followLinks: false)) {
         entities.add(child);
       }
-      
+
       // Ordena: primeiro diretórios, depois arquivos
       entities.sort((a, b) {
         final aIsDir = a is Directory;
         final bIsDir = b is Directory;
-        
+
         // Se ambos são diretórios ou ambos são arquivos, ordena por nome
         if (aIsDir == bIsDir) {
-          return a.path.split(Platform.pathSeparator).last
+          return a.path
+              .split(Platform.pathSeparator)
+              .last
               .compareTo(b.path.split(Platform.pathSeparator).last);
         }
-        
+
         // Diretórios vêm primeiro
         return aIsDir ? -1 : 1;
       });
-      
+
       // Processa os itens ordenados
       final List<TreeNode> children = [];
       for (final child in entities) {
         final childNode = await _createNodeFromDirectory(child);
         children.add(childNode);
       }
-      
+
       return TreeNode(
         id: entity.path,
         label: name,
@@ -119,7 +121,6 @@ class _TreeViewPageState extends State<TreeViewPage> {
         isExpanded: false, // Pastas começam fechadas por padrão
         children: children,
       );
-      
     } catch (e) {
       log('Erro ao ler diretório ${dir.path}: $e');
       return TreeNode(
@@ -155,11 +156,11 @@ class _TreeViewPageState extends State<TreeViewPage> {
         return Icons.insert_drive_file;
     }
   }
-  
+
   /// Retorna os itens de menu de contexto para um nó
   List<TreeViewMenuItem> _getContextMenuItems(TreeNode node) {
     final List<TreeViewMenuItem> items = [];
-    
+
     // Itens comuns para arquivos e pastas
     items.add(
       TreeViewMenuItem(
@@ -168,7 +169,7 @@ class _TreeViewPageState extends State<TreeViewPage> {
         icon: Icons.info_outline,
       ),
     );
-    
+
     // Itens específicos para pastas
     if (node.isFolder) {
       items.add(
@@ -178,7 +179,7 @@ class _TreeViewPageState extends State<TreeViewPage> {
           icon: node.isExpanded ? Icons.unfold_less : Icons.unfold_more,
         ),
       );
-      
+
       items.add(
         TreeViewMenuItem(
           id: 'add_file',
@@ -188,7 +189,7 @@ class _TreeViewPageState extends State<TreeViewPage> {
         ),
       );
     }
-    
+
     // Itens para arquivos
     else {
       items.add(
@@ -200,7 +201,7 @@ class _TreeViewPageState extends State<TreeViewPage> {
         ),
       );
     }
-    
+
     // Itens comuns no final
     items.add(
       TreeViewMenuItem(
@@ -209,7 +210,7 @@ class _TreeViewPageState extends State<TreeViewPage> {
         icon: Icons.edit,
       ),
     );
-    
+
     items.add(
       TreeViewMenuItem(
         id: 'delete',
@@ -218,16 +219,16 @@ class _TreeViewPageState extends State<TreeViewPage> {
         enabled: true,
       ),
     );
-    
+
     return items;
   }
-  
+
   /// Manipula a seleção de um item do menu de contexto
   void _handleContextMenuItemSelected(TreeNode node, String itemId) {
     setState(() {
       lastAction = 'Menu: $itemId em ${node.label}';
     });
-    
+
     switch (itemId) {
       case 'expand':
         setState(() {
@@ -244,7 +245,7 @@ class _TreeViewPageState extends State<TreeViewPage> {
         log('Ação do menu: $itemId para ${node.label}');
     }
   }
-  
+
   /// Exibe informações sobre o nó
   void _showNodeInfo(TreeNode node) {
     showDialog(
@@ -269,7 +270,7 @@ class _TreeViewPageState extends State<TreeViewPage> {
       ),
     );
   }
-  
+
   /// Exibe confirmação de exclusão
   void _showDeleteConfirmation(TreeNode node) {
     showDialog(
@@ -283,7 +284,6 @@ class _TreeViewPageState extends State<TreeViewPage> {
             child: const Text('Cancelar'),
           ),
           TextButton(
-            child: const Text('Excluir'),
             style: TextButton.styleFrom(
               foregroundColor: Colors.red,
             ),
@@ -292,6 +292,7 @@ class _TreeViewPageState extends State<TreeViewPage> {
               log('Simulando exclusão de ${node.label}');
               // Aqui você implementaria a exclusão real
             },
+            child: const Text('Excluir'),
           ),
         ],
       ),
@@ -401,7 +402,7 @@ class _TreeViewPageState extends State<TreeViewPage> {
       ),
     );
   }
-  
+
   /// Recolhe todas as pastas na estrutura de diretórios
   void _collapseAllFolders(TreeNode node) {
     if (node.isFolder) {

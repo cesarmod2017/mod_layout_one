@@ -59,7 +59,8 @@ class TreeViewTheme {
   const TreeViewTheme({
     this.indentation = 20.0,
     this.iconSize = 16.0,
-    this.selectionColor = const Color(0x1A2196F3), // Light blue with 10% opacity
+    this.selectionColor =
+        const Color(0x1A2196F3), // Light blue with 10% opacity
     this.expanderType = ExpanderType.triangle,
     this.showLines = true,
     this.lineColor,
@@ -78,16 +79,16 @@ enum ExpanderType {
 class TreeViewMenuItem {
   /// Unique identifier for the menu item
   final String id;
-  
+
   /// Display text for the menu item
   final String label;
-  
+
   /// Optional icon to display with the menu item
   final IconData? icon;
-  
+
   /// Whether the menu item is enabled or disabled
   final bool enabled;
-  
+
   /// Whether to show a divider after this menu item
   final bool dividerAfter;
 
@@ -113,11 +114,11 @@ class ModTreeView extends StatefulWidget {
   final Function(TreeNode, TreeNode)? onNodeDropped;
   final Function(TreeNode)? onNodeRightClick;
   final int Function(TreeNode, TreeNode)? sortComparator;
-  
+
   /// Callback to get context menu items for a node
   /// Return a list of TreeViewMenuItem to show in the context menu
   final List<TreeViewMenuItem> Function(TreeNode)? getContextMenuItems;
-  
+
   /// Callback when a context menu item is selected
   final Function(TreeNode, String)? onContextMenuItemSelected;
 
@@ -188,12 +189,11 @@ class _ModTreeViewState extends State<ModTreeView> {
 
   Widget _buildDropTarget(TreeNode folder, int level) {
     return DragTarget<TreeNode>(
-      onWillAccept: (draggedNode) {
-        if (draggedNode == null) return false;
-        return _canAcceptDrop(draggedNode, folder);
+      onWillAcceptWithDetails: (details) {
+        return _canAcceptDrop(details.data, folder);
       },
-      onAccept: (draggedNode) {
-        widget.onNodeDropped?.call(draggedNode, folder);
+      onAcceptWithDetails: (details) {
+        widget.onNodeDropped?.call(details.data, folder);
       },
       builder: (context, candidateData, rejectedData) {
         return Container(
@@ -211,10 +211,13 @@ class _ModTreeViewState extends State<ModTreeView> {
   Widget _buildNodeContent(TreeNode node, int level, {bool isPreview = false}) {
     // Check if this node is selected
     final isSelected = node.id == _selectedNodeId;
-    
+
     return GestureDetector(
       onTap: () => _handleNodeTap(node),
-      onSecondaryTap: () => _showContextMenu(context, node),
+      onSecondaryTapDown: (details) {
+        // Store the tap position for context menu
+        _showContextMenu(context, node, details.globalPosition);
+      },
       child: Container(
         padding: EdgeInsets.only(left: widget.theme.indentation * level),
         height: 30, // Increased height for better touch target
@@ -279,23 +282,23 @@ class _ModTreeViewState extends State<ModTreeView> {
     setState(() {
       _selectedNodeId = node.id;
     });
-    
+
     // If it's a folder, toggle expansion
     if (node.isFolder) {
       _handleNodeExpand(node);
     }
-    
+
     // Call the selection callback
     widget.onNodeSelected?.call(node);
   }
 
   void _handleNodeExpand(TreeNode node) {
     if (!node.isFolder) return; // Only expand folders
-    
+
     setState(() {
       node.isExpanded = !node.isExpanded;
     });
-    
+
     if (node.isExpanded) {
       widget.onNodeExpanded?.call(node);
     } else {
@@ -314,38 +317,56 @@ class _ModTreeViewState extends State<ModTreeView> {
     if (node.children.contains(potentialAncestor)) return true;
     return node.children.any((child) => _isAncestor(potentialAncestor, child));
   }
-  
+
   /// Shows the context menu for a node
-  void _showContextMenu(BuildContext context, TreeNode node) {
+  void _showContextMenu(BuildContext context, TreeNode node,
+      [Offset? tapPosition]) {
     // Call the onNodeRightClick callback first
     widget.onNodeRightClick?.call(node);
-    
+
     // If no context menu items provider is set, don't show menu
     if (widget.getContextMenuItems == null) return;
-    
+
     // Get the menu items for this node
     final items = widget.getContextMenuItems!(node);
     if (items.isEmpty) return;
-    
+
     // Select the node when right-clicking
     setState(() {
       _selectedNodeId = node.id;
     });
-    
+
     // Calculate position for the popup menu
-    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-    final RenderBox button = context.findRenderObject() as RenderBox;
-    final Offset position = button.localToGlobal(Offset.zero, ancestor: overlay);
-    
-    // Show the popup menu
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+
+    // Use the tap position if provided, otherwise calculate from the widget
+    RelativeRect position;
+    if (tapPosition != null) {
+      // Use the exact tap position
+      position = RelativeRect.fromLTRB(
+        tapPosition.dx,
+        tapPosition.dy,
+        overlay.size.width - tapPosition.dx,
+        overlay.size.height - tapPosition.dy,
+      );
+    } else {
+      // Fallback to widget position
+      final RenderBox button = context.findRenderObject() as RenderBox;
+      final Offset widgetPosition =
+          button.localToGlobal(Offset.zero, ancestor: overlay);
+      position = RelativeRect.fromLTRB(
+        widgetPosition.dx,
+        widgetPosition.dy,
+        overlay.size.width - widgetPosition.dx - button.size.width,
+        overlay.size.height - widgetPosition.dy - button.size.height,
+      );
+    }
+
+    // Show the popup menu at the tap position
     showMenu<String>(
       context: context,
-      position: RelativeRect.fromLTRB(
-        position.dx,
-        position.dy + button.size.height,
-        position.dx + button.size.width,
-        position.dy,
-      ),
+      position: position,
       items: _buildPopupMenuItems(items),
     ).then((String? itemId) {
       if (itemId != null && widget.onContextMenuItemSelected != null) {
@@ -353,11 +374,12 @@ class _ModTreeViewState extends State<ModTreeView> {
       }
     });
   }
-  
+
   /// Builds the popup menu items from TreeViewMenuItem list
-  List<PopupMenuEntry<String>> _buildPopupMenuItems(List<TreeViewMenuItem> items) {
+  List<PopupMenuEntry<String>> _buildPopupMenuItems(
+      List<TreeViewMenuItem> items) {
     final List<PopupMenuEntry<String>> menuItems = [];
-    
+
     for (final item in items) {
       menuItems.add(
         PopupMenuItem<String>(
@@ -374,12 +396,12 @@ class _ModTreeViewState extends State<ModTreeView> {
           ),
         ),
       );
-      
+
       if (item.dividerAfter) {
         menuItems.add(const PopupMenuDivider());
       }
     }
-    
+
     return menuItems;
   }
 }
