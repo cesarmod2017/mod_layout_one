@@ -356,6 +356,21 @@ class _TreeViewPageState extends State<TreeViewPage> {
     });
   }
 
+  /// Atualiza o estado de seleção de um nó e todos os seus filhos recursivamente
+  void _updateNodeSelectionRecursively(TreeNode node, bool isSelected) {
+    // Atualiza o estado do nó atual
+    setState(() {
+      node.isSelected = isSelected;
+
+      // Se for uma pasta, atualiza todos os filhos recursivamente
+      if (node.isFolder && node.children.isNotEmpty) {
+        for (var child in node.children) {
+          _updateNodeSelectionRecursively(child, isSelected);
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
@@ -404,70 +419,82 @@ class _TreeViewPageState extends State<TreeViewPage> {
             ),
           ),
           Expanded(
-            child: ModTreeView(
-              nodes: nodes,
-              theme: TreeViewTheme(
-                indentation: 24.0,
-                iconSize: 20.0,
-                selectionColor: Theme.of(context).highlightColor,
-                expanderType: ExpanderType.triangle,
-                showLines: true,
-                // lineColor: Theme.of(context).dividerColor,
-                // textColor: Theme.of(context).textTheme.bodyMedium?.color,
-                // iconColor: Theme.of(context).iconTheme.color,
-                lineColor: Colors.red,
-                textColor: Theme.of(context).textTheme.bodyMedium?.color,
-                iconColor: Colors.yellow,
-              ),
-              onNodeSelected: (node) {
-                setState(() {
-                  selectedNodeId = node.id;
-                  lastAction = 'Selecionado: ${node.label}';
-                });
-                log('Selected: ${node.label}');
-              },
-              onNodeExpanded: (node) {
-                setState(() {
-                  node.isExpanded = true;
-                  lastAction = 'Expandido: ${node.label}';
-                });
-                log('Expanded: ${node.label}');
-              },
-              onNodeCollapsed: (node) {
-                setState(() {
-                  node.isExpanded = false;
-                  lastAction = 'Recolhido: ${node.label}';
-                });
-                log('Collapsed: ${node.label}');
-              },
-              onNodeDropped: (source, target) {
-                setState(() {
-                  lastAction = 'Movido: ${source.label} para ${target.label}';
-                });
-                log('Dropped ${source.label} into ${target.label}');
-                if (target.isFolder) {
-                  final newNode =
-                      source.copyWith(id: '${target.id}\\${source.label}');
-
-                  target.children.add(newNode);
-                  target.children.sort((a, b) {
-                    // Primeiro ordena por pasta (pastas primeiro)
-                    if (a.isFolder && !b.isFolder) return -1;
-                    if (!a.isFolder && b.isFolder) return 1;
-                    // Depois ordena por label (ordem alfabética)
-                    return a.label.compareTo(b.label);
+            child: SizedBox(
+              width: 300,
+              child: ModTreeView(
+                nodes: nodes,
+                showIcons: true,
+                newItemIcon: Icons.circle,
+                syncIcon: Icons.sync,
+                showCheckboxes: false,
+                onNodeCheckChanged: (p0, p1) {
+                  log('onNodeCheckChanged: $p0, $p1');
+                  _updateNodeSelectionRecursively(p0, p1);
+                },
+                theme: TreeViewTheme(
+                  indentation: 24.0,
+                  iconSize: 20.0,
+                  selectionColor: Theme.of(context).highlightColor,
+                  expanderType: ExpanderType.triangle,
+                  showLines: true,
+                  // lineColor: Theme.of(context).dividerColor,
+                  // textColor: Theme.of(context).textTheme.bodyMedium?.color,
+                  // iconColor: Theme.of(context).iconTheme.color,
+                  lineColor: Colors.red,
+                  textColor: Theme.of(context).textTheme.bodyMedium?.color,
+                  iconColor: Colors.yellow,
+                ),
+                onNodeSelected: (node) {
+                  setState(() {
+                    node.stateMode = NodeStateMode.sync;
+                    selectedNodeId = node.id;
+                    lastAction = 'Selecionado: ${node.label}';
                   });
-                  _removeNode(source);
-                }
-              },
-              onNodeRightClick: (node) {
-                setState(() {
-                  lastAction = 'Clique direito: ${node.label}';
-                });
-                log('Right clicked: ${node.label}');
-              },
-              getContextMenuItems: _getContextMenuItems,
-              onContextMenuItemSelected: _handleContextMenuItemSelected,
+                  log('Selected: ${node.label}');
+                },
+                onNodeExpanded: (node) {
+                  setState(() {
+                    node.isExpanded = true;
+                    lastAction = 'Expandido: ${node.label}';
+                  });
+                  log('Expanded: ${node.label}');
+                },
+                onNodeCollapsed: (node) {
+                  setState(() {
+                    node.isExpanded = false;
+                    lastAction = 'Recolhido: ${node.label}';
+                  });
+                  log('Collapsed: ${node.label}');
+                },
+                onNodeDropped: (source, target) {
+                  setState(() {
+                    lastAction = 'Movido: ${source.label} para ${target.label}';
+                  });
+                  log('Dropped ${source.label} into ${target.label}');
+                  if (target.isFolder) {
+                    final newNode =
+                        source.copyWith(id: '${target.id}\\${source.label}');
+
+                    target.children.add(newNode);
+                    target.children.sort((a, b) {
+                      // Primeiro ordena por pasta (pastas primeiro)
+                      if (a.isFolder && !b.isFolder) return -1;
+                      if (!a.isFolder && b.isFolder) return 1;
+                      // Depois ordena por label (ordem alfabética)
+                      return a.label.compareTo(b.label);
+                    });
+                    _removeNode(source);
+                  }
+                },
+                onNodeRightClick: (node) {
+                  setState(() {
+                    lastAction = 'Clique direito: ${node.label}';
+                  });
+                  log('Right clicked: ${node.label}');
+                },
+                getContextMenuItems: _getContextMenuItems,
+                onContextMenuItemSelected: _handleContextMenuItemSelected,
+              ),
             ),
           ),
         ],

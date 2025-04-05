@@ -10,7 +10,8 @@ class TreeNode {
   bool isExpanded;
   bool isSelected;
   final List<TreeNode> children;
-  final dynamic data;
+  dynamic data;
+  NodeStateMode stateMode;
 
   TreeNode({
     required this.id,
@@ -22,6 +23,7 @@ class TreeNode {
     this.isSelected = false,
     this.children = const [],
     this.data,
+    this.stateMode = NodeStateMode.synced,
   });
 
   TreeNode copyWith({
@@ -34,6 +36,7 @@ class TreeNode {
     bool? isSelected,
     List<TreeNode>? children,
     dynamic data,
+    NodeStateMode? stateMode,
   }) {
     return TreeNode(
       id: id ?? this.id,
@@ -45,8 +48,16 @@ class TreeNode {
       isSelected: isSelected ?? this.isSelected,
       children: children ?? this.children,
       data: data ?? this.data,
+      stateMode: stateMode ?? this.stateMode,
     );
   }
+}
+
+enum NodeStateMode {
+  synced, // No icon shown
+  new_item, // Show newIcon
+  update, // Show newIcon
+  sync, // Show syncIcon
 }
 
 // Theme configuration
@@ -112,11 +123,15 @@ class ModTreeView extends StatefulWidget {
   final TreeViewTheme theme;
   final bool enableDragDrop;
   final bool showIcons;
+  final bool showCheckboxes;
+  final IconData? newItemIcon;
+  final IconData? syncIcon;
   final Function(TreeNode)? onNodeSelected;
   final Function(TreeNode)? onNodeExpanded;
   final Function(TreeNode)? onNodeCollapsed;
   final Function(TreeNode, TreeNode)? onNodeDropped;
   final Function(TreeNode)? onNodeRightClick;
+  final Function(TreeNode, bool)? onNodeCheckChanged;
   final int Function(TreeNode, TreeNode)? sortComparator;
 
   /// Callback to get context menu items for a node
@@ -132,11 +147,15 @@ class ModTreeView extends StatefulWidget {
     this.theme = const TreeViewTheme(),
     this.enableDragDrop = true,
     this.showIcons = true,
+    this.showCheckboxes = false,
+    this.newItemIcon,
+    this.syncIcon,
     this.onNodeSelected,
     this.onNodeExpanded,
     this.onNodeCollapsed,
     this.onNodeDropped,
     this.onNodeRightClick,
+    this.onNodeCheckChanged,
     this.sortComparator,
     this.getContextMenuItems,
     this.onContextMenuItemSelected,
@@ -196,12 +215,11 @@ class _ModTreeViewState extends State<ModTreeView> {
 
   Widget _buildDropTarget(TreeNode folder, int level) {
     return DragTarget<TreeNode>(
-      onWillAccept: (draggedNode) {
-        if (draggedNode == null) return false;
-        return _canAcceptDrop(draggedNode, folder);
+      onWillAcceptWithDetails: (details) {
+        return _canAcceptDrop(details.data, folder);
       },
-      onAccept: (draggedNode) {
-        widget.onNodeDropped?.call(draggedNode, folder);
+      onAcceptWithDetails: (details) {
+        widget.onNodeDropped?.call(details.data, folder);
       },
       builder: (context, candidateData, rejectedData) {
         return Container(
@@ -235,6 +253,22 @@ class _ModTreeViewState extends State<ModTreeView> {
         ),
         child: Row(
           children: [
+            // Add checkbox if enabled
+            if (widget.showCheckboxes)
+              Checkbox(
+                value: node.isSelected,
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      // Update the selection state
+                      final updatedNode = node.copyWith(isSelected: value);
+                      _updateNodeInTree(updatedNode);
+                    });
+                    // Call the callback
+                    widget.onNodeCheckChanged?.call(node, value);
+                  }
+                },
+              ),
             if (node.isFolder) _buildExpander(node),
             if (widget.showIcons)
               Icon(
@@ -253,10 +287,41 @@ class _ModTreeViewState extends State<ModTreeView> {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
+            // Add state indicator icons if applicable
+            if (node.stateMode != NodeStateMode.synced) ...[
+              const SizedBox(width: 4),
+              _buildStateIcon(node.stateMode),
+            ],
           ],
         ),
       ),
     );
+  }
+
+  // Build state indicator icon based on node state
+  Widget _buildStateIcon(NodeStateMode stateMode) {
+    switch (stateMode) {
+      case NodeStateMode.new_item:
+      case NodeStateMode.update:
+        return widget.newItemIcon != null
+            ? Icon(
+                widget.newItemIcon,
+                size: widget.theme.iconSize,
+                color: Colors.green,
+              )
+            : const SizedBox.shrink();
+      case NodeStateMode.sync:
+        return widget.syncIcon != null
+            ? Icon(
+                widget.syncIcon,
+                size: widget.theme.iconSize,
+                color: Colors.blue,
+              )
+            : const SizedBox.shrink();
+      case NodeStateMode.synced:
+      default:
+        return const SizedBox.shrink();
+    }
   }
 
   Widget _buildExpander(TreeNode node) {
@@ -317,13 +382,13 @@ class _ModTreeViewState extends State<ModTreeView> {
   bool _canAcceptDrop(TreeNode source, TreeNode target) {
     // Não pode soltar um item em si mesmo
     if (source.id == target.id) return false;
-    
+
     // Só pode soltar em pastas
     if (!target.isFolder) return false;
-    
+
     // Verificar se o target é descendente do source (não pode soltar em seu próprio descendente)
     if (_isDescendant(source, target)) return false;
-    
+
     // Permitir soltar em qualquer outra pasta
     return true;
   }
@@ -332,16 +397,16 @@ class _ModTreeViewState extends State<ModTreeView> {
   bool _isDescendant(TreeNode ancestor, TreeNode descendant) {
     // Se o nó ancestral não tem filhos, não pode ter descendentes
     if (ancestor.children.isEmpty) return false;
-    
+
     // Verifica se o descendant é filho direto do ancestor
     for (final child in ancestor.children) {
       // Se encontrou o nó como filho direto
       if (child.id == descendant.id) return true;
-      
+
       // Verifica recursivamente nos filhos
       if (_isDescendant(child, descendant)) return true;
     }
-    
+
     return false;
   }
 
@@ -430,5 +495,26 @@ class _ModTreeViewState extends State<ModTreeView> {
     }
 
     return menuItems;
+  }
+
+  // Helper method to update a node in the tree
+  void _updateNodeInTree(TreeNode updatedNode) {
+    // Function to recursively update nodes in the tree
+    List<TreeNode> updateNodes(List<TreeNode> nodes) {
+      return nodes.map((node) {
+        if (node.id == updatedNode.id) {
+          return updatedNode;
+        } else if (node.children.isNotEmpty) {
+          return node.copyWith(children: updateNodes(node.children));
+        }
+        return node;
+      }).toList();
+    }
+
+    // Update the widget's nodes list
+    final updatedNodes = updateNodes(widget.nodes);
+
+    // If this is a stateful widget that manages its own nodes list
+    // You would update the state here
   }
 }
