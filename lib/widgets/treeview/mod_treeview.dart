@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 class TreeNode {
   final String id;
   final String label;
-  final IconData icon;
+  final IconData iconData;
+  final Color? iconColor;
   final bool isFolder;
   bool isExpanded;
   bool isSelected;
@@ -14,7 +15,8 @@ class TreeNode {
   TreeNode({
     required this.id,
     required this.label,
-    required this.icon,
+    required this.iconData,
+    this.iconColor,
     this.isFolder = false,
     this.isExpanded = false,
     this.isSelected = false,
@@ -25,7 +27,8 @@ class TreeNode {
   TreeNode copyWith({
     String? id,
     String? label,
-    IconData? icon,
+    IconData? iconData,
+    Color? iconColor,
     bool? isFolder,
     bool? isExpanded,
     bool? isSelected,
@@ -35,7 +38,8 @@ class TreeNode {
     return TreeNode(
       id: id ?? this.id,
       label: label ?? this.label,
-      icon: icon ?? this.icon,
+      iconData: iconData ?? this.iconData,
+      iconColor: iconColor ?? this.iconColor,
       isFolder: isFolder ?? this.isFolder,
       isExpanded: isExpanded ?? this.isExpanded,
       isSelected: isSelected ?? this.isSelected,
@@ -234,9 +238,9 @@ class _ModTreeViewState extends State<ModTreeView> {
             if (node.isFolder) _buildExpander(node),
             if (widget.showIcons)
               Icon(
-                node.icon,
+                node.iconData,
                 size: widget.theme.iconSize,
-                color: widget.theme.iconColor,
+                color: node.iconColor ?? widget.theme.iconColor,
               ),
             const SizedBox(width: 4),
             Expanded(

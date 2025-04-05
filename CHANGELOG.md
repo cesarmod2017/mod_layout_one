@@ -1,3 +1,18 @@
+## 1.0.53
+
+* Added ModTreeView widget:
+  * Hierarchical data visualization with expandable/collapsible nodes
+  * Support for custom node styling and icons
+  * Configurable indentation and connection lines
+  * Lazy loading support for large data sets
+  * Interactive node selection with callbacks
+  * Drag and drop functionality for node reordering
+  * Search and filtering capabilities
+  * Keyboard navigation support
+  * Customizable node templates
+  * Optimized rendering for deep tree structures
+  * Accessibility features for screen readers
+
 ## 1.0.52
 
 * Enhanced ModTabs widget:

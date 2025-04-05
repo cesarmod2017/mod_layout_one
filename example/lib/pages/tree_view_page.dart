@@ -75,7 +75,8 @@ class _TreeViewPageState extends State<TreeViewPage> {
       return TreeNode(
         id: entity.path,
         label: name,
-        icon: _getFileIcon(name),
+        iconData: _getFileIcon(name),
+        iconColor: _getFileIconColor(name),
         isFolder: false,
       );
     }
@@ -116,7 +117,8 @@ class _TreeViewPageState extends State<TreeViewPage> {
       return TreeNode(
         id: entity.path,
         label: name,
-        icon: Icons.folder,
+        iconData: Icons.folder,
+        iconColor: Colors.amber,
         isFolder: true,
         isExpanded: false, // Pastas começam fechadas por padrão
         children: children,
@@ -126,7 +128,8 @@ class _TreeViewPageState extends State<TreeViewPage> {
       return TreeNode(
         id: entity.path,
         label: name,
-        icon: Icons.folder,
+        iconData: Icons.folder,
+        iconColor: Colors.amber,
         isFolder: true,
         isExpanded: false,
         children: [],
@@ -154,6 +157,29 @@ class _TreeViewPageState extends State<TreeViewPage> {
         return Icons.image;
       default:
         return Icons.insert_drive_file;
+    }
+  }
+
+  /// Retorna a cor do ícone para o tipo de arquivo
+  Color? _getFileIconColor(String fileName) {
+    final extension = fileName.split('.').last.toLowerCase();
+    switch (extension) {
+      case 'dart':
+        return Colors.blue;
+      case 'yaml':
+      case 'yml':
+        return Colors.purple;
+      case 'md':
+        return Colors.green;
+      case 'json':
+        return Colors.orange;
+      case 'png':
+      case 'jpg':
+      case 'jpeg':
+      case 'gif':
+        return Colors.pink;
+      default:
+        return Colors.grey;
     }
   }
 
@@ -383,13 +409,15 @@ class _TreeViewPageState extends State<TreeViewPage> {
               theme: TreeViewTheme(
                 indentation: 24.0,
                 iconSize: 20.0,
-                selectionColor:
-                    Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                selectionColor: Theme.of(context).highlightColor,
                 expanderType: ExpanderType.triangle,
                 showLines: true,
-                lineColor: Theme.of(context).dividerColor,
+                // lineColor: Theme.of(context).dividerColor,
+                // textColor: Theme.of(context).textTheme.bodyMedium?.color,
+                // iconColor: Theme.of(context).iconTheme.color,
+                lineColor: Colors.red,
                 textColor: Theme.of(context).textTheme.bodyMedium?.color,
-                iconColor: Theme.of(context).iconTheme.color,
+                iconColor: Colors.yellow,
               ),
               onNodeSelected: (node) {
                 setState(() {
@@ -420,13 +448,17 @@ class _TreeViewPageState extends State<TreeViewPage> {
                 if (target.isFolder) {
                   final newNode =
                       source.copyWith(id: '${target.id}\\${source.label}');
-                  log('antes: ${source.id}');
-                  log('depois: ${newNode.id}');
+
                   target.children.add(newNode);
+                  target.children.sort((a, b) {
+                    // Primeiro ordena por pasta (pastas primeiro)
+                    if (a.isFolder && !b.isFolder) return -1;
+                    if (!a.isFolder && b.isFolder) return 1;
+                    // Depois ordena por label (ordem alfabética)
+                    return a.label.compareTo(b.label);
+                  });
                   _removeNode(source);
                 }
-                //target.children.add(source);
-                // Implement your file system move operation here
               },
               onNodeRightClick: (node) {
                 setState(() {
