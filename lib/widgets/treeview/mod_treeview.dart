@@ -56,7 +56,7 @@ class TreeNode {
 enum NodeStateMode {
   synced, // No icon shown
   new_item, // Show newIcon
-  update, // Show newIcon
+  update, // Show updateIcon
   sync, // Show syncIcon
 }
 
@@ -124,8 +124,9 @@ class ModTreeView extends StatefulWidget {
   final bool enableDragDrop;
   final bool showIcons;
   final bool showCheckboxes;
-  final IconData? newItemIcon;
-  final IconData? syncIcon;
+  final Icon? newItemIcon;
+  final Icon? updateIcon;
+  final Icon? syncIcon;
   final Function(TreeNode)? onNodeSelected;
   final Function(TreeNode)? onNodeExpanded;
   final Function(TreeNode)? onNodeCollapsed;
@@ -149,6 +150,7 @@ class ModTreeView extends StatefulWidget {
     this.showIcons = true,
     this.showCheckboxes = false,
     this.newItemIcon,
+    this.updateIcon,
     this.syncIcon,
     this.onNodeSelected,
     this.onNodeExpanded,
@@ -302,22 +304,14 @@ class _ModTreeViewState extends State<ModTreeView> {
   Widget _buildStateIcon(NodeStateMode stateMode) {
     switch (stateMode) {
       case NodeStateMode.new_item:
+        return widget.newItemIcon ?? const SizedBox.shrink();
       case NodeStateMode.update:
-        return widget.newItemIcon != null
-            ? Icon(
-                widget.newItemIcon,
-                size: widget.theme.iconSize,
-                color: Colors.green,
-              )
-            : const SizedBox.shrink();
+        return widget.updateIcon ?? const SizedBox.shrink();
       case NodeStateMode.sync:
-        return widget.syncIcon != null
-            ? Icon(
-                widget.syncIcon,
-                size: widget.theme.iconSize,
-                color: Colors.blue,
-              )
-            : const SizedBox.shrink();
+        return RotationTransition(
+          turns: AlwaysStoppedAnimation(45 / 360),
+          child: widget.syncIcon ?? const SizedBox.shrink(),
+        );
       case NodeStateMode.synced:
       default:
         return const SizedBox.shrink();

@@ -424,9 +424,10 @@ class _TreeViewPageState extends State<TreeViewPage> {
               child: ModTreeView(
                 nodes: nodes,
                 showIcons: true,
-                newItemIcon: Icons.circle,
-                syncIcon: Icons.sync,
-                showCheckboxes: false,
+                newItemIcon: Icon(Icons.circle, color: Colors.green, size: 18),
+                updateIcon: Icon(Icons.circle, color: Colors.orange, size: 18),
+                syncIcon: Icon(Icons.sync, color: Colors.blue, size: 18),
+                showCheckboxes: true,
                 onNodeCheckChanged: (p0, p1) {
                   log('onNodeCheckChanged: $p0, $p1');
                   _updateNodeSelectionRecursively(p0, p1);
@@ -446,7 +447,7 @@ class _TreeViewPageState extends State<TreeViewPage> {
                 ),
                 onNodeSelected: (node) {
                   setState(() {
-                    node.stateMode = NodeStateMode.sync;
+                    node.stateMode = NodeStateMode.synced;
                     selectedNodeId = node.id;
                     lastAction = 'Selecionado: ${node.label}';
                   });

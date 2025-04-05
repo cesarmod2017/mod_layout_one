@@ -55,4 +55,37 @@ class AppController extends GetxController {
     final authService = Get.find<AuthService>();
     await authService.logout();
   }
+
+  List<ModTab> contentTabs = [];
+
+  List<Widget> contentChildren = [];
+  void addTab() {
+    String text = DateTime.now().toString();
+    contentTabs.add(ModTab(
+        text: text,
+        closeable: true,
+        data: TabData(text: "tab 1", content: "content: $text")));
+    contentChildren.add(Container(
+      padding: const EdgeInsets.all(16),
+      child: Text(text),
+    ));
+    update();
+  }
+
+  void removeTab(int index) {
+    if (index >= 0 &&
+        index < contentTabs.length &&
+        index < contentChildren.length) {
+      contentTabs.removeAt(index);
+      contentChildren.removeAt(index);
+      update();
+    }
+  }
+}
+
+class TabData {
+  final String text;
+  final String content;
+
+  TabData({required this.text, required this.content});
 }

@@ -1,3 +1,59 @@
+
+## 1.0.56
+
+* Fixed ModTabs widget:
+  * Resolved issue with tab selection persistence
+  * Fixed tab content alignment problems
+  * Improved tab scrolling behavior on smaller screens
+  * Corrected tab width calculation for dynamic content
+  * Enhanced tab close button responsiveness
+  * Fixed memory leak when removing tabs dynamically
+  * Improved tab rendering performance
+  * Corrected tab indicator animation
+  * Fixed tab overflow handling in horizontal orientation
+  * Enhanced accessibility for keyboard navigation between tabs
+
+
+## 1.0.55
+
+* Fixed ModTabs widget:
+  * Corrected tab addition functionality with GetX state management
+  * Improved tab controller synchronization
+  * Enhanced dynamic tab creation and management
+  * Fixed state update issues when adding new tabs
+  * Optimized tab rendering after dynamic changes
+  * Better memory management for dynamically created tabs
+  * Improved tab lifecycle handling
+  * Enhanced tab content association with tab headers
+  * Fixed tab selection after dynamic tab addition
+  * Proper cleanup of removed tabs to prevent memory leaks
+
+## 1.0.54
+
+* Added ModCheckbox widget:
+  * Customizable checkbox appearance and behavior
+  * Support for different states (checked, unchecked, indeterminate)
+  * Configurable size and color properties
+  * Animated state transitions
+  * Accessible design with proper semantics
+  * Support for disabled state styling
+  * Consistent look and feel with other form components
+  * Touch-friendly hit areas for mobile interfaces
+  * Keyboard navigation support
+  * Integration with form validation systems
+
+* Enhanced icon customization:
+  * Added support for custom icons in creation mode
+  * Improved editing mode with distinctive icon indicators
+  * Synchronization status icons for better visual feedback
+  * Consistent icon theming across the component library
+  * Support for different icon sizes based on context
+  * Color customization options for all icon states
+  * Animation capabilities for state transitions
+  * Better accessibility with proper icon labels
+  * Optimized rendering performance for icon-heavy interfaces
+  * Comprehensive documentation for icon customization options
+
 ## 1.0.53
 
 * Added ModTreeView widget:

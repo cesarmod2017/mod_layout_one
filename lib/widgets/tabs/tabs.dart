@@ -27,6 +27,8 @@ class ModTab {
   final VoidCallback? onClose;
   final bool closeable;
   final Future<bool> Function()? onClosing;
+  /// A dynamic field that can store any type of object associated with this tab
+  final dynamic data;
 
   const ModTab({
     required this.text,
@@ -35,6 +37,7 @@ class ModTab {
     this.onClose,
     this.closeable = false,
     this.onClosing,
+    this.data,
   });
 }
 
@@ -50,7 +53,10 @@ class ModTabs extends StatefulWidget {
   final Color unselectedTextColor;
   final TabOrientation orientation;
   final int initialIndex;
-  final void Function(int)? onTabSelected;
+  /// Callback when a tab is selected, provides both index and tab object
+  final void Function(int index, ModTab tab)? onTabSelected;
+  /// Callback when a tab is closed, provides both index and tab object
+  final void Function(int index, ModTab tab)? onTabClose;
   final double? minTabWidth;
   final double? maxTabWidth;
   final bool enableNewTab;
@@ -72,6 +78,7 @@ class ModTabs extends StatefulWidget {
     this.orientation = TabOrientation.horizontalTop,
     this.initialIndex = 0,
     this.onTabSelected,
+    this.onTabClose,
     this.minTabWidth = 60.0,
     this.maxTabWidth,
     this.enableNewTab = false,
@@ -102,13 +109,17 @@ class _ModTabsState extends State<ModTabs> {
   @override
   void didUpdateWidget(ModTabs oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.tabs != oldWidget.tabs ||
-        widget.children != oldWidget.children) {
-      setState(() {
-        _tabs = List.from(widget.tabs);
-        _children = List.from(widget.children);
-      });
-    }
+    
+    // Always update the internal lists to ensure GetX updates are captured
+    setState(() {
+      _tabs = List.from(widget.tabs);
+      _children = List.from(widget.children);
+      
+      // Ensure selected index is valid
+      if (_selectedIndex >= _tabs.length) {
+        _selectedIndex = _tabs.isEmpty ? -1 : _tabs.length - 1;
+      }
+    });
   }
 
   @override
@@ -125,6 +136,11 @@ class _ModTabsState extends State<ModTabs> {
     }
 
     if (canClose && mounted) {
+      // Call the onTabClose callback before removing the tab
+      if (widget.onTabClose != null) {
+        widget.onTabClose!(index, tab);
+      }
+
       setState(() {
         _tabs.removeAt(index);
         _children.removeAt(index);
@@ -153,65 +169,73 @@ class _ModTabsState extends State<ModTabs> {
     double calculatedWidth =
         textPainter.width + 40; // Adiciona espaço para padding e ícone
     if (tab.closeable) {
-      calculatedWidth += 24; // Espaço adicional para o botão de fechar
+      calculatedWidth += 24; // Adiciona espaço para o botão de fechar
     }
 
-    // Aplica os limites de min/max width se definidos
     if (widget.minTabWidth != null && calculatedWidth < widget.minTabWidth!) {
       calculatedWidth = widget.minTabWidth!;
     }
+
     if (widget.maxTabWidth != null && calculatedWidth > widget.maxTabWidth!) {
       calculatedWidth = widget.maxTabWidth!;
     }
 
-    return SizedBox(
-      width: calculatedWidth,
-      child: GestureDetector(
-        onTap: () {
-          if (mounted) setState(() => _selectedIndex = index);
+    final isVertical = widget.orientation == TabOrientation.verticalLeft ||
+        widget.orientation == TabOrientation.verticalRight;
+
+    return GestureDetector(
+      onTap: () {
+        if (_selectedIndex != index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+          // Call the onTabSelected callback with both index and tab
           if (widget.onTabSelected != null) {
-            widget.onTabSelected!(index);
+            widget.onTabSelected!(index, tab);
           }
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? widget.selectedBackgroundColor
-                : Colors.transparent,
-            border: Border(
-              bottom: BorderSide(
-                color:
-                    isSelected ? widget.selectedTabColor : Colors.transparent,
-                width: 2.0,
+        }
+      },
+      child: Container(
+        constraints: BoxConstraints(
+          minWidth: isVertical ? double.infinity : (widget.minTabWidth ?? 0),
+          maxWidth: isVertical ? double.infinity : (widget.maxTabWidth ?? double.infinity),
+        ),
+        width: isVertical ? double.infinity : calculatedWidth,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? tab.backgroundColor ?? widget.selectedBackgroundColor
+              : Colors.transparent,
+          border: _getBorder(isSelected),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: Text(
+                tab.text,
+                style: tab.style ??
+                    TextStyle(
+                      color: isSelected
+                          ? widget.selectedTextColor
+                          : widget.unselectedTextColor,
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  tab.text,
-                  style: (tab.style ?? const TextStyle()).copyWith(
-                    color: isSelected
-                        ? widget.selectedTextColor
-                        : widget.unselectedTextColor,
-                    fontWeight:
-                        isSelected ? FontWeight.bold : FontWeight.normal,
+            if (tab.closeable)
+              GestureDetector(
+                onTap: () => _handleTabClose(index, tab),
+                child: const Padding(
+                  padding: EdgeInsets.only(left: 8.0),
+                  child: Icon(
+                    Icons.close,
+                    size: 16,
                   ),
-                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              if (tab.closeable)
-                IconButton(
-                  icon: const Icon(Icons.close, size: 16),
-                  onPressed: () => _handleTabClose(index, tab),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                ),
-            ],
-          ),
+          ],
         ),
       ),
     );
@@ -277,6 +301,11 @@ class _ModTabsState extends State<ModTabs> {
   Widget build(BuildContext context) {
     if (_tabs.isEmpty) {
       return widget.emptyWidget ?? Container();
+    }
+
+    // Garante que o índice selecionado seja válido
+    if (_selectedIndex < 0 || _selectedIndex >= _children.length) {
+      _selectedIndex = 0;
     }
 
     final content = _children[_selectedIndex];
@@ -364,6 +393,25 @@ class _ModTabsState extends State<ModTabs> {
               child: _buildTabs(),
             ),
           ],
+        );
+    }
+  }
+
+  Border _getBorder(bool isSelected) {
+    switch (widget.borderType) {
+      case TabBorderType.none:
+        return Border.all(color: Colors.transparent);
+      case TabBorderType.bottom:
+        return Border(
+          bottom: BorderSide(
+            color: isSelected ? widget.selectedTabColor : Colors.transparent,
+            width: 2.0,
+          ),
+        );
+      case TabBorderType.all:
+        return Border.all(
+          color: isSelected ? widget.selectedTabColor : Colors.transparent,
+          width: 2.0,
         );
     }
   }
