@@ -69,9 +69,12 @@ class AppController extends GetxController {
       padding: const EdgeInsets.all(16),
       child: Text(text),
     ));
+
+    selectTab = contentTabs.length - 1;
     update();
   }
 
+  int? selectTab = 0;
   void removeTab(int index) {
     if (index >= 0 &&
         index < contentTabs.length &&

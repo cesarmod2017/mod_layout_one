@@ -53,6 +53,8 @@ class ModTabs extends StatefulWidget {
   final Color unselectedTextColor;
   final TabOrientation orientation;
   final int initialIndex;
+  /// Índice da aba selecionada, pode ser controlado externamente
+  final int? selectedIndex;
   /// Callback when a tab is selected, provides both index and tab object
   final void Function(int index, ModTab tab)? onTabSelected;
   /// Callback when a tab is closed, provides both index and tab object
@@ -77,6 +79,7 @@ class ModTabs extends StatefulWidget {
     this.unselectedTextColor = Colors.grey,
     this.orientation = TabOrientation.horizontalTop,
     this.initialIndex = 0,
+    this.selectedIndex,
     this.onTabSelected,
     this.onTabClose,
     this.minTabWidth = 60.0,
@@ -109,6 +112,11 @@ class _ModTabsState extends State<ModTabs> {
   @override
   void didUpdateWidget(ModTabs oldWidget) {
     super.didUpdateWidget(oldWidget);
+    
+    // Atualiza o índice selecionado se for fornecido externamente
+    if (widget.selectedIndex != null && widget.selectedIndex != _selectedIndex) {
+      _selectedIndex = widget.selectedIndex!;
+    }
     
     // Always update the internal lists to ensure GetX updates are captured
     setState(() {

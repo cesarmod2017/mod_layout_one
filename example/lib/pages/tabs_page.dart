@@ -320,10 +320,11 @@ class _TabsPageState extends State<TabsPage> {
                     print('onTabSelected: $index, ${tabData.content}');
                   },
                   tabs: controller.contentTabs,
-                  children: controller.contentChildren,
+                  selectedIndex: controller.selectTab,
                   onTabClose: (index, tab) {
                     controller.removeTab(index);
                   },
+                  children: controller.contentChildren,
                 ),
               ),
             ],

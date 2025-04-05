@@ -1,4 +1,18 @@
 
+## 1.0.57
+
+* Enhanced ModTabs widget:
+  * Implemented `selectedIndex` property for external tab control
+  * Added support for programmatically changing the active tab
+  * Improved state synchronization with external controllers
+  * Fixed tab selection when controlled from parent widgets
+  * Enhanced tab state management with GetX integration
+  * Optimized tab rendering when selection changes externally
+  * Added proper documentation for the new selection control feature
+  * Implemented bidirectional communication for tab selection state
+  * Fixed edge cases when selected index is out of bounds
+  * Improved performance when switching between tabs programmatically
+
 ## 1.0.56
 
 * Fixed ModTabs widget:
