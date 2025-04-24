@@ -1,4 +1,18 @@
 
+## 1.0.58
+
+* Enhanced ModTab widget:
+  * Added `id` property to uniquely identify tabs
+  * Improved tab management with unique identifiers
+  * Better support for dynamic tab operations (add, remove, select)
+  * Enhanced tab state persistence with identifiable tabs
+  * Optimized tab selection by ID rather than index
+  * Improved programmatic tab manipulation
+  * Added support for tab data retrieval by ID
+  * Enhanced tab event handling with ID-based references
+  * Better integration with external state management
+  * Improved tab lifecycle management with unique identifiers
+
 ## 1.0.57
 
 * Enhanced ModTabs widget:

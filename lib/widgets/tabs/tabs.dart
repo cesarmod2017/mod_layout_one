@@ -21,16 +21,19 @@ enum TabOrientation {
 }
 
 class ModTab {
+  final String id;
   final String text;
   final TextStyle? style;
   final Color? backgroundColor;
   final VoidCallback? onClose;
   final bool closeable;
   final Future<bool> Function()? onClosing;
+
   /// A dynamic field that can store any type of object associated with this tab
   final dynamic data;
 
   const ModTab({
+    required this.id,
     required this.text,
     this.style,
     this.backgroundColor,
@@ -53,10 +56,13 @@ class ModTabs extends StatefulWidget {
   final Color unselectedTextColor;
   final TabOrientation orientation;
   final int initialIndex;
+
   /// Índice da aba selecionada, pode ser controlado externamente
   final int? selectedIndex;
+
   /// Callback when a tab is selected, provides both index and tab object
   final void Function(int index, ModTab tab)? onTabSelected;
+
   /// Callback when a tab is closed, provides both index and tab object
   final void Function(int index, ModTab tab)? onTabClose;
   final double? minTabWidth;
@@ -112,17 +118,18 @@ class _ModTabsState extends State<ModTabs> {
   @override
   void didUpdateWidget(ModTabs oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
+
     // Atualiza o índice selecionado se for fornecido externamente
-    if (widget.selectedIndex != null && widget.selectedIndex != _selectedIndex) {
+    if (widget.selectedIndex != null &&
+        widget.selectedIndex != _selectedIndex) {
       _selectedIndex = widget.selectedIndex!;
     }
-    
+
     // Always update the internal lists to ensure GetX updates are captured
     setState(() {
       _tabs = List.from(widget.tabs);
       _children = List.from(widget.children);
-      
+
       // Ensure selected index is valid
       if (_selectedIndex >= _tabs.length) {
         _selectedIndex = _tabs.isEmpty ? -1 : _tabs.length - 1;
@@ -206,7 +213,9 @@ class _ModTabsState extends State<ModTabs> {
       child: Container(
         constraints: BoxConstraints(
           minWidth: isVertical ? double.infinity : (widget.minTabWidth ?? 0),
-          maxWidth: isVertical ? double.infinity : (widget.maxTabWidth ?? double.infinity),
+          maxWidth: isVertical
+              ? double.infinity
+              : (widget.maxTabWidth ?? double.infinity),
         ),
         width: isVertical ? double.infinity : calculatedWidth,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -227,7 +236,8 @@ class _ModTabsState extends State<ModTabs> {
                       color: isSelected
                           ? widget.selectedTextColor
                           : widget.unselectedTextColor,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
                     ),
                 overflow: TextOverflow.ellipsis,
               ),

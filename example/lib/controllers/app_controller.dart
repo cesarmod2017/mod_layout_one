@@ -62,6 +62,7 @@ class AppController extends GetxController {
   void addTab() {
     String text = DateTime.now().toString();
     contentTabs.add(ModTab(
+        id: 'tab_${DateTime.now().millisecondsSinceEpoch}',
         text: text,
         closeable: true,
         data: TabData(text: "tab 1", content: "content: $text")));

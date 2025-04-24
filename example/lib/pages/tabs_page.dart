@@ -13,10 +13,11 @@ class TabsPage extends StatefulWidget {
 
 class _TabsPageState extends State<TabsPage> {
   List<mod.ModTab> tabs = <mod.ModTab>[
-    const mod.ModTab(text: 'main.dart', closeable: true),
-    const mod.ModTab(text: 'styles.css', closeable: true),
-    const mod.ModTab(text: 'index_teste_teste.html', closeable: true),
-    const mod.ModTab(text: 'New Tab', closeable: true),
+    const mod.ModTab(id: 'main', text: 'main.dart', closeable: true),
+    const mod.ModTab(id: 'styles', text: 'styles.css', closeable: true),
+    const mod.ModTab(
+        id: 'index', text: 'index_teste_teste.html', closeable: true),
+    const mod.ModTab(id: 'new', text: 'New Tab', closeable: true),
   ];
 
   List<Widget> children = <Widget>[
@@ -59,9 +60,9 @@ class _TabsPageState extends State<TabsPage> {
                   borderType: mod.TabBorderType.all,
                   orientation: mod.TabOrientation.horizontalTop,
                   tabs: const [
-                    mod.ModTab(text: 'Tab 1'),
-                    mod.ModTab(text: 'Tab 2'),
-                    mod.ModTab(text: 'Tab 3'),
+                    mod.ModTab(id: 'tab1', text: 'Tab 1'),
+                    mod.ModTab(id: 'tab2', text: 'Tab 2'),
+                    mod.ModTab(id: 'tab3', text: 'Tab 3'),
                   ],
                   children: [
                     Container(
@@ -108,8 +109,8 @@ class _TabsPageState extends State<TabsPage> {
                 content: mod.ModTabs(
                   orientation: mod.TabOrientation.horizontalBottom,
                   tabs: const [
-                    mod.ModTab(text: 'Tab 1'),
-                    mod.ModTab(text: 'Tab 2'),
+                    mod.ModTab(id: 'tab1', text: 'Tab 1'),
+                    mod.ModTab(id: 'tab2', text: 'Tab 2'),
                   ],
                   children: [
                     Container(
@@ -137,8 +138,8 @@ class _TabsPageState extends State<TabsPage> {
                   child: mod.ModTabs(
                     orientation: mod.TabOrientation.verticalLeft,
                     tabs: const [
-                      mod.ModTab(text: 'Tab 1'),
-                      mod.ModTab(text: 'Tab 2'),
+                      mod.ModTab(id: 'tab1', text: 'Tab 1'),
+                      mod.ModTab(id: 'tab2', text: 'Tab 2'),
                     ],
                     children: [
                       Container(
@@ -165,6 +166,7 @@ class _TabsPageState extends State<TabsPage> {
                 content: mod.ModTabs(
                   tabs: const [
                     mod.ModTab(
+                      id: 'home',
                       text: 'Home',
                       style: TextStyle(
                         fontSize: 14,
@@ -172,6 +174,7 @@ class _TabsPageState extends State<TabsPage> {
                       ),
                     ),
                     mod.ModTab(
+                      id: 'settings',
                       text: 'Settings',
                       style: TextStyle(
                         fontSize: 14,
@@ -213,14 +216,14 @@ class _TabsPageState extends State<TabsPage> {
                     minTabWidth: 200,
                     shrinkToFit: true,
                     tabs: const [
-                      mod.ModTab(text: 'Tab 1', closeable: true),
-                      mod.ModTab(text: 'Tab 2', closeable: true),
-                      mod.ModTab(text: 'Tab 3', closeable: true),
-                      mod.ModTab(text: 'Tab 4', closeable: true),
-                      mod.ModTab(text: 'Tab 5', closeable: true),
-                      mod.ModTab(text: 'Tab 6', closeable: true),
-                      mod.ModTab(text: 'Tab 7', closeable: true),
-                      mod.ModTab(text: 'Tab 8'),
+                      mod.ModTab(id: 'tab1', text: 'Tab 1', closeable: true),
+                      mod.ModTab(id: 'tab2', text: 'Tab 2', closeable: true),
+                      mod.ModTab(id: 'tab3', text: 'Tab 3', closeable: true),
+                      mod.ModTab(id: 'tab4', text: 'Tab 4', closeable: true),
+                      mod.ModTab(id: 'tab5', text: 'Tab 5', closeable: true),
+                      mod.ModTab(id: 'tab6', text: 'Tab 6', closeable: true),
+                      mod.ModTab(id: 'tab7', text: 'Tab 7', closeable: true),
+                      mod.ModTab(id: 'tab8', text: 'Tab 8'),
                     ],
                     children: [
                       Container(
@@ -271,9 +274,10 @@ class _TabsPageState extends State<TabsPage> {
                 content: mod.ModTabs(
                   shrinkToFit: true,
                   tabs: const [
-                    mod.ModTab(text: 'Short Tab'),
-                    mod.ModTab(text: 'A Much Longer Tab Title'),
-                    mod.ModTab(text: 'Another Long Tab Title Here'),
+                    mod.ModTab(id: 'short', text: 'Short Tab'),
+                    mod.ModTab(id: 'long1', text: 'A Much Longer Tab Title'),
+                    mod.ModTab(
+                        id: 'long2', text: 'Another Long Tab Title Here'),
                   ],
                   children: [
                     Container(
