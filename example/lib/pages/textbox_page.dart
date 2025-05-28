@@ -156,13 +156,11 @@ class _TextBoxPageState extends State<TextBoxPage> {
                     children: [
                       Flexible(
                         child: mod.ModDropDown<String>(
-                          floatingLabel: true,
+                          //floatingLabel: true,
                           //floatingLabelBackgroundColor: Colors.transparent,
                           label: 'Select Country',
                           hint: 'Choose a country',
                           value: selectedCountry,
-                          //fontSize: 11,
-
                           // isSearch: true,
                           items: countries
                               .map(
@@ -205,7 +203,6 @@ class _TextBoxPageState extends State<TextBoxPage> {
                             }
                             return null;
                           },
-                          floatingLabel: true,
                         ),
                       ),
                       const SizedBox(width: 16),

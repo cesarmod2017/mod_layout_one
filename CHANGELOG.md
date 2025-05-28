@@ -1,3 +1,17 @@
+## 1.0.64
+
+* Enhanced ModTextBox widget:
+  * Improved padding adjustment with label
+  * Enhanced label spacing and alignment
+  * Added better padding control for different label positions
+  * Improved vertical spacing between label and input
+  * Enhanced horizontal padding consistency
+  * Added better support for custom padding values
+  * Improved padding behavior with floating labels
+  * Enhanced padding adjustments for different input sizes
+  * Added better padding control for error states
+  * Improved overall layout consistency
+
 ## 1.0.63
 
 * Enhanced ModDropDown widget:
