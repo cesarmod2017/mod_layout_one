@@ -246,7 +246,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.0.52"
+    version: "1.0.61"
   octo_image:
     dependency: transitive
     description:

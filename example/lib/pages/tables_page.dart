@@ -137,6 +137,7 @@ class _TablesPageState extends State<TablesPage> {
                 source: _DataSource(_sortedData),
                 currentPage: 0,
                 rowsPerPage: 20,
+
                 totalRecords: _sortedData.length,
                 oddRowColor:
                     Theme.of(context).colorScheme.surfaceContainerHighest,

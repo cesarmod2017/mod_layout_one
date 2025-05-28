@@ -1,4 +1,98 @@
+## 1.0.62
 
+* Enhanced ModTextBox widget:
+  * Improved text input validation handling
+  * Added support for custom input formatters
+  * Enhanced keyboard type handling
+  * Improved floating label behavior
+  * Added auto-height adjustment option
+  * Enhanced suffix button integration
+  * Improved error message display
+  * Added support for custom background colors
+  * Enhanced text alignment options
+  * Improved accessibility features
+
+* Enhanced ModDropdownSearch widget:
+  * Added support for custom icons in dropdown items
+  * Improved search functionality with better filtering
+  * Enhanced multi-select capabilities
+  * Added support for custom item display formatting
+  * Improved dropdown positioning
+  * Enhanced keyboard navigation
+  * Added support for custom item styling
+  * Improved accessibility features
+  * Enhanced error handling
+  * Added support for custom validation
+
+* Enhanced ModModal widget:
+  * Improved modal positioning and sizing
+  * Added support for custom animations
+  * Enhanced backdrop handling
+  * Improved content scrolling
+  * Added support for custom header and footer
+  * Enhanced close button behavior
+  * Improved accessibility features
+  * Added support for custom styling
+  * Enhanced keyboard interaction
+  * Improved mobile responsiveness
+
+* Enhanced ModDialog widget:
+  * Improved dialog positioning
+  * Added support for custom animations
+  * Enhanced button layout options
+  * Improved content scrolling
+  * Added support for custom styling
+  * Enhanced keyboard interaction
+  * Improved accessibility features
+  * Added support for custom icons
+  * Enhanced error handling
+  * Improved mobile responsiveness
+
+## 1.0.61
+
+* Fixed ModTextBox widget:
+  * Resolved issue with text input validation
+  * Fixed floating label positioning
+  * Improved keyboard type handling
+  * Enhanced error message display
+  * Fixed suffix button alignment
+
+* Fixed ModDropdownSearch widget:
+  * Resolved issue with search functionality
+  * Fixed dropdown positioning
+  * Improved item selection handling
+  * Enhanced keyboard navigation
+  * Fixed multi-select behavior
+
+## 1.0.60
+
+* Fixed ModModal widget:
+  * Resolved issue with modal positioning
+  * Fixed backdrop handling
+  * Improved content scrolling
+  * Enhanced close button behavior
+  * Fixed mobile responsiveness
+
+* Fixed ModDialog widget:
+  * Resolved issue with dialog positioning
+  * Fixed button layout
+  * Improved content scrolling
+  * Enhanced keyboard interaction
+  * Fixed mobile responsiveness
+
+## 1.0.59
+
+* Enhanced ModButton widget:
+  * Added support for different button sizes (lg, md, sm, xs)
+  * Implemented customizable border radius for rounded corners
+  * Added loading state with animated icon and custom loading text
+  * Improved icon support with left and right icon positioning
+  * Added multiple button types (primary, secondary, success, info, warning, danger, dark)
+  * Implemented border type customization options
+  * Added text alignment control for button labels
+  * Enhanced button sizing with autosize property
+  * Improved disabled state handling
+  * Added custom text color support for better theming integration
 ## 1.0.58
 
 * Enhanced ModTab widget:

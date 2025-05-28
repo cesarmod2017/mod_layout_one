@@ -21,6 +21,18 @@ class ModModal extends StatelessWidget {
   final bool barrierDismissible;
   final VoidCallback? onClose;
 
+  /// Largura máxima do modal (em pixels)
+  final double? maxWidth;
+
+  /// Largura mínima do modal (em pixels)
+  final double? minWidth;
+
+  /// Altura máxima do modal (em pixels)
+  final double? maxHeight;
+
+  /// Altura mínima do modal (em pixels)
+  final double? minHeight;
+
   const ModModal({
     super.key,
     required this.header,
@@ -36,37 +48,71 @@ class ModModal extends StatelessWidget {
     this.borderRadius = 8.0,
     this.barrierDismissible = true,
     this.onClose,
+    this.maxWidth,
+    this.minWidth,
+    this.maxHeight,
+    this.minHeight,
   });
 
   double _getModalWidth(BuildContext context) {
     if (fullScreen) return MediaQuery.of(context).size.width;
 
     final screenWidth = MediaQuery.of(context).size.width;
+    double calculatedWidth;
+
     switch (size) {
       case ModModalSize.xs:
-        return screenWidth * 0.3;
+        calculatedWidth = screenWidth * 0.3;
+        break;
       case ModModalSize.sm:
-        return screenWidth * 0.5;
+        calculatedWidth = screenWidth * 0.5;
+        break;
       case ModModalSize.md:
-        return screenWidth * 0.7;
+        calculatedWidth = screenWidth * 0.7;
+        break;
       case ModModalSize.lg:
-        return screenWidth * 0.9;
+        calculatedWidth = screenWidth * 0.9;
+        break;
     }
+
+    // Aplicar limitações de largura
+    if (maxWidth != null && calculatedWidth > maxWidth!) {
+      calculatedWidth = maxWidth!;
+    }
+    if (minWidth != null && calculatedWidth < minWidth!) {
+      calculatedWidth = minWidth!;
+    }
+
+    return calculatedWidth;
   }
 
   double _getModalHeight(BuildContext context) {
     if (fullScreen) return MediaQuery.of(context).size.height;
 
     final screenHeight = MediaQuery.of(context).size.height;
+    double calculatedHeight;
+
     switch (height) {
       case ModModalHeight.full:
-        return screenHeight * 0.9;
+        calculatedHeight = screenHeight * 0.9;
+        break;
       case ModModalHeight.auto:
-        return double
-            .infinity; // Allow the modal to take the height of its content
+        // Para auto, usar maxHeight se disponível, senão permitir expansão livre
+        return maxHeight ?? double.infinity;
       case ModModalHeight.normal:
-        return screenHeight * 0.6;
+        calculatedHeight = screenHeight * 0.6;
+        break;
     }
+
+    // Aplicar limitações de altura apenas se não for auto
+    if (maxHeight != null && calculatedHeight > maxHeight!) {
+      calculatedHeight = maxHeight!;
+    }
+    if (minHeight != null && calculatedHeight < minHeight!) {
+      calculatedHeight = minHeight!;
+    }
+
+    return calculatedHeight;
   }
 
   @override
@@ -82,6 +128,9 @@ class ModModal extends StatelessWidget {
         width: _getModalWidth(context),
         constraints: BoxConstraints(
           maxHeight: _getModalHeight(context),
+          minWidth: minWidth ?? 0,
+          maxWidth: maxWidth ?? double.infinity,
+          minHeight: minHeight ?? 0,
         ),
         decoration: BoxDecoration(
           borderRadius: fullScreen
@@ -171,6 +220,10 @@ class ModModal extends StatelessWidget {
     double borderRadius = 8.0,
     bool barrierDismissible = true,
     VoidCallback? onClose,
+    double? maxWidth,
+    double? minWidth,
+    double? maxHeight,
+    double? minHeight,
   }) {
     final modalAlignment = position == ModModalPosition.top
         ? Alignment.topCenter
@@ -197,6 +250,10 @@ class ModModal extends StatelessWidget {
           borderRadius: borderRadius,
           barrierDismissible: barrierDismissible,
           onClose: onClose,
+          maxWidth: maxWidth,
+          minWidth: minWidth,
+          maxHeight: maxHeight,
+          minHeight: minHeight,
         ),
       ),
     );

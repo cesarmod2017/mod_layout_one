@@ -33,6 +33,8 @@ class ModalPage extends StatelessWidget {
                       context: context,
                       header: const Text('Basic Modal'),
                       height: mod.ModModalHeight.normal,
+                      maxHeight: 300,
+                      maxWidth: 400,
                       //height: mod.ModModalHeight.normal,
                       body: SizedBox(
                         height: 200,

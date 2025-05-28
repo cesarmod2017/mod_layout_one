@@ -92,6 +92,17 @@ class ButtonsPage extends StatelessWidget {
                         borderRadius: 50,
                         onPressed: () async {},
                       ),
+                      SizedBox(
+                        width: 250,
+                        child: ModButton(
+                          title: 'Pill Button',
+                          leftIcon: Icons.add,
+                          type: ModButtonType.primary,
+                          size: ModButtonSize.xs,
+                          borderRadius: 50,
+                          onPressed: () async {},
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 16),

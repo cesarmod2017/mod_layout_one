@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -49,6 +51,12 @@ class ModTextBox extends StatefulWidget {
   final bool multiline;
   final bool autoHeight;
 
+  // Novos parâmetros para customização
+  final bool showBorder;
+  final Color? backgroundColor;
+  final Color? borderColor;
+  final double borderWidth;
+
   const ModTextBox({
     super.key,
     this.label,
@@ -93,6 +101,10 @@ class ModTextBox extends StatefulWidget {
     this.fixedHeight,
     this.multiline = false,
     this.autoHeight = false,
+    this.showBorder = false,
+    this.backgroundColor,
+    this.borderColor,
+    this.borderWidth = 1.0,
   });
 
   @override
@@ -145,13 +157,13 @@ class _ModTextBoxState extends State<ModTextBox> {
 
     switch (widget.size) {
       case ModTextBoxSize.lg:
-        return 56;
+        return 61;
       case ModTextBoxSize.md:
-        return 49;
+        return 50;
       case ModTextBoxSize.sm:
         return 42;
       case ModTextBoxSize.xs:
-        return 33;
+        return 29;
     }
   }
 
@@ -164,7 +176,7 @@ class _ModTextBoxState extends State<ModTextBox> {
       case ModTextBoxSize.sm:
         return 14;
       case ModTextBoxSize.xs:
-        return 12;
+        return 10;
     }
   }
 
@@ -183,9 +195,20 @@ class _ModTextBoxState extends State<ModTextBox> {
 
   EdgeInsets _getContentPadding() {
     final height = _getHeight();
+    final fontSize = _getFontSize();
+
+    if (widget.multiline) {
+      return const EdgeInsets.symmetric(horizontal: 12, vertical: 12);
+    }
+
+    // Calcula o padding vertical para centralizar o texto
+    // Considera a altura da linha baseada no tamanho da fonte
+    final lineHeight = fontSize * 1.2; // Altura da linha padrão
+    final verticalPadding = (height - lineHeight) / 2;
+
     return EdgeInsets.symmetric(
       horizontal: 12,
-      vertical: widget.multiline ? 12 : (height - _getFontSize() - 8) / 2,
+      vertical: verticalPadding > 0 ? verticalPadding : 4,
     );
   }
 
@@ -208,6 +231,38 @@ class _ModTextBoxState extends State<ModTextBox> {
                 : null)
         : null;
 
+    final bool isDesktop =
+        Platform.isWindows || Platform.isMacOS || Platform.isLinux;
+
+    // Definir cor de fundo padrão baseada no tema
+    Color getDefaultBackgroundColor() {
+      if (widget.backgroundColor != null) {
+        return widget.backgroundColor!;
+      }
+
+      final brightness = theme.brightness;
+      if (brightness == Brightness.dark) {
+        // Para tema escuro, usar uma cor mais clara que o fundo
+        return theme.colorScheme.surface.withOpacity(0.8);
+      } else {
+        // Para tema claro, usar uma cor mais escura que o branco
+        return theme.colorScheme.onSurface.withOpacity(0.05);
+      }
+    }
+
+    // Definir cor da borda
+    Color getBorderColor() {
+      if (hasError) {
+        return theme.colorScheme.error;
+      }
+
+      if (widget.borderColor != null) {
+        return widget.borderColor!;
+      }
+
+      return theme.dividerColor;
+    }
+
     Widget textField = Focus(
       onFocusChange: (hasFocus) {
         if (mounted) {
@@ -219,110 +274,197 @@ class _ModTextBoxState extends State<ModTextBox> {
           });
         }
       },
-      child: SizedBox(
-        height: height,
-        child: Tooltip(
-          message: hasError ? errorMessage ?? '' : '',
-          textStyle: const TextStyle(
-            fontSize: 12,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.red,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: TextFormField(
-            controller: _controller,
-            obscureText: widget.isPassword && _obscureText,
-            readOnly: widget.readOnly,
-            keyboardType: widget.keyboardType ??
-                (widget.multiline
-                    ? TextInputType.multiline
-                    : TextInputType.text),
-            style: widget.style?.copyWith(fontSize: _getFontSize()) ??
-                TextStyle(fontSize: _getFontSize()),
-            inputFormatters: widget.inputFormatters,
-            validator: widget.validator,
-            autovalidateMode: widget.autovalidateMode,
-            autocorrect: widget.autocorrect,
-            autofocus: widget.autofocus,
-            cursorColor: widget.cursorColor,
-            cursorHeight: widget.cursorHeight,
-            enabled: widget.enabled,
-            expands: widget.expands,
-            textInputAction: widget.textInputAction,
-            focusNode: widget.focusNode,
-            maxLength: widget.maxLength,
-            maxLines: maxLines,
-            minLines: minLines,
-            textAlign: widget.textAlign,
-            onTapOutside: widget.onTapOutside as TapRegionCallback?,
-            onEditingComplete: widget.onEditingComplete,
-            onSaved: widget.onSaved,
-            onTap: widget.onTap,
-            onFieldSubmitted: widget.onFieldSubmitted,
-            decoration: InputDecoration(
-              isDense: true,
-              contentPadding: _getContentPadding(),
-              hintText: widget.hint,
-              hintStyle: const TextStyle(fontWeight: FontWeight.normal),
-              errorStyle: const TextStyle(height: 0, fontSize: 0),
-              prefixIcon: widget.prefixIcon != null
-                  ? IconTheme(
-                      data: IconThemeData(size: _getIconSize()),
-                      child: widget.prefixIcon!,
-                    )
-                  : null,
-              suffixIcon: widget.isPassword
-                  ? IconButton(
-                      icon: Icon(
-                        _obscureText ? Icons.visibility : Icons.visibility_off,
-                        size: _getIconSize(),
-                      ),
-                      onPressed: () {
-                        if (mounted) {
-                          setState(() => _obscureText = !_obscureText);
-                        }
-                      })
-                  : widget.suffixButton ??
-                      (widget.suffixIcon != null
-                          ? IconTheme(
-                              data: IconThemeData(size: _getIconSize()),
-                              child: widget.suffixIcon!,
-                            )
-                          : null),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(widget.borderRadius),
-                borderSide: BorderSide(
-                  color:
-                      hasError ? theme.colorScheme.error : theme.dividerColor,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: height,
+            child: Tooltip(
+              message: hasError && isDesktop ? errorMessage ?? '' : '',
+              textStyle: const TextStyle(
+                fontSize: 12,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: TextFormField(
+                controller: _controller,
+                obscureText: widget.isPassword && _obscureText,
+                readOnly: widget.readOnly,
+                keyboardType: widget.keyboardType ??
+                    (widget.multiline
+                        ? TextInputType.multiline
+                        : TextInputType.text),
+                style: widget.style?.copyWith(fontSize: _getFontSize()) ??
+                    TextStyle(fontSize: _getFontSize()),
+                inputFormatters: widget.inputFormatters,
+                validator: widget.validator,
+                autovalidateMode: widget.autovalidateMode,
+                autocorrect: widget.autocorrect,
+                autofocus: widget.autofocus,
+                cursorColor: widget.cursorColor,
+                cursorHeight: widget.cursorHeight,
+                enabled: widget.enabled,
+                expands: widget.expands,
+                textInputAction: widget.textInputAction,
+                focusNode: widget.focusNode,
+                maxLength: widget.maxLength,
+                maxLines: maxLines,
+                minLines: minLines,
+                textAlign: widget.textAlign,
+                onTapOutside: widget.onTapOutside as TapRegionCallback?,
+                onEditingComplete: widget.onEditingComplete,
+                onSaved: widget.onSaved,
+                onTap: widget.onTap,
+                onFieldSubmitted: widget.onFieldSubmitted,
+                decoration: InputDecoration(
+                  isDense: true,
+                  contentPadding: _getContentPadding(),
+                  hintText: widget.hint,
+                  labelText: widget.floatingLabel ? widget.label : null,
+                  labelStyle: widget.floatingLabel
+                      ? TextStyle(fontSize: _getFontSize())
+                      : null,
+                  hintStyle: TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: _getFontSize(),
+                    height: 1.0,
+                  ),
+                  errorStyle: const TextStyle(height: 0, fontSize: 0),
+                  errorText: null,
+                  filled: true,
+                  fillColor: getDefaultBackgroundColor(),
+                  prefixIcon: widget.prefixIcon != null
+                      ? IconTheme(
+                          data: IconThemeData(size: _getIconSize()),
+                          child: widget.prefixIcon!,
+                        )
+                      : null,
+                  suffixIcon: widget.isPassword
+                      ? IconButton(
+                          icon: Icon(
+                            _obscureText
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            size: _getIconSize(),
+                          ),
+                          onPressed: () {
+                            if (mounted) {
+                              setState(() => _obscureText = !_obscureText);
+                            }
+                          })
+                      : widget.suffixButton ??
+                          (widget.suffixIcon != null
+                              ? IconTheme(
+                                  data: IconThemeData(size: _getIconSize()),
+                                  child: widget.suffixIcon!,
+                                )
+                              : null),
+                  border: widget.showBorder
+                      ? OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(widget.borderRadius),
+                          borderSide: BorderSide(
+                            color: getBorderColor(),
+                            width: widget.borderWidth,
+                          ),
+                        )
+                      : OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(widget.borderRadius),
+                          borderSide: BorderSide.none,
+                        ),
+                  enabledBorder: widget.showBorder
+                      ? OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(widget.borderRadius),
+                          borderSide: BorderSide(
+                            color: getBorderColor(),
+                            width: widget.borderWidth,
+                          ),
+                        )
+                      : OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(widget.borderRadius),
+                          borderSide: BorderSide.none,
+                        ),
+                  focusedBorder: widget.showBorder
+                      ? OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(widget.borderRadius),
+                          borderSide: BorderSide(
+                            color: hasError
+                                ? theme.colorScheme.error
+                                : (widget.borderColor ??
+                                    theme.colorScheme.primary),
+                            width: widget.borderWidth,
+                          ),
+                        )
+                      : OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(widget.borderRadius),
+                          borderSide: BorderSide.none,
+                        ),
+                  errorBorder: widget.showBorder
+                      ? OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(widget.borderRadius),
+                          borderSide: BorderSide(
+                            color: theme.colorScheme.error,
+                            width: widget.borderWidth,
+                          ),
+                        )
+                      : OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(widget.borderRadius),
+                          borderSide: BorderSide.none,
+                        ),
+                  focusedErrorBorder: widget.showBorder
+                      ? OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(widget.borderRadius),
+                          borderSide: BorderSide(
+                            color: theme.colorScheme.error,
+                            width: widget.borderWidth,
+                          ),
+                        )
+                      : OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(widget.borderRadius),
+                          borderSide: BorderSide.none,
+                        ),
+                  floatingLabelBehavior: widget.floatingLabel
+                      ? FloatingLabelBehavior.auto
+                      : FloatingLabelBehavior.never,
                 ),
               ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(widget.borderRadius),
-                borderSide: BorderSide(
-                  color:
-                      hasError ? theme.colorScheme.error : theme.dividerColor,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(widget.borderRadius),
-                borderSide: BorderSide(
-                  color:
-                      hasError ? theme.colorScheme.error : theme.dividerColor,
-                ),
-              ),
-              floatingLabelBehavior: widget.floatingLabel
-                  ? FloatingLabelBehavior.auto
-                  : FloatingLabelBehavior.never,
             ),
           ),
-        ),
+          if (!isDesktop && hasError && errorMessage != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 4, left: 12),
+              child: Text(
+                errorMessage,
+                style: TextStyle(
+                  color: theme.colorScheme.error,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+        ],
       ),
     );
 
     if (widget.label == null) {
+      return SizedBox(width: widget.width, child: textField);
+    }
+
+    // Se floatingLabel for true, usar apenas o labelText do InputDecoration
+    if (widget.floatingLabel) {
       return SizedBox(width: widget.width, child: textField);
     }
 
@@ -346,7 +488,7 @@ class _ModTextBoxState extends State<ModTextBox> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(widget.label!, style: theme.textTheme.bodyMedium),
-          const SizedBox(height: 2),
+          const SizedBox(height: 8),
           textField,
         ],
       ),

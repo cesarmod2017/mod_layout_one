@@ -32,6 +32,10 @@ class ModDialog extends StatelessWidget {
   final Color? footerColor;
   final IconData? icon;
   final double borderRadius;
+  final double? maxWidth;
+  final double? minWidth;
+  final double? maxHeight;
+  final double? minHeight;
 
   const ModDialog({
     super.key,
@@ -48,18 +52,37 @@ class ModDialog extends StatelessWidget {
     this.footerColor,
     this.icon,
     this.borderRadius = 8,
+    this.maxWidth,
+    this.minWidth,
+    this.maxHeight,
+    this.minHeight,
   });
 
   double _getDialogWidth(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    double width;
+
     switch (size) {
       case DialogSize.sm:
-        return screenWidth * 0.3;
+        width = screenWidth * 0.3;
+        break;
       case DialogSize.md:
-        return screenWidth * 0.5;
+        width = screenWidth * 0.5;
+        break;
       case DialogSize.lg:
-        return screenWidth * 0.7;
+        width = screenWidth * 0.7;
+        break;
     }
+
+    // Aplicar limites de largura
+    if (maxWidth != null && width > maxWidth!) {
+      width = maxWidth!;
+    }
+    if (minWidth != null && width < minWidth!) {
+      width = minWidth!;
+    }
+
+    return width;
   }
 
   Alignment _getDialogPosition() {
@@ -94,89 +117,97 @@ class ModDialog extends StatelessWidget {
       child: Dialog(
         alignment: _getDialogPosition(),
         elevation: 8,
-        child: Container(
-          width: _getDialogWidth(context),
-          decoration: BoxDecoration(
-            color: Theme.of(context).dialogBackgroundColor,
-            borderRadius: BorderRadius.circular(borderRadius),
-            boxShadow: [
-              BoxShadow(
-                color: (isDark ? Colors.grey : Colors.black).withOpacity(0.2),
-                blurRadius: 5,
-                offset: const Offset(0, 2),
-              ),
-            ],
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: maxHeight ?? double.infinity,
+            minHeight: minHeight ?? 0,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: headerColor,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(borderRadius),
-                    topRight: Radius.circular(borderRadius),
-                  ),
+          child: Container(
+            width: _getDialogWidth(context),
+            decoration: BoxDecoration(
+              color: Theme.of(context).dialogBackgroundColor,
+              borderRadius: BorderRadius.circular(borderRadius),
+              boxShadow: [
+                BoxShadow(
+                  color: (isDark ? Colors.grey : Colors.black).withOpacity(0.2),
+                  blurRadius: 5,
+                  offset: const Offset(0, 2),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          if (icon != null) ...[
-                            Icon(icon),
-                            const SizedBox(width: 8),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: headerColor,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(borderRadius),
+                      topRight: Radius.circular(borderRadius),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            if (icon != null) ...[
+                              Icon(icon),
+                              const SizedBox(width: 8),
+                            ],
+                            Text(
+                              title,
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
                           ],
-                          Text(
-                            title,
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () {
-                        if (onClose != null) {
-                          onClose!();
-                        }
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                ),
-              ),
-
-              // Content
-              Container(
-                padding: const EdgeInsets.all(16),
-                width: double.infinity,
-                color: contentColor,
-                child: content,
-              ),
-
-              // Footer
-              Container(
-                padding: const EdgeInsets.all(16),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: footerColor,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(borderRadius),
-                    bottomRight: Radius.circular(borderRadius),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () {
+                          if (onClose != null) {
+                            onClose!();
+                          }
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
                   ),
                 ),
-                alignment: _getAlignment(),
-                child: Wrap(
-                  spacing: 8,
-                  children: buttons,
+
+                // Content
+                Flexible(
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    width: double.infinity,
+                    color: contentColor,
+                    child: content,
+                  ),
                 ),
-              ),
-            ],
+
+                // Footer
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: footerColor,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(borderRadius),
+                      bottomRight: Radius.circular(borderRadius),
+                    ),
+                  ),
+                  alignment: _getAlignment(),
+                  child: Wrap(
+                    spacing: 8,
+                    children: buttons,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

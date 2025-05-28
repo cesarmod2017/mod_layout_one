@@ -122,9 +122,10 @@ class _TextBoxPageState extends State<TextBoxPage> {
                     children: [
                       Flexible(
                         child: mod.ModTextBox(
-                          //label: "Small TextBox",
+                          label: "Small TextBox",
                           hint: "Enter text",
                           size: ModTextBoxSize.xs,
+                          floatingLabel: true,
                           controller: TextEditingController(),
                           onChange: (text) {
                             log("Small TextBox: $text");
@@ -158,7 +159,11 @@ class _TextBoxPageState extends State<TextBoxPage> {
                           label: "Extra Small TextBox",
                           hint: "Enter text",
                           size: ModTextBoxSize.sm,
+                          autoHeight: true,
                           controller: TextEditingController(),
+                          //backgroundColor: Colors.red,
+                          //floatingLabel: true,
+
                           onChange: (text) {
                             log("Extra Small TextBox: $text");
                           },
@@ -181,6 +186,8 @@ class _TextBoxPageState extends State<TextBoxPage> {
                           label: 'Select Country',
                           hint: 'Choose a country',
                           value: selectedCountry,
+                          fontSize: 11,
+
                           // isSearch: true,
                           items: countries
                               .map(
@@ -201,6 +208,7 @@ class _TextBoxPageState extends State<TextBoxPage> {
                       const SizedBox(width: 5),
                       Flexible(
                         child: mod.ModDropdownSearch<String>(
+                          fontSize: 11,
                           items: const [
                             mod.ModDropdownSearchMenuItem(
                                 value: 'Alice',
@@ -249,11 +257,10 @@ class _TextBoxPageState extends State<TextBoxPage> {
                           size: mod.ModDropdownSearchSize.sm,
                           onChanged: (value) => log(value.toString()),
                           searchHint: "Pesquise por um item",
-                          dropdownBackgroundColor:
-                              Theme.of(context).appBarTheme.backgroundColor,
+                          // dropdownBackgroundColor:Theme.of(context).appBarTheme.backgroundColor,
                           searchBoxPadding: const EdgeInsets.all(16),
-                          borderRadius: 16,
-                          backgroundColor: Colors.transparent,
+                          //borderRadius: 16,
+                          //backgroundColor: Colors.transparent,
                         ),
                       ),
                     ],
@@ -281,6 +288,40 @@ class _TextBoxPageState extends State<TextBoxPage> {
                 },
               ),
             ),
+            const SizedBox(height: 16),
+            mod.ModCard(
+              header: const Text(
+                "Floating Label Examples",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                children: [
+                  mod.ModTextBox(
+                    label: "Floating Label (true)",
+                    hint: "Digite aqui...",
+                    floatingLabel: true,
+                    controller: TextEditingController(),
+                    onChange: (text) {
+                      log("Floating Label: $text");
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  mod.ModTextBox(
+                    label: "Label Fixo (false)",
+                    hint: "Digite aqui...",
+                    floatingLabel: false,
+                    controller: TextEditingController(),
+                    onChange: (text) {
+                      log("Label Fixo: $text");
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
           ],
         ),
       ),

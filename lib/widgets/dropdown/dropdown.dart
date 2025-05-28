@@ -23,6 +23,12 @@ class ModDropDown<T> extends StatefulWidget {
   final bool? enabled;
   final FocusNode? focusNode;
   final ModDropDownSize size;
+  final bool hasBorder;
+  final Color? backgroundColor;
+  final Color? borderColor;
+  final double borderWidth;
+  final double? fontSize;
+  final double? iconSize;
 
   const ModDropDown({
     super.key,
@@ -44,6 +50,12 @@ class ModDropDown<T> extends StatefulWidget {
     this.enabled,
     this.focusNode,
     this.size = ModDropDownSize.md,
+    this.hasBorder = false,
+    this.backgroundColor,
+    this.borderColor,
+    this.borderWidth = 1.0,
+    this.fontSize,
+    this.iconSize,
   });
 
   @override
@@ -94,11 +106,26 @@ class _ModDropDownState<T> extends State<ModDropDown<T>> {
     }
   }
 
+  double _getEffectiveFontSize() {
+    return widget.fontSize ?? _getFontSize();
+  }
+
+  double _getEffectiveIconSize() {
+    return widget.iconSize ?? _getIconSize();
+  }
+
   EdgeInsets _getContentPadding() {
     final height = _getHeight();
+    final fontSize = _getEffectiveFontSize();
+
+    // Calcula o padding vertical para centralizar o texto
+    // Considera a altura da linha baseada no tamanho da fonte
+    final lineHeight = fontSize * 1.2; // Altura da linha padrão
+    final verticalPadding = (height - lineHeight) / 2;
+
     return EdgeInsets.symmetric(
       horizontal: 12,
-      vertical: (height - _getFontSize() - 8) / 2,
+      vertical: verticalPadding > 0 ? verticalPadding : 4,
     );
   }
 
@@ -114,6 +141,17 @@ class _ModDropDownState<T> extends State<ModDropDown<T>> {
         ? widget.errorText ??
             (widget.validator != null ? widget.validator!(widget.value) : null)
         : null;
+
+    // Definir cor de fundo padrão baseada no tema
+    Color defaultBackgroundColor;
+    if (theme.brightness == Brightness.dark) {
+      defaultBackgroundColor = theme.colorScheme.surface.withOpacity(0.8);
+    } else {
+      defaultBackgroundColor = theme.colorScheme.onSurface.withOpacity(0.05);
+    }
+
+    final backgroundColor = widget.backgroundColor ?? defaultBackgroundColor;
+    final borderColor = widget.borderColor ?? theme.dividerColor;
 
     Widget dropDown = Focus(
       onFocusChange: (hasFocus) {
@@ -143,48 +181,70 @@ class _ModDropDownState<T> extends State<ModDropDown<T>> {
             value: widget.value,
             items: widget.items,
             onChanged: widget.readOnly ? null : widget.onChanged,
-            style: widget.style?.copyWith(fontSize: _getFontSize()) ??
-                TextStyle(fontSize: _getFontSize()),
+            style: widget.style?.copyWith(fontSize: _getEffectiveFontSize()) ??
+                TextStyle(fontSize: _getEffectiveFontSize()),
             validator: widget.validator,
             autovalidateMode: widget.autovalidateMode,
+            isExpanded: true,
             icon: widget.suffixIcon ??
                 Icon(
                   Icons.arrow_drop_down,
-                  size: _getIconSize(),
+                  size: _getEffectiveIconSize(),
                 ),
             focusNode: widget.focusNode,
             decoration: InputDecoration(
               isDense: true,
               contentPadding: _getContentPadding(),
               hintText: widget.hint,
+              hintStyle: TextStyle(
+                fontSize: _getEffectiveFontSize(),
+                height: 1.0,
+              ),
               errorStyle: const TextStyle(height: 0, fontSize: 0),
+              filled: true,
+              fillColor: backgroundColor,
               prefixIcon: widget.prefixIcon != null
                   ? IconTheme(
-                      data: IconThemeData(size: _getIconSize()),
+                      data: IconThemeData(size: _getEffectiveIconSize()),
                       child: widget.prefixIcon!,
                     )
                   : null,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(widget.borderRadius),
-                borderSide: BorderSide(
-                  color:
-                      hasError ? theme.colorScheme.error : theme.dividerColor,
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(widget.borderRadius),
-                borderSide: BorderSide(
-                  color:
-                      hasError ? theme.colorScheme.error : theme.dividerColor,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(widget.borderRadius),
-                borderSide: BorderSide(
-                  color:
-                      hasError ? theme.colorScheme.error : theme.dividerColor,
-                ),
-              ),
+              border: widget.hasBorder
+                  ? OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(widget.borderRadius),
+                      borderSide: BorderSide(
+                        color: hasError ? theme.colorScheme.error : borderColor,
+                        width: widget.borderWidth,
+                      ),
+                    )
+                  : OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(widget.borderRadius),
+                      borderSide: BorderSide.none,
+                    ),
+              enabledBorder: widget.hasBorder
+                  ? OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(widget.borderRadius),
+                      borderSide: BorderSide(
+                        color: hasError ? theme.colorScheme.error : borderColor,
+                        width: widget.borderWidth,
+                      ),
+                    )
+                  : OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(widget.borderRadius),
+                      borderSide: BorderSide.none,
+                    ),
+              focusedBorder: widget.hasBorder
+                  ? OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(widget.borderRadius),
+                      borderSide: BorderSide(
+                        color: hasError ? theme.colorScheme.error : borderColor,
+                        width: widget.borderWidth,
+                      ),
+                    )
+                  : OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(widget.borderRadius),
+                      borderSide: BorderSide.none,
+                    ),
             ),
           ),
         ),

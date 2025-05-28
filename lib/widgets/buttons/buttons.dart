@@ -244,7 +244,9 @@ class _ModButtonState extends State<ModButton>
                 }
               },
         child: Container(
-          height: height,
+          constraints: BoxConstraints(
+            minHeight: height,
+          ),
           padding: _getPadding(),
           width: widget.autosize ? null : double.infinity,
           decoration: BoxDecoration(
@@ -255,6 +257,7 @@ class _ModButtonState extends State<ModButton>
           child: Row(
             mainAxisSize: widget.autosize ? MainAxisSize.min : MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               if (widget.leftIcon != null && !_isLoading)
                 Padding(
@@ -278,22 +281,30 @@ class _ModButtonState extends State<ModButton>
                   ),
                 ),
               if (_isLoading && widget.loadingText != null)
-                Text(
-                  widget.loadingText!,
-                  style: TextStyle(
-                    color: _getTextColor(),
-                    fontSize: _getFontSize(),
+                Flexible(
+                  child: Text(
+                    widget.loadingText!,
+                    style: TextStyle(
+                      color: _getTextColor(),
+                      fontSize: _getFontSize(),
+                    ),
+                    textAlign: widget.textAlign,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
-                  textAlign: widget.textAlign,
                 )
               else if (widget.title != null)
-                Text(
-                  widget.title!,
-                  style: TextStyle(
-                    color: _getTextColor(),
-                    fontSize: _getFontSize(),
+                Flexible(
+                  child: Text(
+                    widget.title!,
+                    style: TextStyle(
+                      color: _getTextColor(),
+                      fontSize: _getFontSize(),
+                    ),
+                    textAlign: widget.textAlign,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
-                  textAlign: widget.textAlign,
                 ),
               if (widget.rightIcon != null && !_isLoading)
                 Padding(

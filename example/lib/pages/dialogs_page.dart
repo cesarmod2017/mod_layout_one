@@ -34,6 +34,8 @@ class DialogsPage extends StatelessWidget {
                         context: context,
                         builder: (context) => ModDialog(
                           title: 'Confirmation',
+                          maxWidth: 400,
+                          minWidth: 150,
                           content:
                               const Text('Are you sure you want to proceed?'),
                           buttons: [
