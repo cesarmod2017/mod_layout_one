@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 enum ModDropDownSize { lg, md, sm, xs }
 
-enum ModDropDownLabelPosition { top, left }
+enum ModDropDownLabelPosition { top, left, inside }
 
 class ModDropDown<T> extends StatefulWidget {
   final String? label;
@@ -29,6 +29,8 @@ class ModDropDown<T> extends StatefulWidget {
   final double borderWidth;
   final double? fontSize;
   final double? iconSize;
+  final bool floatingLabel;
+  final Color? floatingLabelBackgroundColor;
 
   const ModDropDown({
     super.key,
@@ -56,6 +58,8 @@ class ModDropDown<T> extends StatefulWidget {
     this.borderWidth = 1.0,
     this.fontSize,
     this.iconSize,
+    this.floatingLabel = false,
+    this.floatingLabelBackgroundColor = Colors.transparent,
   });
 
   @override
@@ -66,6 +70,10 @@ class _ModDropDownState<T> extends State<ModDropDown<T>> {
   // ignore: unused_field
   bool _hasFocus = false;
   bool _showValidationError = false;
+
+  bool get _shouldFloatLabel {
+    return widget.floatingLabel && (_hasFocus || widget.value != null);
+  }
 
   double _getHeight() {
     switch (widget.size) {
@@ -123,6 +131,16 @@ class _ModDropDownState<T> extends State<ModDropDown<T>> {
     final lineHeight = fontSize * 1.2; // Altura da linha padrão
     final verticalPadding = (height - lineHeight) / 2;
 
+    // Se floating label está ativo, ajusta o padding
+    if (_shouldFloatLabel) {
+      return EdgeInsets.fromLTRB(
+        12,
+        verticalPadding > 0 ? verticalPadding - 2 : 2, // Padding top menor
+        12,
+        verticalPadding > 0 ? verticalPadding + 2 : 6, // Padding bottom maior
+      );
+    }
+
     return EdgeInsets.symmetric(
       horizontal: 12,
       vertical: verticalPadding > 0 ? verticalPadding : 4,
@@ -145,9 +163,10 @@ class _ModDropDownState<T> extends State<ModDropDown<T>> {
     // Definir cor de fundo padrão baseada no tema
     Color defaultBackgroundColor;
     if (theme.brightness == Brightness.dark) {
-      defaultBackgroundColor = theme.colorScheme.surface.withOpacity(0.8);
+      defaultBackgroundColor = theme.colorScheme.surface.withValues(alpha: 0.8);
     } else {
-      defaultBackgroundColor = theme.colorScheme.onSurface.withOpacity(0.05);
+      defaultBackgroundColor =
+          theme.colorScheme.onSurface.withValues(alpha: 0.05);
     }
 
     final backgroundColor = widget.backgroundColor ?? defaultBackgroundColor;
@@ -195,7 +214,7 @@ class _ModDropDownState<T> extends State<ModDropDown<T>> {
             decoration: InputDecoration(
               isDense: true,
               contentPadding: _getContentPadding(),
-              hintText: widget.hint,
+              hintText: widget.floatingLabel ? null : widget.hint,
               hintStyle: TextStyle(
                 fontSize: _getEffectiveFontSize(),
                 height: 1.0,
@@ -253,6 +272,59 @@ class _ModDropDownState<T> extends State<ModDropDown<T>> {
 
     if (widget.label == null) {
       return SizedBox(width: widget.width, child: dropDown);
+    }
+
+    // Se floatingLabel for true, usar Stack com Positioned
+    if (widget.floatingLabel) {
+      return SizedBox(
+        width: widget.width,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            dropDown,
+            // Floating Label
+            Positioned(
+              left: 12,
+              top: _shouldFloatLabel ? -12 : (height - 16) / 2,
+              child: AnimatedScale(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                scale: _shouldFloatLabel ? 0.75 : 1.0,
+                alignment: Alignment.centerLeft,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  padding: _shouldFloatLabel
+                      ? const EdgeInsets.symmetric(horizontal: 4, vertical: 2)
+                      : EdgeInsets.zero,
+                  decoration: _shouldFloatLabel
+                      ? BoxDecoration(
+                          color: widget.floatingLabelBackgroundColor ??
+                              backgroundColor,
+                          borderRadius: BorderRadius.circular(2),
+                        )
+                      : null,
+                  child: Text(
+                    widget.label!,
+                    style: TextStyle(
+                      fontSize: _shouldFloatLabel
+                          ? _getEffectiveFontSize()
+                          : _getEffectiveFontSize(),
+                      color: _shouldFloatLabel
+                          ? theme.textTheme.bodyMedium?.color
+                          : theme.textTheme.bodyMedium?.color
+                              ?.withValues(alpha: 0.6),
+                      fontWeight: _shouldFloatLabel
+                          ? FontWeight.w500
+                          : FontWeight.normal,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
     }
 
     if (widget.labelPosition == ModDropDownLabelPosition.left) {

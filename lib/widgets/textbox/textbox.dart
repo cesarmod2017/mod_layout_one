@@ -73,7 +73,7 @@ class ModTextBox extends StatefulWidget {
     this.keyboardType,
     this.style,
     this.labelPosition = ModTextBoxLabelPosition.top,
-    this.floatingLabel = true,
+    this.floatingLabel = false,
     this.validator,
     this.errorText,
     this.width,

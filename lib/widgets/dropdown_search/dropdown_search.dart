@@ -55,6 +55,8 @@ class ModDropdownSearch<T> extends StatefulWidget {
   final double borderWidth;
   final double? fontSize;
   final double? iconSize;
+  final bool floatingLabel;
+  final Color? floatingLabelBackgroundColor;
 
   const ModDropdownSearch({
     super.key,
@@ -89,6 +91,8 @@ class ModDropdownSearch<T> extends StatefulWidget {
     this.borderWidth = 1.0,
     this.fontSize,
     this.iconSize,
+    this.floatingLabel = false,
+    this.floatingLabelBackgroundColor = Colors.transparent,
   });
 
   @override
@@ -103,6 +107,13 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
   List<T> _selectedItems = [];
   OverlayEntry? _overlayEntry;
   List<ModDropdownSearchMenuItem<T>> _filteredItems = [];
+
+  bool get _shouldFloatLabel {
+    // Debug para verificar o estado
+    final shouldFloat =
+        widget.floatingLabel && (_isOpen || _selectedItems.isNotEmpty);
+    return shouldFloat;
+  }
 
   String _getDisplayString(T value) {
     if (widget.displayStringForOption != null) {
@@ -128,6 +139,32 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
       _selectedItems = [widget.value as T];
     }
     _filteredItems = widget.items;
+
+    // Força rebuild após primeiro frame para garantir que estado esteja correto
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // As animações agora são feitas pelos widgets AnimatedPositioned e AnimatedScale
+  }
+
+  @override
+  void didUpdateWidget(ModDropdownSearch<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Atualiza selectedItems se o value mudou
+    if (widget.value != oldWidget.value) {
+      if (widget.value != null && !widget.multiSelect) {
+        _selectedItems = [widget.value as T];
+      } else if (widget.value == null) {
+        _selectedItems = [];
+      }
+    }
   }
 
   @override
@@ -194,6 +231,16 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
     final lineHeight = fontSize * 1.2; // Altura da linha padrão
     final verticalPadding = (height - lineHeight) / 2;
 
+    // Se floating label está ativo, ajusta o padding
+    if (_shouldFloatLabel) {
+      return EdgeInsets.fromLTRB(
+        12,
+        verticalPadding > 0 ? verticalPadding - 2 : 2, // Padding top menor
+        12,
+        verticalPadding > 0 ? verticalPadding + 2 : 6, // Padding bottom maior
+      );
+    }
+
     return EdgeInsets.symmetric(
       horizontal: 12,
       vertical: verticalPadding > 0 ? verticalPadding : 4,
@@ -205,6 +252,7 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
     _focusNode.requestFocus(); // Solicita foco para capturar eventos de teclado
     _overlayEntry = _createOverlayEntry();
     Overlay.of(context).insert(_overlayEntry!);
+
     if (mounted) setState(() {});
   }
 
@@ -213,6 +261,7 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
     _focusNode.unfocus(); // Remove o foco
     _overlayEntry?.remove();
     _overlayEntry = null;
+
     if (mounted) setState(() {});
   }
 
@@ -229,6 +278,7 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
           }
         });
       }
+
       widget.onChanged?.call(value);
       _updateOverlay();
     } else {
@@ -237,6 +287,7 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
           _selectedItems = [value];
         });
       }
+
       widget.onChanged?.call(value);
       _closeDropdown();
     }
@@ -426,7 +477,8 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (widget.label != null &&
-                  widget.labelPosition == ModDropdownSearchLabelPosition.top)
+                  widget.labelPosition == ModDropdownSearchLabelPosition.top &&
+                  !widget.floatingLabel)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 2.0),
                   child: Text(
@@ -434,70 +486,122 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
                     style: theme.textTheme.bodyMedium,
                   ),
                 ),
-              CompositedTransformTarget(
-                link: _layerLink,
-                child: InkWell(
-                  onTap: widget.enabled ? _toggleDropdown : null,
-                  child: Container(
-                    height: _getHeight(),
-                    padding: _getContentPadding(),
-                    decoration: BoxDecoration(
-                      color: widget.enabled
-                          ? backgroundColor
-                          : Theme.of(context).disabledColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(widget.borderRadius),
-                      border: widget.hasBorder
-                          ? Border.all(
-                              color: widget.errorText != null
-                                  ? Theme.of(context).colorScheme.error
-                                  : borderColor,
-                              width: widget.borderWidth,
-                            )
-                          : null,
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        if (widget.prefixIcon != null) ...[
-                          widget.prefixIcon!,
-                          const SizedBox(width: 8),
-                        ],
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              _selectedItems.isEmpty
-                                  ? widget.hint ?? ''
-                                  : _selectedItems
-                                      .map((e) => _getDisplayString(e))
-                                      .join(', '),
-                              style: TextStyle(
-                                fontSize: widget.fontSize ?? _getFontSize(),
-                                color: widget.textColor ??
-                                    Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.color,
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  CompositedTransformTarget(
+                    link: _layerLink,
+                    child: InkWell(
+                      onTap: widget.enabled ? _toggleDropdown : null,
+                      child: Container(
+                        height: _getHeight(),
+                        padding: _getContentPadding(),
+                        decoration: BoxDecoration(
+                          color: widget.enabled
+                              ? backgroundColor
+                              : Theme.of(context)
+                                  .disabledColor
+                                  .withOpacity(0.1),
+                          borderRadius:
+                              BorderRadius.circular(widget.borderRadius),
+                          border: widget.hasBorder
+                              ? Border.all(
+                                  color: widget.errorText != null
+                                      ? Theme.of(context).colorScheme.error
+                                      : borderColor,
+                                  width: widget.borderWidth,
+                                )
+                              : null,
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            if (widget.prefixIcon != null) ...[
+                              widget.prefixIcon!,
+                              const SizedBox(width: 8),
+                            ],
+                            Expanded(
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  _selectedItems.isEmpty
+                                      ? (widget.floatingLabel
+                                          ? ''
+                                          : (widget.hint ?? ''))
+                                      : _selectedItems
+                                          .map((e) => _getDisplayString(e))
+                                          .join(', '),
+                                  style: TextStyle(
+                                    fontSize: widget.fontSize ?? _getFontSize(),
+                                    color: widget.textColor ??
+                                        Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.color,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                              overflow: TextOverflow.ellipsis,
+                            ),
+                            if (widget.suffixIcon != null)
+                              widget.suffixIcon!
+                            else
+                              Icon(
+                                _isOpen
+                                    ? Icons.arrow_drop_up
+                                    : Icons.arrow_drop_down,
+                                size: widget.iconSize ?? _getIconSize(),
+                                color: widget.iconColor ??
+                                    Theme.of(context).iconTheme.color,
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Floating Label
+                  if (widget.label != null && widget.floatingLabel)
+                    Positioned(
+                      left: 12,
+                      top: _shouldFloatLabel ? -12 : (_getHeight() - 16) / 2,
+                      child: AnimatedScale(
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeInOut,
+                        scale: _shouldFloatLabel ? 0.75 : 1.0,
+                        alignment: Alignment.centerLeft,
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeInOut,
+                          padding: _shouldFloatLabel
+                              ? const EdgeInsets.symmetric(
+                                  horizontal: 4, vertical: 2)
+                              : EdgeInsets.zero,
+                          decoration: _shouldFloatLabel
+                              ? BoxDecoration(
+                                  color: widget.floatingLabelBackgroundColor ??
+                                      backgroundColor,
+                                  borderRadius: BorderRadius.circular(2),
+                                )
+                              : null,
+                          child: Text(
+                            widget.label!,
+                            style: TextStyle(
+                              fontSize: _shouldFloatLabel
+                                  ? (widget.fontSize ?? _getFontSize())
+                                  : (widget.fontSize ?? _getFontSize()),
+                              color: _shouldFloatLabel
+                                  ? theme.textTheme.bodyMedium?.color
+                                  : theme.textTheme.bodyMedium?.color
+                                      ?.withOpacity(0.6),
+                              fontWeight: _shouldFloatLabel
+                                  ? FontWeight.w500
+                                  : FontWeight.normal,
                             ),
                           ),
                         ),
-                        if (widget.suffixIcon != null)
-                          widget.suffixIcon!
-                        else
-                          Icon(
-                            _isOpen
-                                ? Icons.arrow_drop_up
-                                : Icons.arrow_drop_down,
-                            size: widget.iconSize ?? _getIconSize(),
-                            color: widget.iconColor ??
-                                Theme.of(context).iconTheme.color,
-                          ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
+                ],
               ),
               if (widget.errorText != null || field.hasError)
                 Padding(

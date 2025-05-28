@@ -1,3 +1,29 @@
+## 1.0.63
+
+* Enhanced ModDropDown widget:
+  * Improved floating label behavior and positioning
+  * Enhanced label animation transitions
+  * Added better support for custom label backgrounds
+  * Improved label text scaling
+  * Enhanced focus state handling
+  * Added smoother label transitions
+  * Improved label color contrast
+  * Enhanced accessibility for floating labels
+  * Added better support for different label positions
+  * Improved label alignment with input content
+
+* Enhanced ModTextBox widget:
+  * Improved floating label behavior and positioning
+  * Enhanced label animation transitions
+  * Added better support for custom label backgrounds
+  * Improved label text scaling
+  * Enhanced focus state handling
+  * Added smoother label transitions
+  * Improved label color contrast
+  * Enhanced accessibility for floating labels
+  * Added better support for different label positions
+  * Improved label alignment with input content
+
 ## 1.0.62
 
 * Enhanced ModTextBox widget:

@@ -155,6 +155,33 @@ class _TextBoxPageState extends State<TextBoxPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Flexible(
+                        child: mod.ModDropDown<String>(
+                          floatingLabel: true,
+                          //floatingLabelBackgroundColor: Colors.transparent,
+                          label: 'Select Country',
+                          hint: 'Choose a country',
+                          value: selectedCountry,
+                          //fontSize: 11,
+
+                          // isSearch: true,
+                          items: countries
+                              .map(
+                                (country) => DropdownMenuItem(
+                                  value: country,
+                                  child: Text(country),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) =>
+                              setState(() => selectedCountry = value),
+                          size: mod.ModDropDownSize.sm,
+                          borderRadius: 6,
+                          validator: (value) =>
+                              value == null ? 'Please select a country' : null,
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      Flexible(
                         child: mod.ModTextBox(
                           label: "Extra Small TextBox",
                           hint: "Enter text",
@@ -178,37 +205,16 @@ class _TextBoxPageState extends State<TextBoxPage> {
                             }
                             return null;
                           },
+                          floatingLabel: true,
                         ),
                       ),
                       const SizedBox(width: 16),
                       Flexible(
-                        child: ModDropDown<String>(
-                          label: 'Select Country',
-                          hint: 'Choose a country',
-                          value: selectedCountry,
-                          fontSize: 11,
-
-                          // isSearch: true,
-                          items: countries
-                              .map(
-                                (country) => DropdownMenuItem(
-                                  value: country,
-                                  child: Text(country),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (value) =>
-                              setState(() => selectedCountry = value),
-                          size: mod.ModDropDownSize.sm,
-                          borderRadius: 6,
-                          validator: (value) =>
-                              value == null ? 'Please select a country' : null,
-                        ),
-                      ),
-                      const SizedBox(width: 5),
-                      Flexible(
                         child: mod.ModDropdownSearch<String>(
-                          fontSize: 11,
+                          //fontSize: 12,
+                          floatingLabel: true,
+                          //floatingLabelBackgroundColor: Colors.red,
+                          value: 'Alice',
                           items: const [
                             mod.ModDropdownSearchMenuItem(
                                 value: 'Alice',
@@ -254,6 +260,7 @@ class _TextBoxPageState extends State<TextBoxPage> {
                           multiSelect: false,
                           hint: 'Selecione um item',
                           label: 'Items',
+
                           size: mod.ModDropdownSearchSize.sm,
                           onChanged: (value) => log(value.toString()),
                           searchHint: "Pesquise por um item",
@@ -317,6 +324,72 @@ class _TextBoxPageState extends State<TextBoxPage> {
                     onChange: (text) {
                       log("Label Fixo: $text");
                     },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            mod.ModCard(
+              header: const Text(
+                "Floating Label Examples para DropDown",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: mod.ModDropDown<String>(
+                          label: "Floating Label (true)",
+                          hint: "Choose an option...",
+                          floatingLabel: true,
+                          value: selectedCountry,
+                          items: countries
+                              .map(
+                                (country) => DropdownMenuItem(
+                                  value: country,
+                                  child: Text(country),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) =>
+                              setState(() => selectedCountry = value),
+                          size: mod.ModDropDownSize.md,
+                          borderRadius: 8,
+                          hasBorder: true,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: mod.ModDropDown<String>(
+                          label: "Label Fixo (false)",
+                          hint: "Choose an option...",
+                          floatingLabel: false,
+                          value: selectedCountry,
+                          items: countries
+                              .map(
+                                (country) => DropdownMenuItem(
+                                  value: country,
+                                  child: Text(country),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) =>
+                              setState(() => selectedCountry = value),
+                          size: mod.ModDropDownSize.md,
+                          borderRadius: 8,
+                          hasBorder: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    "Floating Label: Quando ativo (floatingLabel: true), o label flutua para cima quando há um valor selecionado ou quando o campo tem foco. Quando inativo (floatingLabel: false), o label permanece fixo no topo.",
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                 ],
               ),
