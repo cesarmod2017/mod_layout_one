@@ -27,7 +27,9 @@ class ButtonsPage extends StatelessWidget {
                   const Text("Simple Button:"),
                   ModButton(
                     title: 'Simple Button',
-                    type: ModButtonType.primary,
+                    type: ModButtonType.custom,
+                    backgroundColor: Colors.amber,
+                    textColor: Colors.black,
                     onPressed: () async {},
                   ),
                   const Text("Button with Autosize Disabled:"),

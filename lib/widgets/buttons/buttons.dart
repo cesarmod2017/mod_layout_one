@@ -9,7 +9,8 @@ enum ModButtonType {
   warning,
   danger,
   dark,
-  defaultType
+  defaultType,
+  custom,
 }
 
 enum ModBorderType { none, solid }
@@ -29,6 +30,7 @@ class ModButton extends StatefulWidget {
   final String? loadingText;
   final ModButtonType borderColor;
   final Color? textColor;
+  final Color? backgroundColor;
   final bool disabled;
   final bool autosize;
   final TextAlign textAlign;
@@ -47,6 +49,7 @@ class ModButton extends StatefulWidget {
     this.loadingText,
     this.borderColor = ModButtonType.defaultType,
     this.textColor,
+    this.backgroundColor,
     this.disabled = false,
     this.autosize = true,
     this.textAlign = TextAlign.center,
@@ -160,6 +163,8 @@ class _ModButtonState extends State<ModButton>
         return Colors.black87;
       case ModButtonType.defaultType:
         return Colors.grey.shade300;
+      case ModButtonType.custom:
+        return widget.backgroundColor ?? Colors.grey.shade300;
     }
   }
 
@@ -186,6 +191,8 @@ class _ModButtonState extends State<ModButton>
         return Colors.black87;
       case ModButtonType.defaultType:
         return Colors.grey.shade300;
+      case ModButtonType.custom:
+        return widget.backgroundColor ?? Colors.grey.shade300;
     }
   }
 

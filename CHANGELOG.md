@@ -1,3 +1,32 @@
+## 1.0.66
+
+* Enhanced ModTextBox widget:
+  * Added support for custom border width
+  * Improved border color customization
+  * Enhanced background color control
+  * Added better border visibility control
+  * Improved border radius consistency
+  * Enhanced border state handling
+  * Added better support for custom border styles
+  * Improved border animation transitions
+  * Enhanced border color contrast
+  * Added better accessibility for border states
+
+## 1.0.65
+
+* Enhanced ModTextBox widget:
+  * Improved multiline text input handling
+  * Added better support for auto-height adjustment
+  * Enhanced text input validation
+  * Improved keyboard type handling
+  * Added better support for custom input formatters
+  * Enhanced floating label behavior
+  * Improved suffix button integration
+  * Added better support for custom styles
+  * Enhanced text alignment control
+  * Improved overall input field responsiveness
+
+
 ## 1.0.64
 
 * Enhanced ModTextBox widget:

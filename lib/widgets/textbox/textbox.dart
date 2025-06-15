@@ -113,6 +113,7 @@ class ModTextBox extends StatefulWidget {
 
 class _ModTextBoxState extends State<ModTextBox> {
   late TextEditingController _controller;
+  late FocusNode _focusNode;
   bool _obscureText = true;
   bool _hasFocus = false;
   bool _showValidationError = false;
@@ -127,10 +128,30 @@ class _ModTextBoxState extends State<ModTextBox> {
         widget.onChange!(_controller.text);
       }
     });
+
+    // Inicializar o focusNode
+    _focusNode = widget.focusNode ?? FocusNode();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    if (mounted) {
+      setState(() {
+        _hasFocus = _focusNode.hasFocus;
+        if (!_hasFocus) {
+          _showValidationError = true;
+        }
+      });
+    }
   }
 
   @override
   void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    // Só dispose do focusNode se ele foi criado internamente
+    if (widget.focusNode == null) {
+      _focusNode.dispose();
+    }
     if (widget.controller == null) {
       _controller.dispose();
     }
@@ -263,200 +284,188 @@ class _ModTextBoxState extends State<ModTextBox> {
       return theme.dividerColor;
     }
 
-    Widget textField = Focus(
-      onFocusChange: (hasFocus) {
-        if (mounted) {
-          setState(() {
-            _hasFocus = hasFocus;
-            if (!hasFocus) {
-              _showValidationError = true;
-            }
-          });
-        }
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            height: height,
-            child: Tooltip(
-              message: hasError && isDesktop ? errorMessage ?? '' : '',
-              textStyle: const TextStyle(
-                fontSize: 12,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.red,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: TextFormField(
-                controller: _controller,
-                obscureText: widget.isPassword && _obscureText,
-                readOnly: widget.readOnly,
-                keyboardType: widget.keyboardType ??
-                    (widget.multiline
-                        ? TextInputType.multiline
-                        : TextInputType.text),
-                style: widget.style?.copyWith(fontSize: _getFontSize()) ??
-                    TextStyle(fontSize: _getFontSize()),
-                inputFormatters: widget.inputFormatters,
-                validator: widget.validator,
-                autovalidateMode: widget.autovalidateMode,
-                autocorrect: widget.autocorrect,
-                autofocus: widget.autofocus,
-                cursorColor: widget.cursorColor,
-                cursorHeight: widget.cursorHeight,
-                enabled: widget.enabled,
-                expands: widget.expands,
-                textInputAction: widget.textInputAction,
-                focusNode: widget.focusNode,
-                maxLength: widget.maxLength,
-                maxLines: maxLines,
-                minLines: minLines,
-                textAlign: widget.textAlign,
-                onTapOutside: widget.onTapOutside as TapRegionCallback?,
-                onEditingComplete: widget.onEditingComplete,
-                onSaved: widget.onSaved,
-                onTap: widget.onTap,
-                onFieldSubmitted: widget.onFieldSubmitted,
-                decoration: InputDecoration(
-                  isDense: true,
-                  contentPadding: _getContentPadding(),
-                  hintText: widget.hint,
-                  labelText: widget.floatingLabel ? widget.label : null,
-                  labelStyle: widget.floatingLabel
-                      ? TextStyle(fontSize: _getFontSize())
-                      : null,
-                  hintStyle: TextStyle(
-                    fontWeight: FontWeight.normal,
-                    fontSize: _getFontSize(),
-                    height: 1.0,
-                  ),
-                  errorStyle: const TextStyle(height: 0, fontSize: 0),
-                  errorText: null,
-                  filled: true,
-                  fillColor: getDefaultBackgroundColor(),
-                  prefixIcon: widget.prefixIcon != null
-                      ? IconTheme(
-                          data: IconThemeData(size: _getIconSize()),
-                          child: widget.prefixIcon!,
-                        )
-                      : null,
-                  suffixIcon: widget.isPassword
-                      ? IconButton(
-                          icon: Icon(
-                            _obscureText
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            size: _getIconSize(),
-                          ),
-                          onPressed: () {
-                            if (mounted) {
-                              setState(() => _obscureText = !_obscureText);
-                            }
-                          })
-                      : widget.suffixButton ??
-                          (widget.suffixIcon != null
-                              ? IconTheme(
-                                  data: IconThemeData(size: _getIconSize()),
-                                  child: widget.suffixIcon!,
-                                )
-                              : null),
-                  border: widget.showBorder
-                      ? OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(widget.borderRadius),
-                          borderSide: BorderSide(
-                            color: getBorderColor(),
-                            width: widget.borderWidth,
-                          ),
-                        )
-                      : OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(widget.borderRadius),
-                          borderSide: BorderSide.none,
-                        ),
-                  enabledBorder: widget.showBorder
-                      ? OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(widget.borderRadius),
-                          borderSide: BorderSide(
-                            color: getBorderColor(),
-                            width: widget.borderWidth,
-                          ),
-                        )
-                      : OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(widget.borderRadius),
-                          borderSide: BorderSide.none,
-                        ),
-                  focusedBorder: widget.showBorder
-                      ? OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(widget.borderRadius),
-                          borderSide: BorderSide(
-                            color: hasError
-                                ? theme.colorScheme.error
-                                : (widget.borderColor ??
-                                    theme.colorScheme.primary),
-                            width: widget.borderWidth,
-                          ),
-                        )
-                      : OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(widget.borderRadius),
-                          borderSide: BorderSide.none,
-                        ),
-                  errorBorder: widget.showBorder
-                      ? OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(widget.borderRadius),
-                          borderSide: BorderSide(
-                            color: theme.colorScheme.error,
-                            width: widget.borderWidth,
-                          ),
-                        )
-                      : OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(widget.borderRadius),
-                          borderSide: BorderSide.none,
-                        ),
-                  focusedErrorBorder: widget.showBorder
-                      ? OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(widget.borderRadius),
-                          borderSide: BorderSide(
-                            color: theme.colorScheme.error,
-                            width: widget.borderWidth,
-                          ),
-                        )
-                      : OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(widget.borderRadius),
-                          borderSide: BorderSide.none,
-                        ),
-                  floatingLabelBehavior: widget.floatingLabel
-                      ? FloatingLabelBehavior.auto
-                      : FloatingLabelBehavior.never,
+    Widget textField = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          height: height,
+          child: Tooltip(
+            message: hasError && isDesktop ? errorMessage ?? '' : '',
+            textStyle: const TextStyle(
+              fontSize: 12,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: TextFormField(
+              controller: _controller,
+              obscureText: widget.isPassword && _obscureText,
+              readOnly: widget.readOnly,
+              keyboardType: widget.keyboardType ??
+                  (widget.multiline
+                      ? TextInputType.multiline
+                      : TextInputType.text),
+              style: widget.style?.copyWith(fontSize: _getFontSize()) ??
+                  TextStyle(fontSize: _getFontSize()),
+              inputFormatters: widget.inputFormatters,
+              validator: widget.validator,
+              autovalidateMode: widget.autovalidateMode,
+              autocorrect: widget.autocorrect,
+              autofocus: widget.autofocus,
+              cursorColor: widget.cursorColor,
+              cursorHeight: widget.cursorHeight,
+              enabled: widget.enabled,
+              expands: widget.expands,
+              textInputAction: widget.textInputAction,
+              focusNode: _focusNode,
+              maxLength: widget.maxLength,
+              maxLines: maxLines,
+              minLines: minLines,
+              textAlign: widget.textAlign,
+              onTapOutside: widget.onTapOutside as TapRegionCallback?,
+              onEditingComplete: widget.onEditingComplete,
+              onSaved: widget.onSaved,
+              onTap: widget.onTap,
+              onFieldSubmitted: widget.onFieldSubmitted,
+              decoration: InputDecoration(
+                isDense: true,
+                contentPadding: _getContentPadding(),
+                hintText: widget.hint,
+                labelText: widget.floatingLabel ? widget.label : null,
+                labelStyle: widget.floatingLabel
+                    ? TextStyle(fontSize: _getFontSize())
+                    : null,
+                hintStyle: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontSize: _getFontSize(),
+                  height: 1.0,
                 ),
+                errorStyle: const TextStyle(height: 0, fontSize: 0),
+                errorText: null,
+                filled: true,
+                fillColor: getDefaultBackgroundColor(),
+                prefixIcon: widget.prefixIcon != null
+                    ? IconTheme(
+                        data: IconThemeData(size: _getIconSize()),
+                        child: widget.prefixIcon!,
+                      )
+                    : null,
+                suffixIcon: widget.isPassword
+                    ? IconButton(
+                        icon: Icon(
+                          _obscureText
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          size: _getIconSize(),
+                        ),
+                        onPressed: () {
+                          if (mounted) {
+                            setState(() => _obscureText = !_obscureText);
+                          }
+                        })
+                    : widget.suffixButton ??
+                        (widget.suffixIcon != null
+                            ? IconTheme(
+                                data: IconThemeData(size: _getIconSize()),
+                                child: widget.suffixIcon!,
+                              )
+                            : null),
+                border: widget.showBorder
+                    ? OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(widget.borderRadius),
+                        borderSide: BorderSide(
+                          color: getBorderColor(),
+                          width: widget.borderWidth,
+                        ),
+                      )
+                    : OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(widget.borderRadius),
+                        borderSide: BorderSide.none,
+                      ),
+                enabledBorder: widget.showBorder
+                    ? OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(widget.borderRadius),
+                        borderSide: BorderSide(
+                          color: getBorderColor(),
+                          width: widget.borderWidth,
+                        ),
+                      )
+                    : OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(widget.borderRadius),
+                        borderSide: BorderSide.none,
+                      ),
+                focusedBorder: widget.showBorder
+                    ? OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(widget.borderRadius),
+                        borderSide: BorderSide(
+                          color: hasError
+                              ? theme.colorScheme.error
+                              : (widget.borderColor ??
+                                  theme.colorScheme.primary),
+                          width: widget.borderWidth,
+                        ),
+                      )
+                    : OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(widget.borderRadius),
+                        borderSide: BorderSide.none,
+                      ),
+                errorBorder: widget.showBorder
+                    ? OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(widget.borderRadius),
+                        borderSide: BorderSide(
+                          color: theme.colorScheme.error,
+                          width: widget.borderWidth,
+                        ),
+                      )
+                    : OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(widget.borderRadius),
+                        borderSide: BorderSide.none,
+                      ),
+                focusedErrorBorder: widget.showBorder
+                    ? OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(widget.borderRadius),
+                        borderSide: BorderSide(
+                          color: theme.colorScheme.error,
+                          width: widget.borderWidth,
+                        ),
+                      )
+                    : OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(widget.borderRadius),
+                        borderSide: BorderSide.none,
+                      ),
+                floatingLabelBehavior: widget.floatingLabel
+                    ? FloatingLabelBehavior.auto
+                    : FloatingLabelBehavior.never,
               ),
             ),
           ),
-          if (!isDesktop && hasError && errorMessage != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 4, left: 12),
-              child: Text(
-                errorMessage,
-                style: TextStyle(
-                  color: theme.colorScheme.error,
-                  fontSize: 12,
-                ),
+        ),
+        if (!isDesktop && hasError && errorMessage != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 4, left: 12),
+            child: Text(
+              errorMessage,
+              style: TextStyle(
+                color: theme.colorScheme.error,
+                fontSize: 12,
               ),
             ),
-        ],
-      ),
+          ),
+      ],
     );
 
     if (widget.label == null) {
