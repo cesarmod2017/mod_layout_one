@@ -3,7 +3,8 @@ import 'dart:developer';
 import 'package:example/main.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mod_layout_one/mod_layout_one.dart';
+import 'package:mod_layout_one/mod_layout_one.dart' hide BorderStyle;
+import 'package:mod_layout_one/widgets/datatable/datatable.dart' as datatable;
 
 class TablesPage extends StatefulWidget {
   const TablesPage({super.key});
@@ -182,6 +183,7 @@ class _TablesPageState extends State<TablesPage> {
               ),
               content: ModDataTable(
                 fixedHeader: true,
+                showHorizontalScrollbar: true,
                 headers: [
                   ModDataHeader(
                     child: const SelectableText('ID'),
@@ -256,28 +258,28 @@ class _TablesPageState extends State<TablesPage> {
                   ModDataHeader(
                     child: const SelectableText('Projects'),
                     widthType: WidthType.fixed,
-                    width: 150,
+                    width: 550,
                     sortable: true,
                     field: 'projects',
                   ),
                   ModDataHeader(
                     child: const SelectableText('Performance'),
                     widthType: WidthType.fixed,
-                    width: 120,
+                    width: 550,
                     sortable: true,
                     field: 'performance',
                   ),
                   ModDataHeader(
                     child: const SelectableText('Training'),
                     widthType: WidthType.fixed,
-                    width: 150,
+                    width: 550,
                     sortable: true,
                     field: 'training',
                   ),
                   ModDataHeader(
                     child: const SelectableText('Certifications'),
                     widthType: WidthType.fixed,
-                    width: 200,
+                    width: 550,
                     sortable: true,
                     field: 'certifications',
                   ),
@@ -396,7 +398,7 @@ class _TablesPageState extends State<TablesPage> {
                   },
                 ]),
                 currentPage: 0,
-                rowsPerPage: 1,
+                rowsPerPage: 5,
                 totalRecords: 0,
                 onColumnWidthChanged: (field, width) {
                   log('Column width changed: $field to $width');
@@ -411,7 +413,7 @@ class _TablesPageState extends State<TablesPage> {
                 onSort: (field, direction) {
                   log('Sorting by $field in $direction direction');
                 },
-                rowHeight: 40,
+                rowHeight: 50,
                 paginationText: 'of',
                 rowsPerPageText: 'Rows per page',
                 paginationBackgroundColor:
@@ -421,6 +423,151 @@ class _TablesPageState extends State<TablesPage> {
                   log('Rows per page changed: $rowsPerPage');
                 },
                 availableRowsPerPage: const [1, 5, 10, 15, 20],
+              ),
+            ),
+            const SizedBox(height: 20),
+            ModCard(
+              header: const Text(
+                "Demonstração do Scroll Horizontal",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Esta tabela demonstra o scroll horizontal:",
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        const Text("• Scrollbar horizontal CUSTOMIZADO"),
+                        const Text(
+                            "• Clique em qualquer lugar da trilha para ir direto"),
+                        const Text("• ARRASTO CONTÍNUO garantido no Windows"),
+                        const Text("• Implementação 100% personalizada"),
+                        const Text(
+                            "• Use showHorizontalScrollbar: true para ativar"),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
+                  ModDataTable(
+                    showHorizontalScrollbar: true,
+                    borderStyle: datatable.BorderStyle.topLeftRightBottom,
+                    headers: [
+                      ModDataHeader(
+                        child: const Text('Col 1'),
+                        widthType: WidthType.fixed,
+                        width: 200,
+                        field: 'col1',
+                      ),
+                      ModDataHeader(
+                        child: const Text('Col 2'),
+                        widthType: WidthType.fixed,
+                        width: 200,
+                        field: 'col2',
+                      ),
+                      ModDataHeader(
+                        child: const Text('Col 3'),
+                        widthType: WidthType.fixed,
+                        width: 200,
+                        field: 'col3',
+                      ),
+                      ModDataHeader(
+                        child: const Text('Col 4'),
+                        widthType: WidthType.fixed,
+                        width: 200,
+                        field: 'col4',
+                      ),
+                      ModDataHeader(
+                        child: const Text('Col 5'),
+                        widthType: WidthType.fixed,
+                        width: 200,
+                        field: 'col5',
+                      ),
+                      ModDataHeader(
+                        child: const Text('Col 6'),
+                        widthType: WidthType.fixed,
+                        width: 200,
+                        field: 'col6',
+                      ),
+                      ModDataHeader(
+                        child: const Text('Col 7'),
+                        widthType: WidthType.fixed,
+                        width: 200,
+                        field: 'col7',
+                      ),
+                      ModDataHeader(
+                        child: const Text('Col 8'),
+                        widthType: WidthType.fixed,
+                        width: 200,
+                        field: 'col8',
+                      ),
+                    ],
+                    data: const [
+                      {
+                        'col1': 'Dados 1',
+                        'col2': 'Dados 2',
+                        'col3': 'Dados 3',
+                        'col4': 'Dados 4',
+                        'col5': 'Dados 5',
+                        'col6': 'Dados 6',
+                        'col7': 'Dados 7',
+                        'col8': 'Dados 8',
+                      },
+                      {
+                        'col1': 'Info A',
+                        'col2': 'Info B',
+                        'col3': 'Info C',
+                        'col4': 'Info D',
+                        'col5': 'Info E',
+                        'col6': 'Info F',
+                        'col7': 'Info G',
+                        'col8': 'Info H',
+                      },
+                    ],
+                    source: _ScrollDemoDataSource(const [
+                      {
+                        'col1': 'Dados 1',
+                        'col2': 'Dados 2',
+                        'col3': 'Dados 3',
+                        'col4': 'Dados 4',
+                        'col5': 'Dados 5',
+                        'col6': 'Dados 6',
+                        'col7': 'Dados 7',
+                        'col8': 'Dados 8',
+                      },
+                      {
+                        'col1': 'Info A',
+                        'col2': 'Info B',
+                        'col3': 'Info C',
+                        'col4': 'Info D',
+                        'col5': 'Info E',
+                        'col6': 'Info F',
+                        'col7': 'Info G',
+                        'col8': 'Info H',
+                      },
+                    ]),
+                    currentPage: 0,
+                    rowsPerPage: 2,
+                    totalRecords: 2,
+                    onPageChanged: (page) {
+                      log('Page changed: $page');
+                    },
+                    oddRowColor:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
+                    evenRowColor:
+                        Theme.of(context).colorScheme.surfaceContainer,
+                    headerColor: Theme.of(context).colorScheme.surfaceContainer,
+                  ),
+                ],
               ),
             ),
           ],
@@ -481,6 +628,38 @@ class _WideDataSource extends DataTableSource {
         DataCell(SelectableText(row['training']?.toString() ?? '')),
         DataCell(SelectableText(row['certifications']?.toString() ?? '')),
         DataCell(SelectableText(row['notes']?.toString() ?? '')),
+      ],
+    );
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => _data.length;
+
+  @override
+  int get selectedRowCount => 0;
+}
+
+class _ScrollDemoDataSource extends DataTableSource {
+  final List<Map<String, dynamic>> _data;
+
+  _ScrollDemoDataSource(this._data);
+
+  @override
+  DataRow getRow(int index) {
+    final row = _data[index];
+    return DataRow(
+      cells: [
+        DataCell(Text(row['col1']?.toString() ?? '')),
+        DataCell(Text(row['col2']?.toString() ?? '')),
+        DataCell(Text(row['col3']?.toString() ?? '')),
+        DataCell(Text(row['col4']?.toString() ?? '')),
+        DataCell(Text(row['col5']?.toString() ?? '')),
+        DataCell(Text(row['col6']?.toString() ?? '')),
+        DataCell(Text(row['col7']?.toString() ?? '')),
+        DataCell(Text(row['col8']?.toString() ?? '')),
       ],
     );
   }

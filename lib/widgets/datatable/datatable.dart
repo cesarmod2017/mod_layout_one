@@ -50,6 +50,7 @@ class ModDataTable<T> extends StatefulWidget {
   final bool enableSimplePagination;
   final Function(String field, double newWidth)? onColumnWidthChanged;
   final bool enableColumnResize;
+  final bool showHorizontalScrollbar;
 
   const ModDataTable({
     super.key,
@@ -78,6 +79,7 @@ class ModDataTable<T> extends StatefulWidget {
     this.enableSimplePagination = false,
     this.onColumnWidthChanged,
     this.enableColumnResize = false,
+    this.showHorizontalScrollbar = true,
   });
 
   @override
@@ -90,6 +92,7 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
   final ScrollController _headerScrollController = ScrollController();
   final ScrollController _bodyScrollController = ScrollController();
   List<double> _columnWidths = [];
+  bool _isDragging = false;
 
   @override
   void initState() {
@@ -109,6 +112,150 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
         _headerScrollController.jumpTo(_bodyScrollController.offset);
       }
     });
+  }
+
+  void _handleScrollbarDrag(double localPosition, double trackWidth) {
+    if (!_bodyScrollController.hasClients ||
+        !_bodyScrollController.position.hasContentDimensions) return;
+
+    final double maxScroll = _bodyScrollController.position.maxScrollExtent;
+    if (maxScroll <= 0) return;
+
+    final double percentage = (localPosition / trackWidth).clamp(0.0, 1.0);
+    final double targetOffset = (maxScroll * percentage).clamp(0.0, maxScroll);
+
+    // Debug para entender o problema
+    print(
+        'Drag: localPos=$localPosition, trackWidth=$trackWidth, percentage=$percentage, targetOffset=$targetOffset, isDragging=$_isDragging');
+
+    _bodyScrollController.jumpTo(targetOffset);
+  }
+
+  Widget _buildCustomScrollbar(
+      Widget child, double totalWidth, double screenWidth) {
+    if (!widget.showHorizontalScrollbar || totalWidth <= screenWidth) {
+      return child;
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth <= 0) {
+          return child;
+        }
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Conteúdo flexível mas não expandido
+            Flexible(
+              child: child,
+            ),
+            // Scrollbar fixo na parte inferior
+            Container(
+              height: 25,
+              width: constraints.maxWidth,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: LayoutBuilder(
+                builder: (context, scrollbarConstraints) {
+                  if (scrollbarConstraints.maxWidth <= 16) {
+                    return const SizedBox();
+                  }
+
+                  return GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onPanStart: (details) {
+                      if (_bodyScrollController.hasClients &&
+                          _bodyScrollController.position.hasContentDimensions) {
+                        _isDragging = true;
+                        _handleScrollbarDrag(details.localPosition.dx,
+                            scrollbarConstraints.maxWidth - 16);
+                      }
+                    },
+                    onPanUpdate: (details) {
+                      if (_isDragging &&
+                          _bodyScrollController.hasClients &&
+                          _bodyScrollController.position.hasContentDimensions) {
+                        _handleScrollbarDrag(details.localPosition.dx,
+                            scrollbarConstraints.maxWidth - 16);
+                      }
+                    },
+                    onPanEnd: (details) {
+                      _isDragging = false;
+                    },
+                    onTapDown: (details) {
+                      if (_bodyScrollController.hasClients &&
+                          _bodyScrollController.position.hasContentDimensions) {
+                        _handleScrollbarDrag(details.localPosition.dx,
+                            scrollbarConstraints.maxWidth - 16);
+                      }
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: 13,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: AnimatedBuilder(
+                        animation: _bodyScrollController,
+                        builder: (context, child) {
+                          // Verificação de segurança mais robusta
+                          if (!_bodyScrollController.hasClients ||
+                              !_bodyScrollController
+                                  .position.hasContentDimensions ||
+                              scrollbarConstraints.maxWidth <= 16) {
+                            return Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                width: 50,
+                                height: 13,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.withOpacity(0.6),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                              ),
+                            );
+                          }
+
+                          final double maxScroll =
+                              _bodyScrollController.position.maxScrollExtent;
+                          final double currentScroll =
+                              _bodyScrollController.offset;
+                          final double trackWidth =
+                              scrollbarConstraints.maxWidth - 16;
+                          final double thumbWidth =
+                              (screenWidth / totalWidth * trackWidth)
+                                  .clamp(50.0, trackWidth);
+                          final double thumbPosition = maxScroll > 0
+                              ? (currentScroll / maxScroll) *
+                                  (trackWidth - thumbWidth)
+                              : 0;
+
+                          return Align(
+                            alignment: Alignment.centerLeft,
+                            child: Container(
+                              margin: EdgeInsets.only(
+                                  left: thumbPosition.clamp(
+                                      0.0, trackWidth - thumbWidth)),
+                              width: thumbWidth,
+                              height: 13,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withOpacity(0.6),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -164,38 +311,47 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
           final totalWidth =
               _columnWidths.fold(0.0, (sum, width) => sum + width);
 
-          return Column(
-            children: [
-              if (widget.fixedHeader)
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  controller: _headerScrollController,
-                  child: SizedBox(
-                    width: max(totalWidth, screenWidth),
-                    child: _buildHeader(columnWidths),
-                  ),
-                ),
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    controller: _bodyScrollController,
-                    child: SizedBox(
-                      width: max(totalWidth, screenWidth),
-                      child: Column(
-                        children: [
-                          if (!widget.fixedHeader) _buildHeader(columnWidths),
-                          _buildRows(widget.data, columnWidths),
-                        ],
-                      ),
-                    ),
-                  ),
+          Widget buildScrollableContent() {
+            final scrollableContent = SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              controller: _bodyScrollController,
+              child: SizedBox(
+                width: max(totalWidth, screenWidth),
+                child: Column(
+                  children: [
+                    if (!widget.fixedHeader) _buildHeader(columnWidths),
+                    _buildRows(widget.data, columnWidths),
+                  ],
                 ),
               ),
-              _buildPagination(),
-            ],
-          );
+            );
+
+            return Column(
+              children: [
+                if (widget.fixedHeader)
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    controller: _headerScrollController,
+                    child: SizedBox(
+                      width: max(totalWidth, screenWidth),
+                      child: _buildHeader(columnWidths),
+                    ),
+                  ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: widget.showHorizontalScrollbar
+                        ? _buildCustomScrollbar(
+                            scrollableContent, totalWidth, screenWidth)
+                        : scrollableContent,
+                  ),
+                ),
+                _buildPagination(),
+              ],
+            );
+          }
+
+          return buildScrollableContent();
         },
       ),
     );

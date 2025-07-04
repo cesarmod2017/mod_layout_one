@@ -1,3 +1,16 @@
+## 1.0.69
+* Enhanced ModDataTable widget:
+  * Added custom horizontal scrollbar implementation
+  * Improved horizontal scroll functionality with click-to-position feature
+  * Enhanced continuous drag support for Windows platform
+  * Added showHorizontalScrollbar property for enabling/disabling horizontal scrollbar
+  * Improved horizontal scroll performance and responsiveness
+  * Enhanced scrollbar visual design and customization
+  * Added better support for wide tables with many columns
+  * Improved scrollbar track interaction and navigation
+  * Enhanced horizontal scroll experience across different platforms
+  * Added seamless horizontal scrolling for better user experience
+
 ## 1.0.68
 * Enhanced ModModal widget:
   * Enhanced modal positioning control
