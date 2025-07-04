@@ -223,7 +223,7 @@ class CustomLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ModBaseLayout(
-      showAppBar: false,
+      showAppBar: true,
       title: title,
       lightBackgroundColor: Colors.blue,
       lightForegroundColor: Colors.white,

@@ -20,6 +20,7 @@ class ModModal extends StatelessWidget {
   final double borderRadius;
   final bool barrierDismissible;
   final VoidCallback? onClose;
+  final EdgeInsets? padding;
 
   /// Largura máxima do modal (em pixels)
   final double? maxWidth;
@@ -52,6 +53,7 @@ class ModModal extends StatelessWidget {
     this.minWidth,
     this.maxHeight,
     this.minHeight,
+    this.padding,
   });
 
   double _getModalWidth(BuildContext context) {
@@ -180,7 +182,7 @@ class ModModal extends StatelessWidget {
               child: Container(
                 width: double.infinity,
                 color: bodyColor ?? theme.colorScheme.surface,
-                padding: const EdgeInsets.all(16),
+                padding: padding ?? const EdgeInsets.all(16),
                 child: body,
               ),
             ),
@@ -224,6 +226,7 @@ class ModModal extends StatelessWidget {
     double? minWidth,
     double? maxHeight,
     double? minHeight,
+    EdgeInsets? padding,
   }) {
     final modalAlignment = position == ModModalPosition.top
         ? Alignment.topCenter
@@ -239,6 +242,7 @@ class ModModal extends StatelessWidget {
         child: ModModal(
           header: header,
           body: body,
+          padding: padding,
           footer: footer,
           headerColor: headerColor,
           bodyColor: bodyColor,

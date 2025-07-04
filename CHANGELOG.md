@@ -1,3 +1,30 @@
+## 1.0.68
+* Enhanced ModModal widget:
+  * Enhanced modal positioning control
+  * Added improved support for ModModalPosition (top, center, bottom)
+  * Improved modal alignment system on screen
+  * Enhanced modal positioning and alignment capabilities
+  * Added better support for different screen sizes
+  * Improved responsive behavior of modals
+  * Enhanced visual consistency across different modal positions
+  * Added better spacing and margin control
+  * Improved automatic sizing system
+  * Added padding property support for modal content
+  * Enhanced overall modal presentation and user experience
+
+## 1.0.67
+
+* Enhanced ModColumn widget:
+  * Added backgroundColor property support
+  * Improved container styling capabilities
+  * Enhanced visual customization options
+  * Added better support for background color theming
+  * Improved column background rendering
+  * Enhanced color consistency across different screen sizes
+  * Added better support for transparent backgrounds
+  * Improved background color accessibility
+  * Enhanced overall column appearance control
+
 ## 1.0.66
 
 * Enhanced ModTextBox widget:

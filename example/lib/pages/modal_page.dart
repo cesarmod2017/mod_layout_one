@@ -210,6 +210,7 @@ class ModalPage extends StatelessWidget {
                         position: mod.ModModalPosition.top,
                         header: const Text('Top Modal'),
                         body: const Text('This modal appears at the top'),
+                        padding: const EdgeInsets.all(0),
                         footer: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [

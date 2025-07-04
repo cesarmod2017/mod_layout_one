@@ -5,12 +5,14 @@ class ModColumn extends StatelessWidget {
   final Widget child;
   final Map<ScreenSize, ColumnSize> columnSizes;
   final EdgeInsets? padding;
+  final Color? backgroundColor;
 
   const ModColumn({
     super.key,
     required this.child,
     required this.columnSizes,
     this.padding = EdgeInsets.zero,
+    this.backgroundColor,
   });
 
   double? _getColumnWidth(BuildContext context, BoxConstraints constraints) {
@@ -73,6 +75,7 @@ class ModColumn extends StatelessWidget {
           child: Container(
             padding: padding ?? const EdgeInsets.all(0),
             width: columnWidth,
+            color: backgroundColor,
             child: child,
           ),
         );
