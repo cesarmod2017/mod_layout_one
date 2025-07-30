@@ -32,6 +32,9 @@ class ModTab {
   /// A dynamic field that can store any type of object associated with this tab
   final dynamic data;
 
+  /// Optional icon widget to display to the left of the text
+  final Widget? icon;
+
   const ModTab({
     required this.id,
     required this.text,
@@ -41,6 +44,7 @@ class ModTab {
     this.closeable = false,
     this.onClosing,
     this.data,
+    this.icon,
   });
 }
 
@@ -182,7 +186,10 @@ class _ModTabsState extends State<ModTabs> {
     )..layout();
 
     double calculatedWidth =
-        textPainter.width + 40; // Adiciona espaço para padding e ícone
+        textPainter.width + 40; // Adiciona espaço para padding
+    if (tab.icon != null) {
+      calculatedWidth += 24; // Adiciona espaço para o ícone
+    }
     if (tab.closeable) {
       calculatedWidth += 24; // Adiciona espaço para o botão de fechar
     }
@@ -228,6 +235,10 @@ class _ModTabsState extends State<ModTabs> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (tab.icon != null) ...[
+              tab.icon!,
+              const SizedBox(width: 8),
+            ],
             Expanded(
               child: Text(
                 tab.text,

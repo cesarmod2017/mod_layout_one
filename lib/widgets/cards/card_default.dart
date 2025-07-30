@@ -14,6 +14,7 @@ class ModCard extends StatefulWidget {
   final EdgeInsets padding;
   final double borderRadius;
   final bool initiallyExpanded;
+  final bool disableModCard;
 
   const ModCard({
     super.key,
@@ -30,6 +31,7 @@ class ModCard extends StatefulWidget {
     this.padding = const EdgeInsets.all(16.0),
     this.borderRadius = 8.0,
     this.initiallyExpanded = false,
+    this.disableModCard = false,
   });
 
   @override
@@ -47,6 +49,54 @@ class ModCardState extends State<ModCard> {
 
   @override
   Widget build(BuildContext context) {
+    // Se disableModCard for true, mostra apenas content e footer
+    if (widget.disableModCard) {
+      return AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        child: Card(
+          elevation: 5,
+          margin: widget.margin,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Content sempre visível
+              Container(
+                color: widget.contentColor,
+                width: double.infinity,
+                child: Padding(
+                  padding: widget.padding,
+                  child: widget.content,
+                ),
+              ),
+              // Footer se existir
+              if (widget.footer != null)
+                Container(
+                  decoration: BoxDecoration(
+                    color: widget.footerColor,
+                    borderRadius: widget.footerColor != Colors.transparent
+                        ? BorderRadius.only(
+                            bottomLeft: Radius.circular(widget.borderRadius),
+                            bottomRight: Radius.circular(widget.borderRadius),
+                          )
+                        : null,
+                  ),
+                  width: double.infinity,
+                  child: Padding(
+                    padding: widget.padding,
+                    child: widget.footer,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Comportamento normal quando disableModCard for false
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       child: Card(

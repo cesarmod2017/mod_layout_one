@@ -7,21 +7,21 @@ class CardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CustomLayout(
+    return CustomLayout(
       title: 'Cards',
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            ModCard(
+            const ModCard(
               header: Text("Basic Card Example"),
               content: Center(
                 child:
                     Text("This is a simple card with just header and content"),
               ),
             ),
-            SizedBox(height: 16),
-            ModCard(
+            const SizedBox(height: 16),
+            const ModCard(
               header: Text("Card with Footer"),
               content: Center(
                 child: Text(
@@ -29,8 +29,8 @@ class CardPage extends StatelessWidget {
               ),
               footer: Text("Additional information in footer"),
             ),
-            SizedBox(height: 16),
-            ModCard(
+            const SizedBox(height: 16),
+            const ModCard(
               header: Text("Accordion Card"),
               content: Center(
                 child: Text(
@@ -41,14 +41,35 @@ class CardPage extends StatelessWidget {
               isAccordion: true,
               initiallyExpanded: true,
             ),
-            SizedBox(height: 16),
-            ModCard(
+            const SizedBox(height: 16),
+            const ModCard(
               header: Text("Accordion with Visible Footer"),
               content: Center(
                 child: Text(
                     "This card shows the footer even when content is collapsed"),
               ),
               footer: Text("This footer stays visible when collapsed"),
+              borderRadius: 16,
+              isAccordion: true,
+              showFooterWhenCollapsed: true,
+            ),
+            const SizedBox(height: 16),
+            ModCard(
+              header: const Text("Accordion with Visible Footer"),
+              disableModCard: true,
+              toolbar: [
+                IconButton(
+                  onPressed: () {
+                    print("add");
+                  },
+                  icon: const Icon(Icons.add),
+                ),
+              ],
+              content: const Center(
+                child: Text(
+                    "This card shows the footer even when content is collapsed"),
+              ),
+              footer: const Text("This footer stays visible when collapsed"),
               borderRadius: 16,
               isAccordion: true,
               showFooterWhenCollapsed: true,

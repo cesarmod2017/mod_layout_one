@@ -168,6 +168,11 @@ class _TabsPageState extends State<TabsPage> {
                     mod.ModTab(
                       id: 'home',
                       text: 'Home',
+                      icon: Icon(
+                        Icons.home,
+                        size: 18,
+                        color: Colors.blue,
+                      ),
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,

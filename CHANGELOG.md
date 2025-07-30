@@ -1,3 +1,28 @@
+## 1.0.71
+* Enhanced ModCard widget:
+  * Added disableModCard property for simplified card rendering
+  * Improved card structure when disabling standard card behavior
+  * Enhanced content-only display mode without header interactions
+  * Added better support for direct content and footer rendering
+  * Improved card flexibility with optional header functionality
+  * Enhanced visual consistency when header interactions are disabled
+  * Added seamless content display without accordion behavior
+  * Improved performance for cards that don't need header interactions
+  * Enhanced card customization with simplified rendering options
+  * Added better support for content-focused card layouts
+
+## 1.0.70
+* Enhanced ModTabs widget:
+  * Added icon support for ModTab
+  * Improved tab visual design with optional icon display
+  * Enhanced tab layout to accommodate icons alongside text
+  * Added better icon positioning and spacing control
+  * Improved tab accessibility with icon support
+  * Enhanced visual hierarchy with icon and text combination
+  * Added flexible icon widget support for custom icons
+  * Improved tab rendering performance with icon elements
+  * Enhanced overall tab appearance and user experience
+
 ## 1.0.69
 * Enhanced ModDataTable widget:
   * Added custom horizontal scrollbar implementation
