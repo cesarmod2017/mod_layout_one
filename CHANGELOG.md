@@ -1,3 +1,16 @@
+## 1.0.72
+* Aprimoramentos no widget ModDataTable:
+  * Melhorada a funcionalidade de scroll horizontal
+  * Adicionado suporte aprimorado para sincronização de scroll entre cabeçalho e corpo da tabela
+  * Implementada melhor gestão de controladores de scroll
+  * Aprimorada a responsividade do scroll em tabelas largas
+  * Melhorada a experiência de navegação horizontal em tabelas com muitas colunas
+  * Adicionado controle mais preciso de posicionamento do scroll
+  * Implementadas otimizações de performance para operações de scroll
+  * Aprimorada a sincronização visual durante o scroll horizontal
+  * Melhorada a compatibilidade de scroll em diferentes plataformas
+  * Adicionado suporte melhorado para tabelas com cabeçalho fixo e scroll horizontal
+
 ## 1.0.71
 * Enhanced ModCard widget:
   * Added disableModCard property for simplified card rendering

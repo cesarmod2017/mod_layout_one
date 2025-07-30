@@ -1,0 +1,2 @@
+D:/Projetos/mod_layout_one/example/android/app/.cxx/Debug/6y3lp760/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/Projetos/mod_layout_one/example/android/app/.cxx/Debug/6y3lp760/armeabi-v7a/CMakeFiles/rebuild_cache.dir

@@ -93,6 +93,8 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
   final ScrollController _bodyScrollController = ScrollController();
   List<double> _columnWidths = [];
   bool _isDragging = false;
+  bool _isHorizontalDragging = false;
+  double? _lastPanPosition;
 
   @override
   void initState() {
@@ -129,6 +131,19 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
         'Drag: localPos=$localPosition, trackWidth=$trackWidth, percentage=$percentage, targetOffset=$targetOffset, isDragging=$_isDragging');
 
     _bodyScrollController.jumpTo(targetOffset);
+  }
+
+  void _handleHorizontalDrag(double deltaX) {
+    if (!_bodyScrollController.hasClients ||
+        !_bodyScrollController.position.hasContentDimensions) return;
+
+    final double currentOffset = _bodyScrollController.offset;
+    final double maxScroll = _bodyScrollController.position.maxScrollExtent;
+
+    // Inverte o deltaX para o comportamento natural (arrastar para direita move para esquerda)
+    final double newOffset = (currentOffset - deltaX).clamp(0.0, maxScroll);
+
+    _bodyScrollController.jumpTo(newOffset);
   }
 
   Widget _buildCustomScrollbar(
@@ -312,16 +327,40 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
               _columnWidths.fold(0.0, (sum, width) => sum + width);
 
           Widget buildScrollableContent() {
-            final scrollableContent = SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              controller: _bodyScrollController,
-              child: SizedBox(
-                width: max(totalWidth, screenWidth),
-                child: Column(
-                  children: [
-                    if (!widget.fixedHeader) _buildHeader(columnWidths),
-                    _buildRows(widget.data, columnWidths),
-                  ],
+            final scrollableContent = GestureDetector(
+              onPanStart: (details) {
+                _isHorizontalDragging = true;
+                _lastPanPosition = details.localPosition.dx;
+              },
+              onPanUpdate: (details) {
+                if (_isHorizontalDragging && _lastPanPosition != null) {
+                  final double deltaX =
+                      details.localPosition.dx - _lastPanPosition!;
+                  _handleHorizontalDrag(deltaX);
+                  _lastPanPosition = details.localPosition.dx;
+                }
+              },
+              onPanEnd: (details) {
+                _isHorizontalDragging = false;
+                _lastPanPosition = null;
+              },
+              onPanCancel: () {
+                _isHorizontalDragging = false;
+                _lastPanPosition = null;
+              },
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                controller: _bodyScrollController,
+                physics:
+                    const NeverScrollableScrollPhysics(), // Desabilita o scroll nativo para usar o personalizado
+                child: SizedBox(
+                  width: max(totalWidth, screenWidth),
+                  child: Column(
+                    children: [
+                      if (!widget.fixedHeader) _buildHeader(columnWidths),
+                      _buildRows(widget.data, columnWidths),
+                    ],
+                  ),
                 ),
               ),
             );
@@ -329,12 +368,36 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
             return Column(
               children: [
                 if (widget.fixedHeader)
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    controller: _headerScrollController,
-                    child: SizedBox(
-                      width: max(totalWidth, screenWidth),
-                      child: _buildHeader(columnWidths),
+                  GestureDetector(
+                    onPanStart: (details) {
+                      _isHorizontalDragging = true;
+                      _lastPanPosition = details.localPosition.dx;
+                    },
+                    onPanUpdate: (details) {
+                      if (_isHorizontalDragging && _lastPanPosition != null) {
+                        final double deltaX =
+                            details.localPosition.dx - _lastPanPosition!;
+                        _handleHorizontalDrag(deltaX);
+                        _lastPanPosition = details.localPosition.dx;
+                      }
+                    },
+                    onPanEnd: (details) {
+                      _isHorizontalDragging = false;
+                      _lastPanPosition = null;
+                    },
+                    onPanCancel: () {
+                      _isHorizontalDragging = false;
+                      _lastPanPosition = null;
+                    },
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      controller: _headerScrollController,
+                      physics:
+                          const NeverScrollableScrollPhysics(), // Desabilita o scroll nativo para usar o personalizado
+                      child: SizedBox(
+                        width: max(totalWidth, screenWidth),
+                        child: _buildHeader(columnWidths),
+                      ),
                     ),
                   ),
                 Expanded(
