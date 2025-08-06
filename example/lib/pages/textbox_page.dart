@@ -208,15 +208,24 @@ class _TextBoxPageState extends State<TextBoxPage> {
                       const SizedBox(width: 16),
                       Flexible(
                         child: mod.ModDropdownSearch<String>(
-                          //fontSize: 12,
-                          floatingLabel: true,
+                          // fontSize: 10,
+                          floatingLabel: false,
                           //floatingLabelBackgroundColor: Colors.red,
                           value: 'Alice',
                           items: const [
                             mod.ModDropdownSearchMenuItem(
-                                value: 'Alice',
+                                value: '(Geral) - Relatório Bipagens',
                                 icon: Icons.face,
-                                child: Text('Alice')),
+                                child: Text('(Geral) - Relatório Bipagens')),
+                            mod.ModDropdownSearchMenuItem(
+                                value: 'Programação - Projeto y Planejamento',
+                                icon: Icons.code,
+                                child: Text(
+                                    'Programação - Projeto y Planejamento')),
+                            mod.ModDropdownSearchMenuItem(
+                                value: 'Qualidade - Testing y Debugging',
+                                icon: Icons.bug_report,
+                                child: Text('Qualidade - Testing y Debugging')),
                             mod.ModDropdownSearchMenuItem(
                                 value: 'Bob',
                                 icon: Icons.sports_basketball,

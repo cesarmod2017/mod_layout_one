@@ -186,13 +186,13 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
   double _getHeight() {
     switch (widget.size) {
       case ModDropdownSearchSize.lg:
-        return 58;
+        return 58; // Valor original mantido
       case ModDropdownSearchSize.md:
-        return 47;
+        return 47; // Valor original mantido
       case ModDropdownSearchSize.sm:
-        return 39;
+        return 39; // Valor original mantido
       case ModDropdownSearchSize.xs:
-        return 25;
+        return 25; // Valor original mantido
     }
   }
 
@@ -227,23 +227,31 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
     final fontSize = widget.fontSize ?? _getFontSize();
 
     // Calcula o padding vertical para centralizar o texto
-    // Considera a altura da linha baseada no tamanho da fonte
-    final lineHeight = fontSize * 1.2; // Altura da linha padrão
-    final verticalPadding = (height - lineHeight) / 2;
+    // Usa multiplicador otimizado para acomodar caracteres com descendentes (p, g, j, y, q)
+    // sem desperdiçar espaço vertical
+    final lineHeight = fontSize * 1.35; // Valor otimizado para descendentes
+    final calculatedPadding = (height - lineHeight) / 2;
+
+    // Define padding mínimo baseado no tamanho para garantir espaço para descendentes
+    final minVerticalPadding =
+        widget.size == ModDropdownSearchSize.xs ? 3.0 : 5.0;
+    final verticalPadding = calculatedPadding > minVerticalPadding
+        ? calculatedPadding
+        : minVerticalPadding;
 
     // Se floating label está ativo, ajusta o padding
     if (_shouldFloatLabel) {
       return EdgeInsets.fromLTRB(
         12,
-        verticalPadding > 0 ? verticalPadding - 2 : 2, // Padding top menor
+        verticalPadding - 1, // Reduz padding top para dar mais espaço ao texto
         12,
-        verticalPadding > 0 ? verticalPadding + 2 : 6, // Padding bottom maior
+        verticalPadding + 1, // Aumenta padding bottom para descendentes
       );
     }
 
     return EdgeInsets.symmetric(
       horizontal: 12,
-      vertical: verticalPadding > 0 ? verticalPadding : 4,
+      vertical: verticalPadding,
     );
   }
 

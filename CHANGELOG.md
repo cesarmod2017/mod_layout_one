@@ -1,15 +1,28 @@
+## 1.0.73
+* Enhanced ModDropdown widgets:
+  * Improved ModDropdownSearch floating label functionality
+  * Enhanced label positioning and animation system
+  * Added better support for floating labels with background color customization
+  * Improved visual feedback for active and inactive states
+  * Enhanced dropdown item display and selection behavior
+  * Added better support for multiselect functionality
+  * Improved search functionality within dropdown items
+  * Enhanced keyboard navigation and accessibility
+  * Added better support for custom display strings
+  * Improved overall dropdown user experience and responsiveness
+
 ## 1.0.72
-* Aprimoramentos no widget ModDataTable:
-  * Melhorada a funcionalidade de scroll horizontal
-  * Adicionado suporte aprimorado para sincronização de scroll entre cabeçalho e corpo da tabela
-  * Implementada melhor gestão de controladores de scroll
-  * Aprimorada a responsividade do scroll em tabelas largas
-  * Melhorada a experiência de navegação horizontal em tabelas com muitas colunas
-  * Adicionado controle mais preciso de posicionamento do scroll
-  * Implementadas otimizações de performance para operações de scroll
-  * Aprimorada a sincronização visual durante o scroll horizontal
-  * Melhorada a compatibilidade de scroll em diferentes plataformas
-  * Adicionado suporte melhorado para tabelas com cabeçalho fixo e scroll horizontal
+* Enhanced ModDataTable widget:
+  * Improved horizontal scroll functionality
+  * Added enhanced support for scroll synchronization between header and table body
+  * Implemented better scroll controller management
+  * Enhanced scroll responsiveness for wide tables
+  * Improved horizontal navigation experience for tables with many columns
+  * Added more precise scroll positioning control
+  * Implemented performance optimizations for scroll operations
+  * Enhanced visual synchronization during horizontal scrolling
+  * Improved scroll compatibility across different platforms
+  * Added enhanced support for tables with fixed headers and horizontal scroll
 
 ## 1.0.71
 * Enhanced ModCard widget:
