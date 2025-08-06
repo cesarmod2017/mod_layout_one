@@ -1,3 +1,18 @@
+## 1.0.74
+* Enhanced ModPopupButton widget:
+  * Added comprehensive popup button functionality with customizable menu items
+  * Implemented support for nested submenus with hover behavior on desktop platforms
+  * Added automatic platform detection for optimal user experience (desktop vs mobile)
+  * Enhanced popup positioning with intelligent overflow detection and adjustment
+  * Implemented custom styling options including font sizes and padding for menus and submenus
+  * Added support for icon and text combinations in menu items
+  * Enhanced submenu positioning with configurable offset and spacing controls
+  * Implemented timer-based hover behavior for smooth submenu interactions
+  * Added support for custom widgets in menu items for advanced layouts
+  * Improved accessibility and keyboard navigation for popup menu interactions
+  * Enhanced visual feedback with proper styling for different button types
+  * Added comprehensive customization options for popup appearance and behavior
+
 ## 1.0.73
 * Enhanced ModDropdown widgets:
   * Improved ModDropdownSearch floating label functionality

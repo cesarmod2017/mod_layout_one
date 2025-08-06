@@ -39,6 +39,7 @@ export 'translations/es_es.dart';
 export 'translations/pt_br.dart';
 export 'widgets/buttons/buttons.dart';
 export 'widgets/buttons/icon_buttom.dart';
+export 'widgets/buttons/popup_buttom.dart';
 // Cards
 export 'widgets/cards/card_default.dart';
 export 'widgets/datatable/datatable.dart';

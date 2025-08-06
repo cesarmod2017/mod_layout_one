@@ -315,6 +315,786 @@ class ButtonsPage extends StatelessWidget {
                       ),
                     ],
                   ),
+                  ModPopupButton<String>(
+                    title: 'Popup Button',
+                    items: [
+                      ModPopupMenuItem(value: 'Item 1', text: 'Item 1'),
+                      ModPopupMenuItem(value: 'Item 2', text: 'Item 2'),
+                      ModPopupMenuItem(value: 'Item 3', text: 'Item 3'),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            ModCard(
+              header: const Text(
+                "Popup Button Examples",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Basic Popup Button:"),
+                  const SizedBox(height: 8),
+                  ModPopupButton<String>(
+                    title: 'Ações',
+                    leftIcon: Icons.menu,
+                    popupIcon: Icons.arrow_drop_down,
+                    type: ModButtonType.primary,
+                    items: [
+                      ModPopupMenuItem<String>(
+                        value: 'edit',
+                        text: 'Editar',
+                        icon: Icons.edit,
+                      ),
+                      ModPopupMenuItem<String>(
+                        value: 'delete',
+                        text: 'Excluir',
+                        icon: Icons.delete,
+                      ),
+                      ModPopupMenuItem<String>(
+                        value: 'share',
+                        text: 'Compartilhar',
+                        icon: Icons.share,
+                      ),
+                    ],
+                    onSelected: (value) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Selecionado: $value')),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  const Text("Icon Only Popup Button:"),
+                  const SizedBox(height: 8),
+                  ModPopupButton<String>(
+                    popupIcon: Icons.more_vert,
+                    type: ModButtonType.secondary,
+                    size: ModButtonSize.sm,
+                    items: [
+                      ModPopupMenuItem<String>(
+                        value: 'option1',
+                        text: 'Opção 1',
+                        icon: Icons.star,
+                      ),
+                      ModPopupMenuItem<String>(
+                        value: 'option2',
+                        text: 'Opção 2',
+                        icon: Icons.favorite,
+                      ),
+                      ModPopupMenuItem<String>(
+                        value: 'option3',
+                        text: 'Opção 3',
+                        icon: Icons.bookmark,
+                      ),
+                    ],
+                    onSelected: (value) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Selecionado: $value')),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  const Text("Different Types and Colors:"),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      ModPopupButton<String>(
+                        title: 'Success',
+                        popupIcon: Icons.keyboard_arrow_down,
+                        type: ModButtonType.success,
+                        size: ModButtonSize.sm,
+                        items: [
+                          ModPopupMenuItem<String>(
+                            value: 'approve',
+                            text: 'Aprovar',
+                            icon: Icons.check_circle,
+                          ),
+                          ModPopupMenuItem<String>(
+                            value: 'complete',
+                            text: 'Concluir',
+                            icon: Icons.done,
+                          ),
+                        ],
+                        onSelected: (value) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Ação: $value')),
+                          );
+                        },
+                      ),
+                      ModPopupButton<String>(
+                        title: 'Warning',
+                        popupIcon: Icons.keyboard_arrow_down,
+                        type: ModButtonType.warning,
+                        size: ModButtonSize.sm,
+                        items: [
+                          ModPopupMenuItem<String>(
+                            value: 'caution',
+                            text: 'Atenção',
+                            icon: Icons.warning,
+                          ),
+                          ModPopupMenuItem<String>(
+                            value: 'review',
+                            text: 'Revisar',
+                            icon: Icons.visibility,
+                          ),
+                        ],
+                        onSelected: (value) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Ação: $value')),
+                          );
+                        },
+                      ),
+                      ModPopupButton<String>(
+                        title: 'Danger',
+                        popupIcon: Icons.keyboard_arrow_down,
+                        type: ModButtonType.danger,
+                        size: ModButtonSize.sm,
+                        items: [
+                          ModPopupMenuItem<String>(
+                            value: 'delete',
+                            text: 'Excluir',
+                            icon: Icons.delete,
+                          ),
+                          ModPopupMenuItem<String>(
+                            value: 'remove',
+                            text: 'Remover',
+                            icon: Icons.remove_circle,
+                          ),
+                        ],
+                        onSelected: (value) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Ação: $value')),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Text("Custom Colors and Styling:"),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      ModPopupButton<String>(
+                        title: 'Custom',
+                        leftIcon: Icons.palette,
+                        popupIcon: Icons.expand_more,
+                        type: ModButtonType.custom,
+                        backgroundColor: Colors.purple,
+                        textColor: Colors.white,
+                        borderRadius: 12.0,
+                        items: [
+                          ModPopupMenuItem<String>(
+                            value: 'theme1',
+                            text: 'Tema 1',
+                            icon: Icons.color_lens,
+                            iconColor: Colors.purple,
+                          ),
+                          ModPopupMenuItem<String>(
+                            value: 'theme2',
+                            text: 'Tema 2',
+                            icon: Icons.color_lens,
+                            iconColor: Colors.blue,
+                          ),
+                          ModPopupMenuItem<String>(
+                            value: 'theme3',
+                            text: 'Tema 3',
+                            icon: Icons.color_lens,
+                            iconColor: Colors.green,
+                          ),
+                        ],
+                        onSelected: (value) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Tema selecionado: $value')),
+                          );
+                        },
+                      ),
+                      ModPopupButton<String>(
+                        title: 'Gradient',
+                        popupIcon: Icons.gradient,
+                        type: ModButtonType.custom,
+                        backgroundColor: Colors.orange.shade400,
+                        textColor: Colors.white,
+                        borderRadius: 20.0,
+                        size: ModButtonSize.lg,
+                        items: [
+                          ModPopupMenuItem<String>(
+                            value: 'gradient1',
+                            text: 'Gradiente 1',
+                            icon: Icons.gradient,
+                          ),
+                          ModPopupMenuItem<String>(
+                            value: 'gradient2',
+                            text: 'Gradiente 2',
+                            icon: Icons.gradient,
+                          ),
+                        ],
+                        onSelected: (value) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Gradiente: $value')),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Text("Different Sizes:"),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      ModPopupButton<String>(
+                        title: 'Large',
+                        popupIcon: Icons.arrow_drop_down,
+                        type: ModButtonType.info,
+                        size: ModButtonSize.lg,
+                        items: [
+                          ModPopupMenuItem<String>(
+                            value: 'item1',
+                            text: 'Item 1',
+                            icon: Icons.looks_one,
+                          ),
+                          ModPopupMenuItem<String>(
+                            value: 'item2',
+                            text: 'Item 2',
+                            icon: Icons.looks_two,
+                          ),
+                        ],
+                        onSelected: (value) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Item: $value')),
+                          );
+                        },
+                      ),
+                      ModPopupButton<String>(
+                        title: 'Medium',
+                        popupIcon: Icons.arrow_drop_down,
+                        type: ModButtonType.info,
+                        size: ModButtonSize.md,
+                        items: [
+                          ModPopupMenuItem<String>(
+                            value: 'item1',
+                            text: 'Item 1',
+                            icon: Icons.looks_one,
+                          ),
+                          ModPopupMenuItem<String>(
+                            value: 'item2',
+                            text: 'Item 2',
+                            icon: Icons.looks_two,
+                          ),
+                        ],
+                        onSelected: (value) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Item: $value')),
+                          );
+                        },
+                      ),
+                      ModPopupButton<String>(
+                        title: 'Small',
+                        popupIcon: Icons.arrow_drop_down,
+                        type: ModButtonType.info,
+                        size: ModButtonSize.sm,
+                        items: [
+                          ModPopupMenuItem<String>(
+                            value: 'item1',
+                            text: 'Item 1',
+                            icon: Icons.looks_one,
+                          ),
+                          ModPopupMenuItem<String>(
+                            value: 'item2',
+                            text: 'Item 2',
+                            icon: Icons.looks_two,
+                          ),
+                        ],
+                        onSelected: (value) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Item: $value')),
+                          );
+                        },
+                      ),
+                      ModPopupButton<String>(
+                        title: 'XS',
+                        popupIcon: Icons.arrow_drop_down,
+                        type: ModButtonType.info,
+                        size: ModButtonSize.xs,
+                        items: [
+                          ModPopupMenuItem<String>(
+                            value: 'item1',
+                            text: 'Item 1',
+                            icon: Icons.looks_one,
+                          ),
+                          ModPopupMenuItem<String>(
+                            value: 'item2',
+                            text: 'Item 2',
+                            icon: Icons.looks_two,
+                          ),
+                        ],
+                        onSelected: (value) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Item: $value')),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Text("With Disabled Items:"),
+                  const SizedBox(height: 8),
+                  ModPopupButton<String>(
+                    title: 'Status',
+                    leftIcon: Icons.settings,
+                    popupIcon: Icons.keyboard_arrow_down,
+                    type: ModButtonType.dark,
+                    items: [
+                      ModPopupMenuItem<String>(
+                        value: 'active',
+                        text: 'Ativo',
+                        icon: Icons.check_circle,
+                        iconColor: Colors.green,
+                        textColor: Colors.green,
+                      ),
+                      ModPopupMenuItem<String>(
+                        value: 'inactive',
+                        text: 'Inativo',
+                        icon: Icons.pause_circle,
+                        iconColor: Colors.orange,
+                        textColor: Colors.orange,
+                      ),
+                      ModPopupMenuItem<String>(
+                        value: 'disabled',
+                        text: 'Desabilitado',
+                        icon: Icons.block,
+                        enabled: false,
+                      ),
+                      ModPopupMenuItem<String>(
+                        value: 'pending',
+                        text: 'Pendente',
+                        icon: Icons.hourglass_empty,
+                        iconColor: Colors.blue,
+                        textColor: Colors.blue,
+                      ),
+                    ],
+                    onSelected: (value) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Status: $value')),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  const Text("Custom Widget Items:"),
+                  const SizedBox(height: 8),
+                  ModPopupButton<int>(
+                    title: 'Advanced',
+                    leftIcon: Icons.auto_awesome,
+                    popupIcon: Icons.expand_more,
+                    type: ModButtonType.secondary,
+                    borderRadius: 8.0,
+                    items: [
+                      ModPopupMenuItem<int>(
+                        value: 1,
+                        child: Row(
+                          children: [
+                            Icon(Icons.favorite, color: Colors.red, size: 18),
+                            const SizedBox(width: 8),
+                            const Text('Favorito'),
+                            const Spacer(),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Text(
+                                'NEW',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      ModPopupMenuItem<int>(
+                        value: 2,
+                        child: Row(
+                          children: [
+                            Icon(Icons.star_rate,
+                                color: Colors.amber, size: 18),
+                            const SizedBox(width: 8),
+                            const Text('5 Estrelas'),
+                            const Spacer(),
+                            Icon(Icons.arrow_forward_ios,
+                                size: 14, color: Colors.grey),
+                          ],
+                        ),
+                      ),
+                      ModPopupMenuItem<int>(
+                        value: 3,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 12,
+                                height: 12,
+                                decoration: const BoxDecoration(
+                                  color: Colors.green,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Text('Online'),
+                              const Spacer(),
+                              const Text(
+                                '•••',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                    onSelected: (value) {
+                      String message = '';
+                      switch (value) {
+                        case 1:
+                          message = 'Favorito selecionado';
+                          break;
+                        case 2:
+                          message = '5 Estrelas selecionado';
+                          break;
+                        case 3:
+                          message = 'Status Online';
+                          break;
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(message)),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  const Text("Popup Buttons with Submenus:"),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      ModPopupButton<String>(
+                        title: 'Configurações',
+                        leftIcon: Icons.settings,
+                        popupIcon: Icons.arrow_drop_down,
+                        type: ModButtonType.secondary,
+                        menuFontSize: 15,
+                        submenuFontSize: 14,
+                        menuItemPadding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        submenuItemPadding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 10),
+                        iconTextSpacing: 10,
+                        submenuOffset: 2,
+                        items: [
+                          ModPopupMenuItem<String>(
+                            value: 'perfil',
+                            text: 'Perfil',
+                            icon: Icons.person,
+                            submenu: [
+                              ModPopupMenuItem<String>(
+                                value: 'edit_profile',
+                                text: 'Editar Perfil',
+                                icon: Icons.edit,
+                              ),
+                              ModPopupMenuItem<String>(
+                                value: 'change_password',
+                                text: 'Alterar Senha',
+                                icon: Icons.lock,
+                              ),
+                              ModPopupMenuItem<String>(
+                                value: 'privacy',
+                                text: 'Privacidade',
+                                icon: Icons.privacy_tip,
+                              ),
+                            ],
+                          ),
+                          ModPopupMenuItem<String>(
+                            value: 'tema',
+                            text: 'Tema',
+                            icon: Icons.palette,
+                            submenu: [
+                              ModPopupMenuItem<String>(
+                                value: 'light_theme',
+                                text: 'Tema Claro',
+                                icon: Icons.light_mode,
+                              ),
+                              ModPopupMenuItem<String>(
+                                value: 'dark_theme',
+                                text: 'Tema Escuro',
+                                icon: Icons.dark_mode,
+                              ),
+                              ModPopupMenuItem<String>(
+                                value: 'auto_theme',
+                                text: 'Automático',
+                                icon: Icons.auto_mode,
+                              ),
+                            ],
+                          ),
+                          ModPopupMenuItem<String>(
+                            value: 'idioma',
+                            text: 'Idioma',
+                            icon: Icons.language,
+                            submenu: [
+                              ModPopupMenuItem<String>(
+                                value: 'pt_br',
+                                text: 'Português',
+                                icon: Icons.flag,
+                              ),
+                              ModPopupMenuItem<String>(
+                                value: 'en_us',
+                                text: 'English',
+                                icon: Icons.flag,
+                              ),
+                              ModPopupMenuItem<String>(
+                                value: 'es_es',
+                                text: 'Español',
+                                icon: Icons.flag,
+                              ),
+                            ],
+                          ),
+                          ModPopupMenuItem<String>(
+                            value: 'logout',
+                            text: 'Sair',
+                            icon: Icons.logout,
+                            textColor: Colors.red,
+                            iconColor: Colors.red,
+                          ),
+                        ],
+                        onSelected: (value) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Configuração: $value')),
+                          );
+                        },
+                      ),
+                      ModPopupButton<String>(
+                        title: 'Arquivo',
+                        leftIcon: Icons.folder,
+                        popupIcon: Icons.keyboard_arrow_down,
+                        type: ModButtonType.info,
+                        size: ModButtonSize.sm,
+                        items: [
+                          ModPopupMenuItem<String>(
+                            value: 'new',
+                            text: 'Novo',
+                            icon: Icons.add,
+                            submenu: [
+                              ModPopupMenuItem<String>(
+                                value: 'new_document',
+                                text: 'Documento',
+                                icon: Icons.description,
+                              ),
+                              ModPopupMenuItem<String>(
+                                value: 'new_folder',
+                                text: 'Pasta',
+                                icon: Icons.folder,
+                              ),
+                              ModPopupMenuItem<String>(
+                                value: 'new_spreadsheet',
+                                text: 'Planilha',
+                                icon: Icons.table_chart,
+                              ),
+                            ],
+                          ),
+                          ModPopupMenuItem<String>(
+                            value: 'open',
+                            text: 'Abrir',
+                            icon: Icons.folder_open,
+                          ),
+                          ModPopupMenuItem<String>(
+                            value: 'export',
+                            text: 'Exportar',
+                            icon: Icons.file_upload,
+                            submenu: [
+                              ModPopupMenuItem<String>(
+                                value: 'export_pdf',
+                                text: 'PDF',
+                                icon: Icons.picture_as_pdf,
+                              ),
+                              ModPopupMenuItem<String>(
+                                value: 'export_excel',
+                                text: 'Excel',
+                                icon: Icons.table_view,
+                              ),
+                              ModPopupMenuItem<String>(
+                                value: 'export_image',
+                                text: 'Imagem',
+                                icon: Icons.image,
+                              ),
+                            ],
+                          ),
+                        ],
+                        onSelected: (value) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Arquivo: $value')),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Text("Customização Avançada de Fontes e Espaçamentos:"),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      ModPopupButton<String>(
+                        title: 'Fontes Pequenas',
+                        leftIcon: Icons.text_fields,
+                        popupIcon: Icons.keyboard_arrow_down,
+                        type: ModButtonType.info,
+                        size: ModButtonSize.sm,
+                        menuFontSize: 12,
+                        submenuFontSize: 11,
+                        menuItemPadding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 6),
+                        submenuItemPadding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 6),
+                        iconTextSpacing: 6,
+                        submenuOffset: 1,
+                        items: [
+                          ModPopupMenuItem<String>(
+                            value: 'formato',
+                            text: 'Formatação',
+                            icon: Icons.format_paint,
+                            submenu: [
+                              ModPopupMenuItem<String>(
+                                value: 'bold',
+                                text: 'Negrito',
+                                icon: Icons.format_bold,
+                              ),
+                              ModPopupMenuItem<String>(
+                                value: 'italic',
+                                text: 'Itálico',
+                                icon: Icons.format_italic,
+                              ),
+                              ModPopupMenuItem<String>(
+                                value: 'underline',
+                                text: 'Sublinhado',
+                                icon: Icons.format_underlined,
+                              ),
+                            ],
+                          ),
+                          ModPopupMenuItem<String>(
+                            value: 'align',
+                            text: 'Alinhamento',
+                            icon: Icons.format_align_left,
+                            submenu: [
+                              ModPopupMenuItem<String>(
+                                value: 'left',
+                                text: 'Esquerda',
+                                icon: Icons.format_align_left,
+                              ),
+                              ModPopupMenuItem<String>(
+                                value: 'center',
+                                text: 'Centro',
+                                icon: Icons.format_align_center,
+                              ),
+                              ModPopupMenuItem<String>(
+                                value: 'right',
+                                text: 'Direita',
+                                icon: Icons.format_align_right,
+                              ),
+                            ],
+                          ),
+                        ],
+                        onSelected: (value) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Formatação: $value')),
+                          );
+                        },
+                      ),
+                      ModPopupButton<String>(
+                        title: 'Fontes Grandes',
+                        leftIcon: Icons.text_increase,
+                        popupIcon: Icons.expand_more,
+                        type: ModButtonType.warning,
+                        size: ModButtonSize.lg,
+                        menuFontSize: 18,
+                        submenuFontSize: 16,
+                        menuItemPadding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 16),
+                        submenuItemPadding: const EdgeInsets.symmetric(
+                            horizontal: 18, vertical: 14),
+                        iconTextSpacing: 12,
+                        submenuOffset: 6,
+                        items: [
+                          ModPopupMenuItem<String>(
+                            value: 'media',
+                            text: 'Mídia',
+                            icon: Icons.perm_media,
+                            submenu: [
+                              ModPopupMenuItem<String>(
+                                value: 'photo',
+                                text: 'Inserir Foto',
+                                icon: Icons.photo,
+                              ),
+                              ModPopupMenuItem<String>(
+                                value: 'video',
+                                text: 'Inserir Vídeo',
+                                icon: Icons.videocam,
+                              ),
+                              ModPopupMenuItem<String>(
+                                value: 'audio',
+                                text: 'Inserir Áudio',
+                                icon: Icons.audiotrack,
+                              ),
+                            ],
+                          ),
+                          ModPopupMenuItem<String>(
+                            value: 'help',
+                            text: 'Ajuda',
+                            icon: Icons.help_outline,
+                          ),
+                        ],
+                        onSelected: (value) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Mídia: $value')),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Text("Disabled Popup Button:"),
+                  const SizedBox(height: 8),
+                  ModPopupButton<String>(
+                    title: 'Disabled',
+                    leftIcon: Icons.block,
+                    popupIcon: Icons.arrow_drop_down,
+                    type: ModButtonType.primary,
+                    disabled: true,
+                    items: [
+                      ModPopupMenuItem<String>(
+                        value: 'item1',
+                        text: 'Item 1',
+                        icon: Icons.looks_one,
+                      ),
+                    ],
+                    onSelected: (value) {},
+                  ),
                 ],
               ),
             ),
