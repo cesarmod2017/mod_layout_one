@@ -1,3 +1,20 @@
+## 1.0.75
+* Enhanced ModBarChart widget:
+  * Added comprehensive horizontal bar chart functionality with customizable data visualization
+  * Implemented support for static and dynamic data loading with async data fetching capabilities
+  * Added interactive action buttons with period filtering and custom styling options
+  * Enhanced chart customization with configurable bar height, spacing, and border radius
+  * Implemented unit positioning support (left/right) with flexible value formatting
+  * Added comprehensive theming support for light and dark modes with customizable colors
+  * Enhanced user interaction with bar click callbacks and tooltip functionality
+  * Implemented scroll support for charts with many data items using maxItemsBeforeScroll
+  * Added error handling capabilities with custom error callbacks
+  * Enhanced visual feedback with loading states and data update animations
+  * Implemented comprehensive styling options for titles, labels, and chart elements
+  * Added support for custom footer widgets and additional chart metadata display
+  * Enhanced accessibility and responsive design for different screen sizes
+  * Improved chart performance with optimized rendering and data handling
+
 ## 1.0.74
 * Enhanced ModPopupButton widget:
   * Added comprehensive popup button functionality with customizable menu items

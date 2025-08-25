@@ -4,6 +4,7 @@ import 'package:example/controllers/app_controller.dart';
 import 'package:example/pages/avatars_page.dart';
 import 'package:example/pages/buttons_page.dart';
 import 'package:example/pages/card_page.dart';
+import 'package:example/pages/charts_page.dart';
 import 'package:example/pages/dialogs_page.dart';
 import 'package:example/pages/home_page.dart';
 import 'package:example/pages/loading_page.dart';
@@ -94,6 +95,11 @@ void main() async {
           title: 'tables'.tr,
           icon: Icons.table_chart,
           route: '/tables',
+        ),
+        MenuItem(
+          title: 'charts'.tr,
+          icon: Icons.bar_chart,
+          route: '/charts',
         ),
       ],
       customTranslations:
@@ -207,6 +213,12 @@ class MyApp extends StatelessWidget {
               transition: Transition.noTransition,
               preventDuplicates: true,
             ),
+            GetPage(
+              name: '/charts',
+              page: () => const ChartsPage(),
+              transition: Transition.noTransition,
+              preventDuplicates: true,
+            ),
           ],
           initialRoute: '/home',
         ));
@@ -258,6 +270,7 @@ class CustomLayout extends StatelessWidget {
         'menu:tables',
         'menu:loading',
         'menu:treeview',
+        'menu:charts',
       ],
       moduleMenuGroups: [
         ModuleMenu(
@@ -386,6 +399,13 @@ class CustomLayout extends StatelessWidget {
                   route: '/treeview',
                   type: 'menu',
                   value: 'treeview',
+                ),
+                MenuItem(
+                  title: 'charts',
+                  icon: Icons.bar_chart,
+                  route: '/charts',
+                  type: 'menu',
+                  value: 'charts',
                 ),
               ],
             ),

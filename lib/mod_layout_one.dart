@@ -42,6 +42,9 @@ export 'widgets/buttons/icon_buttom.dart';
 export 'widgets/buttons/popup_buttom.dart';
 // Cards
 export 'widgets/cards/card_default.dart';
+// Charts
+export 'widgets/charts/charts.dart';
+export 'widgets/charts/mod_bar_chart.dart';
 export 'widgets/datatable/datatable.dart';
 export 'widgets/dialogs/dialog.dart';
 export 'widgets/dropdown/dropdown.dart';

@@ -15,6 +15,7 @@ class AppTranslations extends BaseTranslations {
         'language_english': 'English',
         'language_portuguese': 'Portuguese',
         'language_spanish': 'Spanish',
+        'charts': 'Charts',
       },
       'pt_BR': {
         'settings_content': 'Conteúdo das configurações aqui',
@@ -22,6 +23,7 @@ class AppTranslations extends BaseTranslations {
         'language_english': 'Inglês',
         'language_portuguese': 'Português',
         'language_spanish': 'Espanhol',
+        'charts': 'Gráficos',
       },
       'es_ES': {
         'settings_content': 'Contenido de las configuraciones aquí',
@@ -29,6 +31,7 @@ class AppTranslations extends BaseTranslations {
         'language_english': 'Inglés',
         'language_portuguese': 'Portugués',
         'language_spanish': 'Español',
+        'charts': 'Gráficos',
       }
     };
 
