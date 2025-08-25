@@ -24,7 +24,7 @@ class MyAppTheme {
       backgroundColor:
           appBarColor, // Updated drawer background color for light theme
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
@@ -92,7 +92,7 @@ class MyAppTheme {
       backgroundColor: Color(0xFF2C2F33),
       surfaceTintColor: Colors.white,
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
