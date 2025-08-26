@@ -15,7 +15,7 @@ enum BarChartOrientation {
 }
 
 class _HoverableBar extends StatefulWidget {
-  final ChartDataItem item;
+  final ModChartDataItem item;
   final Color color;
   final double width;
   final double height;
@@ -129,11 +129,11 @@ class ModBarChart extends StatefulWidget {
   final String title;
   final TextStyle? titleStyle;
   final List<ChartActionButton> actions;
-  final ChartData? initialData;
-  final Future<ChartData> Function(String period)? fetchData;
+  final ModChartData? initialData;
+  final Future<ModChartData> Function(String period)? fetchData;
   final Function(String)? onPeriodChange;
-  final Function(String, List<ChartDataItem>)? onDataLoaded;
-  final Function(ChartDataItem)? onBarClick;
+  final Function(String, List<ModChartDataItem>)? onDataLoaded;
+  final Function(ModChartDataItem)? onBarClick;
   final Function(String)? onError;
   final BarChartOrientation orientation;
   final double barHeight;
@@ -630,7 +630,7 @@ class _ModBarChartState extends State<ModBarChart> {
     }
 
     // Se o footer interativo estiver habilitado, filtra apenas os itens visíveis
-    List<ChartDataItem> itemsToShow = data.data;
+    List<ModChartDataItem> itemsToShow = data.data;
     if (widget.enableFooter) {
       _initializeItemVisibility(data.data);
       itemsToShow = _getVisibleItems(data.data);
@@ -642,7 +642,7 @@ class _ModBarChartState extends State<ModBarChart> {
     }
 
     // Cria dados filtrados para renderização
-    final filteredData = ChartData(
+    final filteredData = ModChartData(
       title: data.title,
       period: data.period,
       unit: data.unit,
@@ -781,7 +781,7 @@ class _ModBarChartState extends State<ModBarChart> {
     );
   }
 
-  Widget _buildChart(ChartData data, ThemeData theme) {
+  Widget _buildChart(ModChartData data, ThemeData theme) {
     final maxValue = _calculateMaxValue(data);
 
     return widget.orientation == BarChartOrientation.horizontal
@@ -790,7 +790,7 @@ class _ModBarChartState extends State<ModBarChart> {
   }
 
   Widget _buildHorizontalChart(
-      ChartData data, ThemeData theme, double maxValue) {
+      ModChartData data, ThemeData theme, double maxValue) {
     final zoomFactor = widget.enableZoom ? _currentZoom / 100.0 : 1.0;
 
     Widget chartContent = Column(
@@ -897,7 +897,7 @@ class _ModBarChartState extends State<ModBarChart> {
     );
   }
 
-  Widget _buildVerticalChart(ChartData data, ThemeData theme, double maxValue) {
+  Widget _buildVerticalChart(ModChartData data, ThemeData theme, double maxValue) {
     final zoomFactor = widget.enableZoom ? _currentZoom / 100.0 : 1.0;
 
     Widget chartContent = Row(
@@ -988,7 +988,7 @@ class _ModBarChartState extends State<ModBarChart> {
   }
 
   Widget _buildHorizontalBarRow(
-    ChartDataItem item,
+    ModChartDataItem item,
     int index,
     double maxValue,
     ThemeData theme,
@@ -1107,7 +1107,7 @@ class _ModBarChartState extends State<ModBarChart> {
     );
   }
 
-  double _calculateMaxValue(ChartData data) {
+  double _calculateMaxValue(ModChartData data) {
     if (data.data.isEmpty) return 0;
 
     final maxDataValue =
@@ -1121,7 +1121,7 @@ class _ModBarChartState extends State<ModBarChart> {
   }
 
   Widget _buildVerticalBarColumn(
-    ChartDataItem item,
+    ModChartDataItem item,
     int index,
     double maxValue,
     ThemeData theme,
@@ -1189,7 +1189,7 @@ class _ModBarChartState extends State<ModBarChart> {
   }
 
   // Inicializa a visibilidade de todos os itens como true
-  void _initializeItemVisibility(List<ChartDataItem> items) {
+  void _initializeItemVisibility(List<ModChartDataItem> items) {
     for (var item in items) {
       if (!_itemVisibility.containsKey(item.label)) {
         _itemVisibility[item.label] = true;
@@ -1198,7 +1198,7 @@ class _ModBarChartState extends State<ModBarChart> {
   }
 
   // Retorna apenas os itens visíveis
-  List<ChartDataItem> _getVisibleItems(List<ChartDataItem> items) {
+  List<ModChartDataItem> _getVisibleItems(List<ModChartDataItem> items) {
     return items.where((item) => _itemVisibility[item.label] == true).toList();
   }
 

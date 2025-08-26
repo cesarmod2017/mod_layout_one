@@ -1,3 +1,10 @@
+## 1.0.76
+* ModChartDataItem fixes:
+  * Fixed color property propagation in fromJson method to maintain custom item colors in charts
+  * Improved color consistency for chart items when loading data via JSON
+  * Enhanced custom color functionality for dynamic data loading
+
+
 ## 1.0.75
 * Enhanced ModBarChart widget:
   * Added comprehensive horizontal bar chart functionality with customizable data visualization

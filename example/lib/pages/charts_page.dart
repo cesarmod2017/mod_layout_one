@@ -14,69 +14,69 @@ class _ChartsPageState extends State<ChartsPage> {
   String selectedPeriod = 'geral';
 
   // Simulação de dados para diferentes períodos
-  final Map<String, ChartData> mockData = {
-    'geral': ChartData(
+  final Map<String, ModChartData> mockData = {
+    'geral': ModChartData(
       title: 'DESEMPENHO GERAL',
       period: 'geral',
       unit: '',
       updatedAt: DateTime.now(),
       data: [
-        ChartDataItem(label: 'Cesar', value: 15.4),
-        ChartDataItem(label: 'Rodrigo', value: 12.5),
-        ChartDataItem(label: 'Fred', value: 10.0),
-        ChartDataItem(label: 'Ana', value: 5.0),
-        ChartDataItem(label: 'Maria', value: 8.7),
-        ChartDataItem(label: 'João', value: 11.3),
-        ChartDataItem(label: 'Pedro', value: 9.2),
-        ChartDataItem(label: 'Lucas', value: 7.8),
+        ModChartDataItem(label: 'Cesar', value: 15.4),
+        ModChartDataItem(label: 'Rodrigo', value: 12.5),
+        ModChartDataItem(label: 'Fred', value: 10.0),
+        ModChartDataItem(label: 'Ana', value: 5.0),
+        ModChartDataItem(label: 'Maria', value: 8.7),
+        ModChartDataItem(label: 'João', value: 11.3),
+        ModChartDataItem(label: 'Pedro', value: 9.2),
+        ModChartDataItem(label: 'Lucas', value: 7.8),
       ],
       maxHint: 20,
     ),
-    'mes': ChartData(
+    'mes': ModChartData(
       title: 'DESEMPENHO MENSAL',
       period: 'mes',
       unit: '%',
       unitPosition: UnitPosition.right, // Unidade à direita (18,2%)
       updatedAt: DateTime.now(),
       data: [
-        ChartDataItem(label: 'Cesar', value: 18.2),
-        ChartDataItem(label: 'Rodrigo', value: 14.7),
-        ChartDataItem(label: 'Fred', value: 12.3),
-        ChartDataItem(label: 'Ana', value: 8.5),
-        ChartDataItem(label: 'Maria', value: 10.1),
-        ChartDataItem(label: 'João', value: 13.6),
-        ChartDataItem(label: 'Pedro', value: 11.4),
-        ChartDataItem(label: 'Lucas', value: 9.9),
-        ChartDataItem(label: 'Carlos', value: 15.7),
-        ChartDataItem(label: 'Julia', value: 12.8),
-        ChartDataItem(label: 'Rafael', value: 14.2),
-        ChartDataItem(label: 'Beatriz', value: 11.5),
-        ChartDataItem(label: 'Gabriel', value: 13.3),
-        ChartDataItem(label: 'Fernanda', value: 10.6),
-        ChartDataItem(label: 'Bruno', value: 9.4),
+        ModChartDataItem(label: 'Cesar', value: 18.2),
+        ModChartDataItem(label: 'Rodrigo', value: 14.7),
+        ModChartDataItem(label: 'Fred', value: 12.3),
+        ModChartDataItem(label: 'Ana', value: 8.5),
+        ModChartDataItem(label: 'Maria', value: 10.1),
+        ModChartDataItem(label: 'João', value: 13.6),
+        ModChartDataItem(label: 'Pedro', value: 11.4),
+        ModChartDataItem(label: 'Lucas', value: 9.9),
+        ModChartDataItem(label: 'Carlos', value: 15.7),
+        ModChartDataItem(label: 'Julia', value: 12.8),
+        ModChartDataItem(label: 'Rafael', value: 14.2),
+        ModChartDataItem(label: 'Beatriz', value: 11.5),
+        ModChartDataItem(label: 'Gabriel', value: 13.3),
+        ModChartDataItem(label: 'Fernanda', value: 10.6),
+        ModChartDataItem(label: 'Bruno', value: 9.4),
       ],
       maxHint: 25,
     ),
-    'ano': ChartData(
+    'ano': ModChartData(
       title: 'DESEMPENHO ANUAL',
       period: 'ano',
       unit: 'k',
       unitPosition: UnitPosition.right, // Unidade à direita (125,4k)
       updatedAt: DateTime.now(),
       data: [
-        ChartDataItem(label: 'Cesar', value: 125.4),
-        ChartDataItem(label: 'Rodrigo', value: 98.5),
-        ChartDataItem(label: 'Fred', value: 87.0),
-        ChartDataItem(label: 'Ana', value: 65.0),
-        ChartDataItem(label: 'Maria', value: 72.7),
-        ChartDataItem(label: 'João', value: 91.3),
+        ModChartDataItem(label: 'Cesar', value: 125.4),
+        ModChartDataItem(label: 'Rodrigo', value: 98.5),
+        ModChartDataItem(label: 'Fred', value: 87.0),
+        ModChartDataItem(label: 'Ana', value: 65.0),
+        ModChartDataItem(label: 'Maria', value: 72.7),
+        ModChartDataItem(label: 'João', value: 91.3),
       ],
       maxHint: 150,
     ),
   };
 
   // Simula chamada à API
-  Future<ChartData> fetchChartData(String period) async {
+  Future<ModChartData> fetchModChartData(String period) async {
     // Simula delay de rede
     await Future.delayed(const Duration(seconds: 1));
 
@@ -130,7 +130,7 @@ class _ChartsPageState extends State<ChartsPage> {
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
-                initialData: ChartData(
+                initialData: ModChartData(
                   title: 'VENDAS POR CATEGORIA',
                   period: 'geral',
                   unit: 'R\$',
@@ -139,11 +139,11 @@ class _ChartsPageState extends State<ChartsPage> {
                       UnitPosition.left, // Unidade à esquerda (R$ 45.780)
                   updatedAt: DateTime.now(),
                   data: [
-                    ChartDataItem(label: 'Eletrônicos', value: 45780),
-                    ChartDataItem(label: 'Roupas', value: 32150),
-                    ChartDataItem(label: 'Alimentos', value: 28900),
-                    ChartDataItem(label: 'Livros', value: 15670),
-                    ChartDataItem(label: 'Esportes', value: 21340),
+                    ModChartDataItem(label: 'Eletrônicos', value: 45780),
+                    ModChartDataItem(label: 'Roupas', value: 32150),
+                    ModChartDataItem(label: 'Alimentos', value: 28900),
+                    ModChartDataItem(label: 'Livros', value: 15670),
+                    ModChartDataItem(label: 'Esportes', value: 21340),
                   ],
                   maxHint: 50000,
                 ),
@@ -217,7 +217,7 @@ class _ChartsPageState extends State<ChartsPage> {
                     },
                   ),
                 ],
-                fetchData: fetchChartData,
+                fetchData: fetchModChartData,
                 onPeriodChange: (period) {
                   debugPrint('Período alterado para: $period');
                 },
@@ -253,7 +253,7 @@ class _ChartsPageState extends State<ChartsPage> {
                   fontWeight: FontWeight.bold,
                   color: Colors.indigo,
                 ),
-                initialData: ChartData(
+                initialData: ModChartData(
                   title: 'PROGRESSO DO PROJETO',
                   period: 'geral',
                   unit: '%',
@@ -261,12 +261,12 @@ class _ChartsPageState extends State<ChartsPage> {
                   unitPosition: UnitPosition.right, // Percentual à direita
                   updatedAt: DateTime.now(),
                   data: [
-                    ChartDataItem(label: 'Frontend', value: 85),
-                    ChartDataItem(label: 'Backend', value: 72),
-                    ChartDataItem(label: 'Database', value: 90),
-                    ChartDataItem(label: 'DevOps', value: 65),
-                    ChartDataItem(label: 'Testing', value: 58),
-                    ChartDataItem(label: 'Documentation', value: 45),
+                    ModChartDataItem(label: 'Frontend', value: 85),
+                    ModChartDataItem(label: 'Backend', value: 72),
+                    ModChartDataItem(label: 'Database', value: 90),
+                    ModChartDataItem(label: 'DevOps', value: 65),
+                    ModChartDataItem(label: 'Testing', value: 58),
+                    ModChartDataItem(label: 'Documentation', value: 45),
                   ],
                   maxHint: 100,
                 ),
@@ -316,14 +316,14 @@ class _ChartsPageState extends State<ChartsPage> {
               ),
               content: ModBarChart(
                 title: 'RANKING DE VENDEDORES',
-                initialData: ChartData(
+                initialData: ModChartData(
                   title: 'RANKING DE VENDEDORES',
                   period: 'geral',
                   unit: '',
                   updatedAt: DateTime.now(),
                   data: List.generate(
                     20,
-                    (index) => ChartDataItem(
+                    (index) => ModChartDataItem(
                       label: 'Vendedor ${index + 1}',
                       value: (20 - index) * 5.0 + (index * 2.5),
                     ),
@@ -390,17 +390,17 @@ class _ChartsPageState extends State<ChartsPage> {
                 darkUnselectedTextColor: Colors.orange.shade300,
                 darkBorderColor: Colors.orange.withValues(alpha: 0.4),
 
-                initialData: ChartData(
+                initialData: ModChartData(
                   title: 'CORES PERSONALIZADAS',
                   period: 'q1',
                   unit: 'pts',
                   unitPosition: UnitPosition.right,
                   updatedAt: DateTime.now(),
                   data: [
-                    ChartDataItem(label: 'Vendas', value: 92),
-                    ChartDataItem(label: 'Marketing', value: 78),
-                    ChartDataItem(label: 'Suporte', value: 85),
-                    ChartDataItem(label: 'Financeiro', value: 67),
+                    ModChartDataItem(label: 'Vendas', value: 92),
+                    ModChartDataItem(label: 'Marketing', value: 78),
+                    ModChartDataItem(label: 'Suporte', value: 85),
+                    ModChartDataItem(label: 'Financeiro', value: 67),
                   ],
                   maxHint: 100,
                 ),
@@ -420,19 +420,19 @@ class _ChartsPageState extends State<ChartsPage> {
                 enableFooter: true, // Habilita o footer interativo
                 emptyStateTitle: 'Selecione pelo menos uma categoria',
                 emptyStateIcon: Icons.category_outlined,
-                initialData: ChartData(
+                initialData: ModChartData(
                   title: 'VENDAS POR CATEGORIA',
                   period: 'geral',
                   unit: 'R\$',
                   unitPosition: UnitPosition.left,
                   updatedAt: DateTime.now(),
                   data: [
-                    ChartDataItem(label: 'Eletrônicos', value: 45780),
-                    ChartDataItem(label: 'Roupas', value: 32150),
-                    ChartDataItem(label: 'Alimentos', value: 28900),
-                    ChartDataItem(label: 'Livros', value: 15670),
-                    ChartDataItem(label: 'Esportes', value: 21340),
-                    ChartDataItem(label: 'Casa', value: 18900),
+                    ModChartDataItem(label: 'Eletrônicos', value: 45780),
+                    ModChartDataItem(label: 'Roupas', value: 32150),
+                    ModChartDataItem(label: 'Alimentos', value: 28900),
+                    ModChartDataItem(label: 'Livros', value: 15670),
+                    ModChartDataItem(label: 'Esportes', value: 21340),
+                    ModChartDataItem(label: 'Casa', value: 18900),
                   ],
                   maxHint: 50000,
                 ),
@@ -466,15 +466,15 @@ class _ChartsPageState extends State<ChartsPage> {
                   '''// Exemplo básico
 ModBarChart(
   title: 'MEU GRÁFICO',
-  initialData: ChartData(
+  initialData: ModChartData(
     title: 'MEU GRÁFICO',
     period: 'geral',
     unit: 'R\$',
     unitPosition: UnitPosition.left, // R\$ 100 (esquerda) ou 100 R\$ (direita)
     data: [
-      ChartDataItem(label: 'Item 1', value: 100),
-      ChartDataItem(label: 'Item 2', value: 85),
-      ChartDataItem(label: 'Item 3', value: 70),
+      ModChartDataItem(label: 'Item 1', value: 100),
+      ModChartDataItem(label: 'Item 2', value: 85),
+      ModChartDataItem(label: 'Item 3', value: 70),
     ],
   ),
 )
@@ -485,7 +485,7 @@ ModBarChart(
   actions: [...],
   fetchData: (period) async {
     final response = await api.get('/chart/\$period');
-    return ChartData.fromJson(response.data);
+    return ModChartData.fromJson(response.data);
   },
 
   // Cores customizadas - Light Theme

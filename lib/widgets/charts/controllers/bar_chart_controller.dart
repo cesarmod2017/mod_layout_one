@@ -5,14 +5,14 @@ class BarChartController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxBool hasError = false.obs;
   final RxString errorMessage = ''.obs;
-  final Rx<ChartData?> chartData = Rx<ChartData?>(null);
+  final Rx<ModChartData?> chartData = Rx<ModChartData?>(null);
   final RxString selectedPeriod = 'geral'.obs;
 
   Future<void> loadData({
-    required Future<ChartData> Function(String period) fetchData,
+    required Future<ModChartData> Function(String period) fetchData,
     required String period,
     Function(String)? onPeriodChange,
-    Function(String, List<ChartDataItem>)? onDataLoaded,
+    Function(String, List<ModChartDataItem>)? onDataLoaded,
     Function(String)? onError,
   }) async {
     try {
@@ -38,9 +38,9 @@ class BarChartController extends GetxController {
   }
 
   void retry({
-    required Future<ChartData> Function(String period) fetchData,
+    required Future<ModChartData> Function(String period) fetchData,
     Function(String)? onPeriodChange,
-    Function(String, List<ChartDataItem>)? onDataLoaded,
+    Function(String, List<ModChartDataItem>)? onDataLoaded,
     Function(String)? onError,
   }) {
     loadData(
