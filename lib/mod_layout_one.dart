@@ -45,6 +45,7 @@ export 'widgets/cards/card_default.dart';
 // Charts
 export 'widgets/charts/charts.dart';
 export 'widgets/charts/mod_bar_chart.dart';
+export 'widgets/charts/models/chart_action_button_theme.dart';
 export 'widgets/datatable/datatable.dart';
 export 'widgets/dialogs/dialog.dart';
 export 'widgets/dropdown/dropdown.dart';
@@ -65,6 +66,9 @@ export 'widgets/tabs/tabs.dart';
 export 'widgets/text/text_copy.dart';
 export 'widgets/text/text_divider.dart';
 export 'widgets/textbox/textbox.dart';
+// Toast
+export 'widgets/toast/mod_toast.dart';
+export 'widgets/toast/toast_manager.dart';
 export 'widgets/treeview/mod_treeview.dart';
 
 // Configuration

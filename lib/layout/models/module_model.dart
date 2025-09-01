@@ -8,6 +8,9 @@ class ModuleMenu {
   final String? description;
   final List<MenuGroup> menuGroups;
   final Function(ModuleMenu)? onSelect;
+  final double? fontSize;
+  final FontWeight? fontWeight;
+  final double? iconSize;
 
   const ModuleMenu({
     required this.name,
@@ -16,5 +19,8 @@ class ModuleMenu {
     this.description,
     required this.menuGroups,
     this.onSelect,
+    this.fontSize,
+    this.fontWeight,
+    this.iconSize,
   });
 }

@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:mod_layout_one/controllers/language_controller.dart';
 import 'package:mod_layout_one/controllers/layout_controller.dart';
 import 'package:mod_layout_one/controllers/theme_controller.dart';
-import 'package:mod_layout_one/layout/components/sidebar.dart';
 import 'package:mod_layout_one/layout/models/menu_group.dart';
 import 'package:mod_layout_one/layout/models/module_model.dart';
 
@@ -16,6 +15,9 @@ class MobileDrawer extends StatelessWidget {
   final Color? backgroundColor;
   final Color? selectedColor;
   final Color? unselectedColor;
+  final double? fontSize;
+  final FontWeight? fontWeight;
+  final double? iconSize;
 
   const MobileDrawer({
     super.key,
@@ -26,53 +28,74 @@ class MobileDrawer extends StatelessWidget {
     this.backgroundColor,
     this.selectedColor,
     this.unselectedColor,
+    this.fontSize,
+    this.fontWeight,
+    this.iconSize,
   });
 
   @override
   Widget build(BuildContext context) {
-    final LayoutController layoutController = Get.find();
     final width = MediaQuery.of(context).size.width * 0.85;
 
+    // Solução robusta: múltiplas camadas de cor para forçar a cor personalizada
     return Drawer(
-      child: Column(
-        children: [
-          if (header != null) header!,
-          if (moduleMenuGroups != null && moduleMenuGroups!.isNotEmpty)
-            _buildModuleSelector(context),
-          Expanded(
-            child: Obx(() {
-              final List<MenuGroup> currentMenuGroups =
-                  moduleMenuGroups != null &&
-                          layoutController.selectedModule.value != null
-                      ? layoutController.selectedModule.value!.menuGroups
-                      : menuGroups;
-
-              return ModSidebar(
-                claims: claims,
-                menuGroups: currentMenuGroups,
-                backgroundColor: backgroundColor,
-                selectedColor: selectedColor,
-                unselectedColor: unselectedColor,
-              );
-            }),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: backgroundColor ?? Colors.white,
+        ),
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            color: backgroundColor ?? Colors.white,
           ),
-          Container(
-            width: width,
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: Theme.of(context).dividerColor),
+          child: Material(
+            type: MaterialType.canvas,
+            color: backgroundColor ?? Colors.white,
+            child: Container(
+              color: backgroundColor ?? Colors.white,
+              child: Column(
+                children: [
+                  if (header != null) header!,
+                  if (moduleMenuGroups != null && moduleMenuGroups!.isNotEmpty)
+                    _buildModuleSelector(context),
+                  Expanded(
+                    child: Container(
+                      color: backgroundColor,
+                      child: Center(
+                        child: Text(
+                          'TESTE DRAWER - COR: ${backgroundColor?.toString() ?? "null"}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: width,
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(color: Theme.of(context).dividerColor),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildThemeButton(),
+                        _buildLanguageButton(),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildThemeButton(),
-                _buildLanguageButton(),
-              ],
-            ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -103,7 +126,7 @@ class MobileDrawer extends StatelessWidget {
               else
                 Icon(
                   currentModule?.icon ?? Icons.apps,
-                  size: 24,
+                  size: currentModule?.iconSize ?? iconSize ?? 24,
                   color: Theme.of(context).iconTheme.color,
                 ),
               Expanded(
@@ -112,8 +135,11 @@ class MobileDrawer extends StatelessWidget {
                   children: [
                     Text(
                       currentModule?.name ?? 'Selecione um módulo',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
+                      style: TextStyle(
+                        fontWeight: currentModule?.fontWeight ??
+                            fontWeight ??
+                            FontWeight.bold,
+                        fontSize: currentModule?.fontSize ?? fontSize,
                       ),
                     ),
                     if (currentModule?.description != null)
@@ -152,8 +178,17 @@ class MobileDrawer extends StatelessWidget {
               return ListTile(
                 leading: module.image != null
                     ? SizedBox(width: 24, height: 24, child: module.image)
-                    : Icon(module.icon ?? Icons.apps),
-                title: Text(module.name),
+                    : Icon(
+                        module.icon ?? Icons.apps,
+                        size: module.iconSize ?? iconSize,
+                      ),
+                title: Text(
+                  module.name,
+                  style: TextStyle(
+                    fontSize: module.fontSize ?? fontSize,
+                    fontWeight: module.fontWeight ?? fontWeight,
+                  ),
+                ),
                 subtitle: module.description != null
                     ? Text(
                         module.description!,

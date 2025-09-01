@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class MyAppTheme {
   // Cor primária customizada
   static const Color primaryColor = Color.fromARGB(255, 1, 79, 203);
-  
+
   // Cores do VS Code Light Theme
   static const Color lightBackground = Color(0xFFFFFFFF);
   static const Color lightSurface = Color(0xFFF3F3F3);
@@ -11,7 +11,7 @@ class MyAppTheme {
   static const Color lightBorder = Color(0xFFE5E5E5);
   static const Color lightText = Color(0xFF24292F);
   static const Color lightTextSecondary = Color(0xFF656D76);
-  
+
   // Cores do VS Code Dark Theme
   static const Color darkBackground = Color(0xFF1E1E1E);
   static const Color darkSurface = Color(0xFF2D2D30);

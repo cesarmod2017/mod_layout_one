@@ -1,3 +1,42 @@
+## 1.0.78
+* Enhanced ModBarChart widget:
+  * Added interactive footer with legend functionality for better data visualization control
+  * Implemented item visibility toggle system allowing users to show/hide specific chart items
+  * Enhanced legend customization with configurable border, container styling, and color themes
+  * Added comprehensive zoom functionality with customizable zoom icons and range controls
+  * Improved chart orientation support with both horizontal and vertical bar chart layouts
+  * Enhanced empty state handling with customizable titles and icons when no data is visible
+  * Added advanced color customization for action buttons in both light and dark themes
+  * Implemented ChartActionButtonTheme for centralized button styling and theming
+  * Enhanced chart container customization with configurable background colors and dimensions
+  * Improved legend interaction with visual feedback for active/inactive items
+  * Added support for custom chart width and height constraints for better responsive design
+  * Enhanced chart padding and spacing controls for improved layout flexibility
+  * Improved chart performance with optimized rendering for large datasets
+  * Added comprehensive theme integration for seamless light/dark mode transitions
+
+## 1.0.77
+* Added ModToast widget system:
+  * Implemented comprehensive toast notification system with ToastManager for centralized toast management
+  * Added multiple toast types: success, error, warning, info, and custom with predefined styling
+  * Enhanced toast positioning system with support for topCenter, topLeft, topRight, bottomCenter, bottomLeft, and bottomRight positions
+  * Implemented configurable duration settings with different defaults per toast type (success: 4s, error: 6s, warning: 5s, info: 4s)
+  * Added custom toast functionality with full control over icon, colors, dimensions, and styling
+  * Enhanced toast appearance with customizable background colors, text colors, border radius, and shadows
+  * Implemented toast dismissal with optional close button and automatic timeout functionality
+  * Added margin and padding customization for flexible toast positioning and spacing
+  * Enhanced toast display with icon support and consistent visual hierarchy
+  * Implemented width and height constraints with maxWidth support for responsive design
+* Enhanced ModDropdownSearch widget:
+  * Improved floating label behavior and positioning accuracy
+  * Enhanced label animation smoothness and timing
+  * Fixed label background color issues in different themes
+  * Improved dropdown overlay positioning and sizing
+  * Enhanced search functionality with better text matching algorithms
+  * Added better keyboard navigation support for dropdown items
+  * Improved multiselect display and selection feedback
+  * Enhanced dropdown item styling and hover effects
+
 ## 1.0.76
 * ModChartDataItem fixes:
   * Fixed color property propagation in fromJson method to maintain custom item colors in charts

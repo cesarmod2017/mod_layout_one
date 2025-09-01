@@ -162,80 +162,116 @@ class _ChartsPageState extends State<ChartsPage> {
             const SizedBox(height: 24),
 
             // Exemplo 2: Gráfico com carregamento dinâmico
-            ModCard(
-              header: const Text(
-                'Exemplo 2: Gráfico com Carregamento Dinâmico e Filtros',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              content: ModBarChart(
-                title: 'DESEMPENHO DA EQUIPE',
-                darkBorderColor: Colors.red,
-                orientation: BarChartOrientation.vertical,
-                //barChartWidth: 900,
-                enableFooter: true,
-                chartContainerHeight: 300,
-                darkSelectedBackgroundColor: Colors.red,
-                darkSelectedTextColor: Colors.white,
-                darkUnselectedBackgroundColor:
-                    Colors.red.withValues(alpha: 0.2),
-                darkUnselectedTextColor: Colors.red.shade700,
-                lightSelectedBackgroundColor: Colors.blue,
-                lightSelectedTextColor: Colors.white,
-                lightUnselectedBackgroundColor:
-                    Colors.blue.withValues(alpha: 0.2),
-                lightUnselectedTextColor: Colors.blue.shade700,
-                lightBorderColor: Colors.blue.withValues(alpha: 0.3),
-                actions: [
-                  ChartActionButton(
-                    title: 'Geral',
-                    isSelected: selectedPeriod == 'geral',
+            ModContainer(
+              child: ModRow(
+                columns: [
+                  ModColumn(
+                    columnSizes: const {
+                      ScreenSize.xs: ColumnSize.col12,
+                      ScreenSize.md: ColumnSize.col6,
+                    },
+                    child: ModCard(
+                      header: const Text(
+                        'Exemplo 2: Gráfico com Carregamento Dinâmico e Filtros',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      contentColor: Get.theme.colorScheme.surfaceContainer,
+                      content: ModBarChart(
+                        title: 'DESEMPENHO DA EQUIPE',
+                        darkBorderColor: Colors.red,
+                        orientation: BarChartOrientation.vertical,
+                        zoomInIcon: Icons.zoom_in,
+                        zoomOutIcon: Icons.zoom_out,
+                        titleAlign: TextAlign.left,
+                        titleStyle: TextStyle(fontSize: 14),
+                        actionButtonTheme: ChartActionButtonTheme(
+                          darkBorderColor: Colors.green,
+                          lightBorderColor: Colors.blue,
+                          borderWidth: 1,
+                          padding: const EdgeInsets.all(8),
+                          fontSize: 10,
+                          //height: 30,
+                          borderRadius: 16,
+                          darkSelectedBackgroundColor: Colors.red,
+                          lightSelectedBackgroundColor: Colors.blue,
+                          darkSelectedTextColor: Colors.white,
+                          lightSelectedTextColor: Colors.white,
+                          darkUnselectedBackgroundColor: Colors.yellow,
+                          darkUnselectedTextColor: Colors.black,
+                          lightUnselectedBackgroundColor:
+                              Colors.blue.withValues(alpha: 0.2),
+                        ),
+                        //barChartWidth: 900,
+                        enableFooter: true,
+                        showLegendBorder: false,
+                        showLegendContainer: true,
+                        chartContainerHeight: 300,
+                        darkSelectedBackgroundColor: Colors.red,
+                        darkSelectedTextColor: Colors.white,
+                        darkUnselectedBackgroundColor:
+                            Colors.red.withValues(alpha: 0.2),
+                        darkUnselectedTextColor: Colors.red.shade700,
+                        lightSelectedBackgroundColor: Colors.blue,
+                        lightSelectedTextColor: Colors.white,
+                        lightUnselectedBackgroundColor:
+                            Colors.blue.withValues(alpha: 0.2),
+                        lightUnselectedTextColor: Colors.blue.shade700,
+                        lightBorderColor: Colors.blue.withValues(alpha: 0.3),
+                        actions: [
+                          ChartActionButton(
+                            title: 'Geral',
+                            isSelected: selectedPeriod == 'geral',
 
-                    onPressed: () {
-                      setState(() {
-                        selectedPeriod = 'geral';
-                      });
-                    },
-                    // Exemplo de TextStyle customizado (opcional)
-                    // textStyle: const TextStyle(fontSize: 16),
-                  ),
-                  ChartActionButton(
-                    title: 'Mês',
-                    isSelected: selectedPeriod == 'mes',
-                    onPressed: () {
-                      setState(() {
-                        selectedPeriod = 'mes';
-                      });
-                    },
-                  ),
-                  ChartActionButton(
-                    title: 'Ano',
-                    isSelected: selectedPeriod == 'ano',
-                    onPressed: () {
-                      setState(() {
-                        selectedPeriod = 'ano';
-                      });
-                    },
+                            onPressed: () {
+                              setState(() {
+                                selectedPeriod = 'geral';
+                              });
+                            },
+                            // Exemplo de TextStyle customizado (opcional)
+                            // textStyle: const TextStyle(fontSize: 16),
+                          ),
+                          ChartActionButton(
+                            title: 'Mês',
+                            isSelected: selectedPeriod == 'mes',
+                            onPressed: () {
+                              setState(() {
+                                selectedPeriod = 'mes';
+                              });
+                            },
+                          ),
+                          ChartActionButton(
+                            title: 'Ano',
+                            isSelected: selectedPeriod == 'ano',
+                            onPressed: () {
+                              setState(() {
+                                selectedPeriod = 'ano';
+                              });
+                            },
+                          ),
+                        ],
+                        fetchData: fetchModChartData,
+                        onPeriodChange: (period) {
+                          debugPrint('Período alterado para: $period');
+                        },
+                        onDataLoaded: (period, data) {
+                          debugPrint(
+                              'Dados carregados para $period: ${data.length} itens');
+                        },
+                        onBarClick: (item) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('${item.label}: ${item.value}'),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        },
+                        onError: (error) {
+                          debugPrint('Erro ao carregar dados: $error');
+                        },
+                      ),
+                    ),
                   ),
                 ],
-                fetchData: fetchModChartData,
-                onPeriodChange: (period) {
-                  debugPrint('Período alterado para: $period');
-                },
-                onDataLoaded: (period, data) {
-                  debugPrint(
-                      'Dados carregados para $period: ${data.length} itens');
-                },
-                onBarClick: (item) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('${item.label}: ${item.value}'),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
-                },
-                onError: (error) {
-                  debugPrint('Erro ao carregar dados: $error');
-                },
               ),
             ),
             const SizedBox(height: 24),

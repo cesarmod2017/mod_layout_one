@@ -13,6 +13,9 @@ class ModSidebar extends StatelessWidget {
   final Widget? header;
   final Widget? footer;
   final List<String>? claims;
+  final double? fontSize;
+  final FontWeight? fontWeight;
+  final double? iconSize;
 
   const ModSidebar({
     super.key,
@@ -23,6 +26,9 @@ class ModSidebar extends StatelessWidget {
     this.header,
     this.footer,
     this.claims,
+    this.fontSize,
+    this.fontWeight,
+    this.iconSize,
   });
 
   @override
@@ -54,7 +60,10 @@ class ModSidebar extends StatelessWidget {
       duration: const Duration(milliseconds: 200),
       width: width,
       child: Material(
-        color: backgroundColor ?? Theme.of(context).drawerTheme.backgroundColor,
+        color: isInDrawer
+            ? Colors.transparent
+            : (backgroundColor ??
+                Theme.of(context).drawerTheme.backgroundColor),
         child: Column(
           children: [
             if (header != null) header!,
@@ -85,12 +94,12 @@ class ModSidebar extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: group.title,
           ),
-        ...group.items.map((item) => _buildMenuItem(item, 0)),
+        ...group.items.map((item) => _buildMenuItem(item, 0, group)),
       ],
     );
   }
 
-  Widget _buildMenuItem(MenuItem item, int level) {
+  Widget _buildMenuItem(MenuItem item, int level, MenuGroup group) {
     if (claims != null && claims!.isNotEmpty) {
       if (!claims!.contains("${item.type}:${item.value}")) {
         return const SizedBox.shrink();
@@ -102,7 +111,10 @@ class ModSidebar extends StatelessWidget {
       level: level,
       selectedColor: selectedColor,
       unselectedColor: unselectedColor,
-      buildSubmenu: (subItem) => _buildMenuItem(subItem, level + 1),
+      fontSize: item.fontSize ?? group.fontSize ?? fontSize,
+      fontWeight: item.fontWeight ?? group.fontWeight ?? fontWeight,
+      iconSize: item.iconSize ?? group.iconSize ?? iconSize,
+      buildSubmenu: (subItem) => _buildMenuItem(subItem, level + 1, group),
     );
   }
 }
@@ -112,6 +124,9 @@ class _ExpandableMenuItem extends StatefulWidget {
   final int level;
   final Color? selectedColor;
   final Color? unselectedColor;
+  final double? fontSize;
+  final FontWeight? fontWeight;
+  final double? iconSize;
   final Widget Function(MenuItem) buildSubmenu;
 
   const _ExpandableMenuItem({
@@ -119,6 +134,9 @@ class _ExpandableMenuItem extends StatefulWidget {
     required this.level,
     this.selectedColor,
     this.unselectedColor,
+    this.fontSize,
+    this.fontWeight,
+    this.iconSize,
     required this.buildSubmenu,
   });
 
@@ -218,8 +236,17 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
 
     if (!hasSubItems) {
       return ListTile(
-        leading: Icon(item.icon),
-        title: Text(item.title),
+        leading: Icon(
+          item.icon,
+          size: widget.iconSize,
+        ),
+        title: Text(
+          item.title,
+          style: TextStyle(
+            fontSize: widget.fontSize,
+            fontWeight: widget.fontWeight,
+          ),
+        ),
         onTap: () {
           if (item.route != null) {
             controller.setSelectedRoute(item.route!);
@@ -231,8 +258,17 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
     }
 
     return ExpansionTile(
-      leading: Icon(item.icon),
-      title: Text(item.title),
+      leading: Icon(
+        item.icon,
+        size: widget.iconSize,
+      ),
+      title: Text(
+        item.title,
+        style: TextStyle(
+          fontSize: widget.fontSize,
+          fontWeight: widget.fontWeight,
+        ),
+      ),
       trailing: const Icon(Icons.chevron_right),
       children: item.subItems!
           .map((subItem) => _buildPopupMenuItem(context, subItem))
@@ -271,6 +307,7 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
             ),
             leading: Icon(
               widget.item.icon,
+              size: widget.iconSize,
               color: isSelected
                   ? widget.selectedColor ?? Get.theme.primaryIconTheme.color
                   : widget.unselectedColor ?? Get.theme.iconTheme.color,
@@ -283,8 +320,9 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
                           ? widget.selectedColor ??
                               Get.theme.primaryIconTheme.color
                           : widget.unselectedColor ?? Get.theme.iconTheme.color,
-                      fontWeight:
-                          isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: widget.fontWeight ??
+                          (isSelected ? FontWeight.bold : FontWeight.normal),
+                      fontSize: widget.fontSize,
                     ),
                   )
                 : null,

@@ -13,6 +13,7 @@ import 'package:example/pages/tables_page.dart';
 import 'package:example/pages/tabs_page.dart';
 import 'package:example/pages/textbox_page.dart';
 import 'package:example/pages/textcopy_page.dart';
+import 'package:example/pages/toast_page.dart';
 import 'package:example/pages/tree_view_page.dart';
 import 'package:example/services/auth_service.dart';
 import 'package:example/services/storage_service.dart';
@@ -100,6 +101,11 @@ void main() async {
           title: 'charts'.tr,
           icon: Icons.bar_chart,
           route: '/charts',
+        ),
+        MenuItem(
+          title: 'toast'.tr,
+          icon: Icons.notifications,
+          route: '/toast',
         ),
       ],
       customTranslations:
@@ -219,6 +225,12 @@ class MyApp extends StatelessWidget {
               transition: Transition.noTransition,
               preventDuplicates: true,
             ),
+            GetPage(
+              name: '/toast',
+              page: () => const ToastPage(),
+              transition: Transition.noTransition,
+              preventDuplicates: true,
+            ),
           ],
           initialRoute: '/home',
         ));
@@ -271,11 +283,15 @@ class CustomLayout extends StatelessWidget {
         'menu:loading',
         'menu:treeview',
         'menu:charts',
+        'menu:toast',
       ],
       moduleMenuGroups: [
         ModuleMenu(
           name: 'Administrativo',
           icon: Icons.admin_panel_settings,
+          fontSize: 14.0,
+          fontWeight: FontWeight.w600,
+          iconSize: 18.0,
           description: 'Módulo de administração do sistema',
           onSelect: (module) async {
             // Ação a ser executada quando o módulo for selecionado
@@ -288,6 +304,8 @@ class CustomLayout extends StatelessWidget {
                 MenuItem(
                   title: 'Corporate',
                   icon: Icons.business,
+                  //fontSize: 10.0,
+                  //iconSize: 10.0,
                   //route: '/avatars',
                   type: 'menu',
                   value: 'avatars',
@@ -407,6 +425,13 @@ class CustomLayout extends StatelessWidget {
                   type: 'menu',
                   value: 'charts',
                 ),
+                MenuItem(
+                  title: 'toast',
+                  icon: Icons.notifications,
+                  route: '/toast',
+                  type: 'menu',
+                  value: 'toast',
+                ),
               ],
             ),
           ],
@@ -415,6 +440,9 @@ class CustomLayout extends StatelessWidget {
           name: 'Documentos',
           icon: Icons.description,
           description: 'Gestão de documentos',
+          fontSize: 16.0,
+          fontWeight: FontWeight.w600,
+          iconSize: 28.0,
           onSelect: (module) async {
             // Ação a ser executada quando o módulo for selecionado
             log('Module selected: ${module.name}');
@@ -423,10 +451,16 @@ class CustomLayout extends StatelessWidget {
           menuGroups: [
             const MenuGroup(
               title: Text('Components'),
+              fontSize: 14.0,
+              fontWeight: FontWeight.w500,
+              iconSize: 22.0,
               items: [
                 MenuItem(
                   title: 'Corporate',
                   icon: Icons.business,
+                  fontSize: 13.0,
+                  fontWeight: FontWeight.w400,
+                  iconSize: 20.0,
                   //route: '/avatars',
                   type: 'menu',
                   value: 'avatars',
@@ -434,6 +468,8 @@ class CustomLayout extends StatelessWidget {
                     MenuItem(
                       title: 'avatars',
                       icon: Icons.telegram,
+                      fontSize: 12.0,
+                      iconSize: 18.0,
                       type: 'menu',
                       value: 'avatars',
                       subItems: [

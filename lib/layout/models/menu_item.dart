@@ -9,6 +9,9 @@ class MenuItem {
   final String? value;
   final String? url;
   final VoidCallback? onTap;
+  final double? fontSize;
+  final FontWeight? fontWeight;
+  final double? iconSize;
 
   const MenuItem({
     required this.title,
@@ -19,5 +22,8 @@ class MenuItem {
     this.value,
     this.url,
     this.onTap,
+    this.fontSize,
+    this.fontWeight,
+    this.iconSize,
   });
 }

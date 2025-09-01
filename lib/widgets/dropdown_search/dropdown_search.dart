@@ -57,6 +57,7 @@ class ModDropdownSearch<T> extends StatefulWidget {
   final double? iconSize;
   final bool floatingLabel;
   final Color? floatingLabelBackgroundColor;
+  final bool searchEnabled;
 
   const ModDropdownSearch({
     super.key,
@@ -93,6 +94,7 @@ class ModDropdownSearch<T> extends StatefulWidget {
     this.iconSize,
     this.floatingLabel = false,
     this.floatingLabelBackgroundColor = Colors.transparent,
+    this.searchEnabled = true,
   });
 
   @override
@@ -308,6 +310,8 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
   }
 
   void _updateSearch(String value) {
+    if (!widget.searchEnabled) return;
+    
     if (mounted) {
       setState(() {
         _filteredItems = widget.items
@@ -382,28 +386,29 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Padding(
-                            padding: widget.searchBoxPadding ??
-                                const EdgeInsets.all(8.0),
-                            child: TextField(
-                              controller: _searchController,
-                              decoration: widget.searchDecoration ??
-                                  InputDecoration(
-                                    hintText: widget.searchHint ?? 'Search...',
-                                    prefixIcon: const Icon(Icons.search),
-                                    suffixIcon: IconButton(
-                                      icon: const Icon(Icons.clear),
-                                      onPressed: () {
-                                        _searchController.clear();
-                                        _updateSearch('');
-                                      },
+                          if (widget.searchEnabled)
+                            Padding(
+                              padding: widget.searchBoxPadding ??
+                                  const EdgeInsets.all(8.0),
+                              child: TextField(
+                                controller: _searchController,
+                                decoration: widget.searchDecoration ??
+                                    InputDecoration(
+                                      hintText: widget.searchHint ?? 'Search...',
+                                      prefixIcon: const Icon(Icons.search),
+                                      suffixIcon: IconButton(
+                                        icon: const Icon(Icons.clear),
+                                        onPressed: () {
+                                          _searchController.clear();
+                                          _updateSearch('');
+                                        },
+                                      ),
+                                      filled: true,
+                                      fillColor: widget.searchBackgroundColor,
                                     ),
-                                    filled: true,
-                                    fillColor: widget.searchBackgroundColor,
-                                  ),
-                              onChanged: _updateSearch,
+                                onChanged: _updateSearch,
+                              ),
                             ),
-                          ),
                           Container(
                             constraints: BoxConstraints(
                               maxHeight:

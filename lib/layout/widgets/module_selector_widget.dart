@@ -34,6 +34,7 @@ class ModuleSelector extends StatelessWidget {
           child: IconButton(
             icon: Icon(
               currentModule?.icon ?? Icons.apps,
+              size: currentModule?.iconSize,
               color: Theme.of(context).iconTheme.color,
             ),
             onPressed: () => _showModulePopup(context),
@@ -64,7 +65,7 @@ class ModuleSelector extends StatelessWidget {
               else
                 Icon(
                   currentModule?.icon ?? Icons.apps,
-                  size: 24,
+                  size: currentModule?.iconSize ?? 24,
                   color: Theme.of(context).iconTheme.color,
                 ),
               const SizedBox(width: 10),
@@ -74,8 +75,10 @@ class ModuleSelector extends StatelessWidget {
                   children: [
                     Text(
                       currentModule?.name ?? 'Selecione um módulo',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
+                      style: TextStyle(
+                        fontWeight:
+                            currentModule?.fontWeight ?? FontWeight.bold,
+                        fontSize: currentModule?.fontSize,
                       ),
                     ),
                     if (currentModule?.description != null)
@@ -142,14 +145,23 @@ class ModuleSelector extends StatelessWidget {
                 else
                   Padding(
                     padding: const EdgeInsets.only(right: 8),
-                    child: Icon(module.icon ?? Icons.apps),
+                    child: Icon(
+                      module.icon ?? Icons.apps,
+                      size: module.iconSize,
+                    ),
                   ),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(module.name),
+                      Text(
+                        module.name,
+                        style: TextStyle(
+                          fontSize: module.fontSize,
+                          fontWeight: module.fontWeight,
+                        ),
+                      ),
                       if (module.description != null)
                         Text(
                           module.description!,

@@ -34,6 +34,7 @@ class ModBaseLayout extends StatefulWidget {
   final Color? lightForegroundColor;
   final Color? darkForegroundColor;
   final bool showAppBar;
+  final Color? drawerBackgroundColor;
 
   const ModBaseLayout({
     super.key,
@@ -60,6 +61,7 @@ class ModBaseLayout extends StatefulWidget {
     this.lightForegroundColor,
     this.darkForegroundColor,
     this.showAppBar = true,
+    this.drawerBackgroundColor,
   }) : assert(menuGroups != null || moduleMenuGroups != null,
             'Pelo menos um de menuGroups ou moduleMenuGroups deve ser fornecido');
 
@@ -147,7 +149,8 @@ class _ModBaseLayoutState extends State<ModBaseLayout> {
                 menuGroups: currentMenuGroups,
                 moduleMenuGroups: widget.moduleMenuGroups,
                 claims: widget.claims,
-                backgroundColor: widget.sidebarBackgroundColor,
+                backgroundColor: widget.drawerBackgroundColor ??
+                    widget.sidebarBackgroundColor,
                 selectedColor: widget.sidebarSelectedColor,
                 unselectedColor: widget.sidebarUnselectedColor,
               )

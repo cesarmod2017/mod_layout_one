@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import 'controllers/bar_chart_controller.dart';
+import 'models/chart_action_button_theme.dart';
 import 'models/chart_data.dart';
 
 enum BarChartOrientation {
@@ -128,6 +129,7 @@ class _HoverableBarState extends State<_HoverableBar> {
 class ModBarChart extends StatefulWidget {
   final String title;
   final TextStyle? titleStyle;
+  final TextAlign titleAlign;
   final List<ChartActionButton> actions;
   final ModChartData? initialData;
   final Future<ModChartData> Function(String period)? fetchData;
@@ -150,6 +152,22 @@ class ModBarChart extends StatefulWidget {
   final EdgeInsets? padding;
   final Widget? footer;
   final List<Color>? customColors;
+
+  // Background customization
+  final Color? backgroundColor;
+  final Color? containerBackgroundColor;
+
+  // Zoom icons customization
+  final IconData? zoomInIcon;
+  final IconData? zoomOutIcon;
+  final IconData? zoomResetIcon;
+
+  // Action button theme
+  final ChartActionButtonTheme? actionButtonTheme;
+
+  // Legend customization
+  final bool showLegendBorder;
+  final bool showLegendContainer;
 
   // Footer interativo
   final bool enableFooter;
@@ -174,6 +192,7 @@ class ModBarChart extends StatefulWidget {
     super.key,
     required this.title,
     this.titleStyle,
+    this.titleAlign = TextAlign.left,
     this.actions = const [],
     this.initialData,
     this.fetchData,
@@ -196,6 +215,18 @@ class ModBarChart extends StatefulWidget {
     this.padding,
     this.footer,
     this.customColors,
+    // Background customization
+    this.backgroundColor,
+    this.containerBackgroundColor,
+    // Zoom icons
+    this.zoomInIcon,
+    this.zoomOutIcon,
+    this.zoomResetIcon,
+    // Action button theme
+    this.actionButtonTheme,
+    // Legend customization
+    this.showLegendBorder = true,
+    this.showLegendContainer = true,
     // Footer options
     this.enableFooter = false,
     this.emptyStateTitle,
@@ -221,9 +252,9 @@ class ModBarChart extends StatefulWidget {
 class _ModBarChartState extends State<ModBarChart> {
   late BarChartController controller;
   double _currentZoom = 100.0;
-  
+
   // Controla a visibilidade dos itens do gráfico
-  Map<String, bool> _itemVisibility = {};
+  final Map<String, bool> _itemVisibility = {};
 
   final List<Color> defaultColors = [
     const Color(0xFF2196F3), // Blue
@@ -264,6 +295,23 @@ class _ModBarChartState extends State<ModBarChart> {
         orElse: () => widget.actions.first,
       );
       _loadData(selectedAction.title.toLowerCase());
+    }
+  }
+
+  Alignment _getTitleAlignment() {
+    switch (widget.titleAlign) {
+      case TextAlign.left:
+        return Alignment.centerLeft;
+      case TextAlign.right:
+        return Alignment.centerRight;
+      case TextAlign.center:
+        return Alignment.center;
+      case TextAlign.justify:
+        return Alignment.centerLeft;
+      case TextAlign.start:
+        return Alignment.centerLeft;
+      case TextAlign.end:
+        return Alignment.centerRight;
     }
   }
 
@@ -332,27 +380,27 @@ class _ModBarChartState extends State<ModBarChart> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Zoom Out (-)
-        _buildZoomButton(
-          icon: Icons.remove,
+        // Zoom Out
+        _buildZoomIcon(
+          icon: widget.zoomOutIcon ?? Icons.remove,
           onTap: _zoomOut,
           enabled: _currentZoom > widget.minZoom,
           theme: theme,
           isDark: isDark,
         ),
-        const SizedBox(width: 4),
-        // Reset Zoom ([])
-        _buildZoomButton(
-          icon: Icons.crop_free,
+        const SizedBox(width: 8),
+        // Reset Zoom
+        _buildZoomIcon(
+          icon: widget.zoomResetIcon ?? Icons.crop_free,
           onTap: _resetZoom,
           enabled: _currentZoom != 100.0,
           theme: theme,
           isDark: isDark,
         ),
-        const SizedBox(width: 4),
-        // Zoom In (+)
-        _buildZoomButton(
-          icon: Icons.add,
+        const SizedBox(width: 8),
+        // Zoom In
+        _buildZoomIcon(
+          icon: widget.zoomInIcon ?? Icons.add,
           onTap: _zoomIn,
           enabled: _currentZoom < widget.maxZoom,
           theme: theme,
@@ -362,39 +410,21 @@ class _ModBarChartState extends State<ModBarChart> {
     );
   }
 
-  Widget _buildZoomButton({
+  Widget _buildZoomIcon({
     required IconData icon,
     required VoidCallback onTap,
     required bool enabled,
     required ThemeData theme,
     required bool isDark,
   }) {
-    return Container(
-      width: 32,
-      height: 32,
-      decoration: BoxDecoration(
+    return GestureDetector(
+      onTap: enabled ? onTap : null,
+      child: Icon(
+        icon,
+        size: 20,
         color: enabled
-            ? (isDark ? Colors.grey[800] : Colors.grey[100])
-            : (isDark ? Colors.grey[850] : Colors.grey[50]),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: isDark ? Colors.grey[700]! : Colors.grey[300]!,
-          width: 1,
-        ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: enabled ? onTap : null,
-          borderRadius: BorderRadius.circular(6),
-          child: Icon(
-            icon,
-            size: 16,
-            color: enabled
-                ? (isDark ? Colors.white : Colors.black87)
-                : (isDark ? Colors.grey[600] : Colors.grey[400]),
-          ),
-        ),
+            ? (isDark ? Colors.white : Colors.black87)
+            : (isDark ? Colors.grey[600] : Colors.grey[400]),
       ),
     );
   }
@@ -406,17 +436,23 @@ class _ModBarChartState extends State<ModBarChart> {
 
     return Container(
       padding: widget.padding ?? const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: isDark ? Colors.grey[900] : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      decoration: widget.backgroundColor != null ||
+              widget.containerBackgroundColor != null
+          ? BoxDecoration(
+              color: widget.backgroundColor ?? widget.containerBackgroundColor,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: widget.backgroundColor != null ||
+                      widget.containerBackgroundColor != null
+                  ? [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
+                      ),
+                    ]
+                  : null,
+            )
+          : null, // Transparent by default
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -448,12 +484,16 @@ class _ModBarChartState extends State<ModBarChart> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Center(
+                    child: Align(
+                      alignment: _getTitleAlignment(),
                       child: Text(
                         widget.title,
+                        textAlign: widget.titleAlign,
                         style: widget.titleStyle ??
-                            theme.textTheme.headlineSmall?.copyWith(
+                            TextStyle(
+                              fontSize: 16,
                               fontWeight: FontWeight.w600,
+                              color: theme.textTheme.headlineSmall?.color,
                             ),
                       ),
                     ),
@@ -473,12 +513,16 @@ class _ModBarChartState extends State<ModBarChart> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-              child: Center(
+              child: Align(
+                alignment: _getTitleAlignment(),
                 child: Text(
                   widget.title,
+                  textAlign: widget.titleAlign,
                   style: widget.titleStyle ??
-                      theme.textTheme.headlineSmall?.copyWith(
+                      TextStyle(
+                        fontSize: 16,
                         fontWeight: FontWeight.w600,
+                        color: theme.textTheme.headlineSmall?.color,
                       ),
                 ),
               ),
@@ -510,34 +554,34 @@ class _ModBarChartState extends State<ModBarChart> {
           final isSelected =
               controller.selectedPeriod.value == action.title.toLowerCase();
 
-          // Determina as cores baseado no tema e nas customizações
-          final backgroundColor = _getButtonBackgroundColor(
-            isSelected,
-            isDark,
-            theme,
-          );
+          // Determina as cores e estilos baseado no tema
+          final backgroundColor =
+              _getButtonBackgroundColor(isSelected, isDark, theme);
+          final textColor = _getButtonTextColor(isSelected, isDark, theme);
+          final borderColor = _getButtonBorderColor(isSelected, isDark, theme);
 
-          final textColor = _getButtonTextColor(
-            isSelected,
-            isDark,
-            theme,
-          );
-
-          final borderColor = _getButtonBorderColor(
-            isSelected,
-            isDark,
-            theme,
-          );
+          // Use theme values or defaults
+          final buttonTheme = widget.actionButtonTheme;
+          final minHeight =
+              buttonTheme?.height; // Usa como altura mínima se especificada
+          final fontSize = buttonTheme?.fontSize ?? 14.0;
+          final padding = buttonTheme?.padding ??
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+          final borderRadius = buttonTheme?.borderRadius ?? 20.0;
+          final borderWidth = buttonTheme?.borderWidth ?? 1.0;
 
           return Padding(
             padding: const EdgeInsets.only(left: 8),
             child: Container(
+              constraints: minHeight != null
+                  ? BoxConstraints(minHeight: minHeight)
+                  : null,
               decoration: BoxDecoration(
                 color: backgroundColor,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(borderRadius),
                 border: Border.all(
                   color: borderColor,
-                  width: 1,
+                  width: borderWidth,
                 ),
               ),
               child: Material(
@@ -549,20 +593,19 @@ class _ModBarChartState extends State<ModBarChart> {
                           _loadData(action.title.toLowerCase());
                           action.onPressed();
                         },
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(borderRadius),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    child: Text(
-                      action.title,
-                      style: action.textStyle ??
-                          TextStyle(
-                            color: textColor,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                          ),
+                    padding: padding,
+                    child: Center(
+                      child: Text(
+                        action.title,
+                        style: action.textStyle ??
+                            TextStyle(
+                              color: textColor,
+                              fontWeight: FontWeight.w500,
+                              fontSize: fontSize,
+                            ),
+                      ),
                     ),
                   ),
                 ),
@@ -577,40 +620,61 @@ class _ModBarChartState extends State<ModBarChart> {
   // Métodos auxiliares para determinar as cores dos botões
   Color _getButtonBackgroundColor(
       bool isSelected, bool isDark, ThemeData theme) {
+    final buttonTheme = widget.actionButtonTheme;
+
     if (isSelected) {
       return isDark
-          ? (widget.darkSelectedBackgroundColor ?? theme.primaryColor)
-          : (widget.lightSelectedBackgroundColor ?? theme.primaryColor);
+          ? (buttonTheme?.darkSelectedBackgroundColor ??
+              widget.darkSelectedBackgroundColor ??
+              theme.primaryColor)
+          : (buttonTheme?.lightSelectedBackgroundColor ??
+              widget.lightSelectedBackgroundColor ??
+              theme.primaryColor);
     } else {
       return isDark
-          ? (widget.darkUnselectedBackgroundColor ??
+          ? (buttonTheme?.darkUnselectedBackgroundColor ??
+              widget.darkUnselectedBackgroundColor ??
               theme.primaryColor.withValues(alpha: 0.2))
-          : (widget.lightUnselectedBackgroundColor ??
+          : (buttonTheme?.lightUnselectedBackgroundColor ??
+              widget.lightUnselectedBackgroundColor ??
               theme.primaryColor.withValues(alpha: 0.1));
     }
   }
 
   Color _getButtonTextColor(bool isSelected, bool isDark, ThemeData theme) {
+    final buttonTheme = widget.actionButtonTheme;
+
     if (isSelected) {
       return isDark
-          ? (widget.darkSelectedTextColor ?? Colors.white)
-          : (widget.lightSelectedTextColor ?? Colors.white);
+          ? (buttonTheme?.darkSelectedTextColor ??
+              widget.darkSelectedTextColor ??
+              Colors.white)
+          : (buttonTheme?.lightSelectedTextColor ??
+              widget.lightSelectedTextColor ??
+              Colors.white);
     } else {
       return isDark
-          ? (widget.darkUnselectedTextColor ??
+          ? (buttonTheme?.darkUnselectedTextColor ??
+              widget.darkUnselectedTextColor ??
               theme.primaryColor.withValues(alpha: 0.9))
-          : (widget.lightUnselectedTextColor ?? theme.primaryColor);
+          : (buttonTheme?.lightUnselectedTextColor ??
+              widget.lightUnselectedTextColor ??
+              theme.primaryColor);
     }
   }
 
   Color _getButtonBorderColor(bool isSelected, bool isDark, ThemeData theme) {
+    final buttonTheme = widget.actionButtonTheme;
+
     if (isSelected) {
       return Colors.transparent;
     } else {
       return isDark
-          ? (widget.darkBorderColor ??
+          ? (buttonTheme?.darkBorderColor ??
+              widget.darkBorderColor ??
               theme.primaryColor.withValues(alpha: 0.3))
-          : (widget.lightBorderColor ??
+          : (buttonTheme?.lightBorderColor ??
+              widget.lightBorderColor ??
               theme.primaryColor.withValues(alpha: 0.2));
     }
   }
@@ -634,7 +698,7 @@ class _ModBarChartState extends State<ModBarChart> {
     if (widget.enableFooter) {
       _initializeItemVisibility(data.data);
       itemsToShow = _getVisibleItems(data.data);
-      
+
       // Se todos os itens estão ocultos, mostra estado vazio personalizado
       if (itemsToShow.isEmpty) {
         return _buildCustomEmptyState(theme);
@@ -897,7 +961,8 @@ class _ModBarChartState extends State<ModBarChart> {
     );
   }
 
-  Widget _buildVerticalChart(ModChartData data, ThemeData theme, double maxValue) {
+  Widget _buildVerticalChart(
+      ModChartData data, ThemeData theme, double maxValue) {
     final zoomFactor = widget.enableZoom ? _currentZoom / 100.0 : 1.0;
 
     Widget chartContent = Row(
@@ -918,10 +983,12 @@ class _ModBarChartState extends State<ModBarChart> {
       // Sem zoom - layout simples com scroll horizontal e largura total
       // Calcula largura necessária para todos os itens considerando labels
       final barWidth = widget.barHeight;
-      final labelWidth = barWidth + 20; // Largura do label (conforme _buildVerticalBarColumn)
+      final labelWidth =
+          barWidth + 20; // Largura do label (conforme _buildVerticalBarColumn)
       final itemWidth = math.max(barWidth, labelWidth) + widget.barSpacing;
-      final totalContentWidth = (itemWidth * data.data.length) + 32; // +32 for padding
-      
+      final totalContentWidth =
+          (itemWidth * data.data.length) + 32; // +32 for padding
+
       return Container(
         width: double.infinity, // Ocupa 100% da largura disponível
         height: widget.chartContainerHeight,
@@ -948,7 +1015,8 @@ class _ModBarChartState extends State<ModBarChart> {
     const verticalSpacing = 60.0; // Space for labels above and below
     // Calcula largura necessária considerando labels (igual ao modo sem zoom)
     final barWidth = widget.barHeight;
-    final labelWidth = barWidth + 20; // Largura do label (conforme _buildVerticalBarColumn)
+    final labelWidth =
+        barWidth + 20; // Largura do label (conforme _buildVerticalBarColumn)
     final itemWidth = math.max(barWidth, labelWidth) + widget.barSpacing;
     final baseWidth = itemWidth * data.data.length + 32; // incluindo padding
     final scaledWidth =
@@ -1211,77 +1279,87 @@ class _ModBarChartState extends State<ModBarChart> {
     _initializeItemVisibility(items);
 
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainer.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: theme.dividerColor.withValues(alpha: 0.2),
-          width: 1,
-        ),
-      ),
+      padding: widget.showLegendContainer
+          ? const EdgeInsets.all(4)
+          : EdgeInsets.zero,
+      decoration: widget.showLegendContainer
+          ? (widget.showLegendBorder
+              ? BoxDecoration(
+                  color:
+                      theme.colorScheme.surfaceContainer.withValues(alpha: 0.5),
+                )
+              : BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                ))
+          : null,
       child: Wrap(
-            spacing: 12,
-            runSpacing: 8,
-            children: items.asMap().entries.map((entry) {
-              final index = entry.key;
-              final item = entry.value;
-              final color = _getBarColor(index);
-              final isVisible = _itemVisibility[item.label] ?? true;
+        spacing: 12,
+        runSpacing: 8,
+        children: items.asMap().entries.map((entry) {
+          final index = entry.key;
+          final item = entry.value;
+          final color = _getBarColor(index);
+          final isVisible = _itemVisibility[item.label] ?? true;
 
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _itemVisibility[item.label] = !isVisible;
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isVisible 
-                        ? color.withValues(alpha: 0.1) 
-                        : Colors.grey.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: isVisible 
-                          ? color 
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _itemVisibility[item.label] = !isVisible;
+              });
+            },
+            child: Container(
+              padding: widget.showLegendContainer
+                  ? const EdgeInsets.symmetric(horizontal: 12, vertical: 6)
+                  : const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              decoration: widget.showLegendContainer
+                  ? (widget.showLegendBorder
+                      ? BoxDecoration(
+                          color: isVisible
+                              ? color.withValues(alpha: 0.1)
+                              : Colors.grey.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: isVisible
+                                ? color
+                                : Colors.grey.withValues(alpha: 0.5),
+                            width: 1.5,
+                          ),
+                        )
+                      : BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(20),
+                        ))
+                  : null,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 12,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: isVisible
+                          ? color
                           : Colors.grey.withValues(alpha: 0.5),
-                      width: 1.5,
+                      shape: BoxShape.circle,
                     ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          color: isVisible 
-                              ? color 
-                              : Colors.grey.withValues(alpha: 0.5),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        item.label,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: isVisible 
-                              ? theme.textTheme.bodySmall?.color
-                              : Colors.grey,
-                          fontWeight: isVisible 
-                              ? FontWeight.w600 
-                              : FontWeight.normal,
-                        ),
-                      ),
-                    ],
+                  const SizedBox(width: 6),
+                  Text(
+                    item.label,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: isVisible
+                          ? theme.textTheme.bodySmall?.color
+                          : Colors.grey,
+                      fontWeight:
+                          isVisible ? FontWeight.w600 : FontWeight.normal,
+                    ),
                   ),
-                ),
-              );
-            }).toList(),
+                ],
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }

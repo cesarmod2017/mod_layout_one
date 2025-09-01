@@ -212,6 +212,7 @@ class _TextBoxPageState extends State<TextBoxPage> {
                           floatingLabel: false,
                           //floatingLabelBackgroundColor: Colors.red,
                           value: 'Alice',
+                          searchEnabled: false,
                           items: const [
                             mod.ModDropdownSearchMenuItem(
                                 value: '(Geral) - Relatório Bipagens',
