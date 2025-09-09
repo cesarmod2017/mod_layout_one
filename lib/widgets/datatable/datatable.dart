@@ -118,16 +118,20 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
 
   void _handleScrollbarDrag(double localPosition, double trackWidth) {
     if (!_bodyScrollController.hasClients ||
-        !_bodyScrollController.position.hasContentDimensions) return;
+        !_bodyScrollController.position.hasContentDimensions) {
+      return;
+    }
 
     final double maxScroll = _bodyScrollController.position.maxScrollExtent;
-    if (maxScroll <= 0) return;
+    if (maxScroll <= 0) {
+      return;
+    }
 
     final double percentage = (localPosition / trackWidth).clamp(0.0, 1.0);
     final double targetOffset = (maxScroll * percentage).clamp(0.0, maxScroll);
 
     // Debug para entender o problema
-    print(
+    debugPrint(
         'Drag: localPos=$localPosition, trackWidth=$trackWidth, percentage=$percentage, targetOffset=$targetOffset, isDragging=$_isDragging');
 
     _bodyScrollController.jumpTo(targetOffset);
@@ -135,7 +139,9 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
 
   void _handleHorizontalDrag(double deltaX) {
     if (!_bodyScrollController.hasClients ||
-        !_bodyScrollController.position.hasContentDimensions) return;
+        !_bodyScrollController.position.hasContentDimensions) {
+      return;
+    }
 
     final double currentOffset = _bodyScrollController.offset;
     final double maxScroll = _bodyScrollController.position.maxScrollExtent;

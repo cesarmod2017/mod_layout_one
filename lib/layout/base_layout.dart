@@ -4,8 +4,10 @@ import 'package:mod_layout_one/controllers/layout_controller.dart';
 import 'package:mod_layout_one/layout/components/footer.dart';
 import 'package:mod_layout_one/layout/components/header.dart';
 import 'package:mod_layout_one/layout/components/mobile_drawer.dart';
+import 'package:mod_layout_one/layout/components/no_access_screen.dart';
 import 'package:mod_layout_one/layout/components/sidebar.dart';
 import 'package:mod_layout_one/layout/models/menu_group.dart';
+import 'package:mod_layout_one/layout/models/menu_item.dart';
 import 'package:mod_layout_one/layout/models/module_model.dart';
 import 'package:mod_layout_one/layout/widgets/module_selector_widget.dart';
 import 'package:mod_layout_one/layout/widgets/user_profile.dart';
@@ -35,6 +37,9 @@ class ModBaseLayout extends StatefulWidget {
   final Color? darkForegroundColor;
   final bool showAppBar;
   final Color? drawerBackgroundColor;
+  final String? loginRoute;
+  final VoidCallback? onNoAccessRedirect;
+  final bool disableClaimsValidation;
 
   const ModBaseLayout({
     super.key,
@@ -62,6 +67,9 @@ class ModBaseLayout extends StatefulWidget {
     this.darkForegroundColor,
     this.showAppBar = true,
     this.drawerBackgroundColor,
+    this.loginRoute,
+    this.onNoAccessRedirect,
+    this.disableClaimsValidation = false,
   }) : assert(menuGroups != null || moduleMenuGroups != null,
             'Pelo menos um de menuGroups ou moduleMenuGroups deve ser fornecido');
 
@@ -77,13 +85,90 @@ class _ModBaseLayoutState extends State<ModBaseLayout> {
   void initState() {
     super.initState();
 
-    // Se tivermos módulos e nenhum módulo estiver selecionado, selecione o primeiro
+    // Se tivermos módulos visíveis e nenhum módulo estiver selecionado, selecione o primeiro
     if (widget.moduleMenuGroups != null &&
-        widget.moduleMenuGroups!.isNotEmpty &&
+        _filteredModules.isNotEmpty &&
         Get.find<LayoutController>().selectedModule.value == null) {
-      Get.find<LayoutController>()
-          .setSelectedModule(widget.moduleMenuGroups!.first);
+      Get.find<LayoutController>().setSelectedModule(_filteredModules.first);
     }
+  }
+
+  bool _hasValidClaim(MenuItem item) {
+    if (widget.claims == null || widget.claims!.isEmpty) {
+      return true;
+    }
+
+    // First priority: check claimName
+    if (item.claimName != null) {
+      return widget.claims!.contains(item.claimName!);
+    }
+
+    // Second priority: check type:value combination
+    if (item.type != null && item.value != null) {
+      return widget.claims!.contains("${item.type}:${item.value}");
+    }
+
+    // If both are null and claims exist, don't show the item
+    return false;
+  }
+
+  bool _hasValidGroupClaim(MenuGroup group) {
+    if (widget.claims == null || widget.claims!.isEmpty) {
+      return true;
+    }
+
+    // Check if MenuGroup has claimName and validate it
+    if (group.claimName != null) {
+      return widget.claims!.contains(group.claimName!);
+    }
+
+    // If no claimName, check if any items are visible
+    return group.items.any((item) => _hasValidClaim(item));
+  }
+
+  bool _hasValidModuleClaim(ModuleMenu module) {
+    if (widget.claims == null || widget.claims!.isEmpty) {
+      return true;
+    }
+
+    // Check if any menu group in the module is visible
+    return module.menuGroups.any((group) => _hasValidGroupClaim(group));
+  }
+
+  List<ModuleMenu> get _filteredModules {
+    // If claims validation is disabled, return all modules
+    if (widget.disableClaimsValidation) {
+      return widget.moduleMenuGroups ?? [];
+    }
+
+    return widget.moduleMenuGroups
+            ?.where((module) => _hasValidModuleClaim(module))
+            .toList() ??
+        [];
+  }
+
+  bool get _shouldShowNoAccessScreen {
+    // Never show no access screen if claims validation is disabled
+    if (widget.disableClaimsValidation) {
+      return false;
+    }
+
+    // Only show no access screen if claims are provided and no modules are available
+    if (widget.claims == null || widget.claims!.isEmpty) {
+      return false;
+    }
+
+    // Check if using modules system
+    if (widget.moduleMenuGroups != null) {
+      return _filteredModules.isEmpty;
+    }
+
+    // Check if using menu groups system
+    if (widget.menuGroups != null) {
+      return !widget.menuGroups!.any((group) => _hasValidGroupClaim(group));
+    }
+
+    return false;
   }
 
   List<MenuGroup> get currentMenuGroups {
@@ -104,9 +189,9 @@ class _ModBaseLayoutState extends State<ModBaseLayout> {
 
     // Atualizar o layout controller quando as dependências mudarem
     if (widget.moduleMenuGroups != null &&
-        widget.moduleMenuGroups!.isNotEmpty &&
+        _filteredModules.isNotEmpty &&
         layoutController.selectedModule.value == null) {
-      layoutController.setSelectedModule(widget.moduleMenuGroups!.first);
+      layoutController.setSelectedModule(_filteredModules.first);
     }
   }
 
@@ -114,6 +199,20 @@ class _ModBaseLayoutState extends State<ModBaseLayout> {
   Widget build(BuildContext context) {
     final LayoutController layoutController = Get.find();
     layoutController.checkScreenSize(context);
+
+    // Show no access screen if user has no permissions
+    if (_shouldShowNoAccessScreen) {
+      debugPrint('[ModBaseLayout] Showing NoAccessScreen');
+      debugPrint('[ModBaseLayout] loginRoute: ${widget.loginRoute}');
+      debugPrint('[ModBaseLayout] onNoAccessRedirect callback: ${widget.onNoAccessRedirect != null}');
+      debugPrint('[ModBaseLayout] claims: ${widget.claims}');
+      debugPrint('[ModBaseLayout] filteredModules count: ${_filteredModules.length}');
+      
+      return NoAccessScreen(
+        loginRoute: widget.loginRoute,
+        onLoginRedirect: widget.onNoAccessRedirect,
+      );
+    }
 
     return PopScope(
       onPopInvokedWithResult: (didPop, result) async {
@@ -171,11 +270,13 @@ class _ModBaseLayoutState extends State<ModBaseLayout> {
                   width: isExpanded ? expandedWidth : collapsedWidth,
                   child: Column(
                     children: [
-                      if (widget.moduleMenuGroups != null)
+                      if (widget.moduleMenuGroups != null &&
+                          _filteredModules.isNotEmpty)
                         SizedBox(
                           width: isExpanded ? expandedWidth : collapsedWidth,
                           child: ModuleSelector(
-                            modules: widget.moduleMenuGroups!,
+                            modules: _filteredModules,
+                            claims: widget.claims,
                             onModuleSelected: (module) {
                               layoutController.setSelectedModule(module);
                               setState(() {});

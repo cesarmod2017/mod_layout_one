@@ -2,16 +2,66 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mod_layout_one/controllers/layout_controller.dart';
 import 'package:mod_layout_one/layout/models/module_model.dart';
+import 'package:mod_layout_one/layout/models/menu_group.dart';
+import 'package:mod_layout_one/layout/models/menu_item.dart';
 
 class ModuleSelector extends StatelessWidget {
   final List<ModuleMenu> modules;
   final Function(ModuleMenu) onModuleSelected;
+  final List<String>? claims;
 
   const ModuleSelector({
     super.key,
     required this.modules,
     required this.onModuleSelected,
+    this.claims,
   });
+
+  bool _hasValidClaim(MenuItem item) {
+    if (claims == null || claims!.isEmpty) {
+      return true;
+    }
+
+    // First priority: check claimName
+    if (item.claimName != null) {
+      return claims!.contains(item.claimName!);
+    }
+
+    // Second priority: check type:value combination
+    if (item.type != null && item.value != null) {
+      return claims!.contains("${item.type}:${item.value}");
+    }
+
+    // If both are null and claims exist, don't show the item
+    return false;
+  }
+
+  bool _hasValidGroupClaim(MenuGroup group) {
+    if (claims == null || claims!.isEmpty) {
+      return true;
+    }
+
+    // Check if MenuGroup has claimName and validate it
+    if (group.claimName != null) {
+      return claims!.contains(group.claimName!);
+    }
+
+    // If no claimName, check if any items are visible
+    return group.items.any((item) => _hasValidClaim(item));
+  }
+
+  bool _hasValidModuleClaim(ModuleMenu module) {
+    if (claims == null || claims!.isEmpty) {
+      return true;
+    }
+
+    // Check if any menu group in the module is visible
+    return module.menuGroups.any((group) => _hasValidGroupClaim(group));
+  }
+
+  List<ModuleMenu> get _filteredModules {
+    return modules.where((module) => _hasValidModuleClaim(module)).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +183,7 @@ class ModuleSelector extends StatelessWidget {
             ),
           ),
         ),
-        ...modules.map((module) {
+        ..._filteredModules.map((module) {
           return PopupMenuItem<void>(
             child: Row(
               children: [

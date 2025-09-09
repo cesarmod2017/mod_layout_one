@@ -36,9 +36,16 @@ class ModSidebar extends StatelessWidget {
     final LayoutController controller = Get.find();
     final bool isInDrawer =
         context.findAncestorWidgetOfExactType<Drawer>() != null;
+    
+    // Debug logs
+    debugPrint('[ModSidebar] Building sidebar - isInDrawer: $isInDrawer');
+    debugPrint('[ModSidebar] Device width: ${MediaQuery.of(context).size.width}');
+    debugPrint('[ModSidebar] Is mobile: ${controller.isMobile.value}');
+    debugPrint('[ModSidebar] Theme mode: ${Theme.of(context).brightness}');
 
-    // For mobile drawer, don't use Obx
+    // For mobile/tablet drawer, don't use Obx
     if (isInDrawer) {
+      debugPrint('[ModSidebar] Building drawer content for mobile/tablet');
       return _buildSidebarContent(context, true, true);
     }
 
@@ -55,26 +62,36 @@ class ModSidebar extends StatelessWidget {
     final width = isInDrawer
         ? MediaQuery.of(context).size.width * 0.85
         : (isExpanded ? 240.0 : 70.0);
+    
+    debugPrint('[ModSidebar] Content - width: $width, isExpanded: $isExpanded, isInDrawer: $isInDrawer');
+    debugPrint('[ModSidebar] Menu groups count: ${menuGroups.length}');
+    
+    // Get proper colors for drawer
+    final drawerBackgroundColor = isInDrawer
+        ? Theme.of(context).drawerTheme.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor
+        : (backgroundColor ?? Theme.of(context).drawerTheme.backgroundColor);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       width: width,
       child: Material(
-        color: isInDrawer
-            ? Colors.transparent
-            : (backgroundColor ??
-                Theme.of(context).drawerTheme.backgroundColor),
+        color: drawerBackgroundColor,
+        elevation: isInDrawer ? 0 : 2,
         child: Column(
           children: [
             if (header != null) header!,
             Expanded(
               child: ListView(
                 padding: EdgeInsets.zero,
+                physics: const AlwaysScrollableScrollPhysics(),
                 children: menuGroups
-                    .map((group) => _buildMenuGroup(
-                          group,
-                          isExpanded || isInDrawer,
-                        ))
+                    .map((group) {
+                      debugPrint('[ModSidebar] Building menu group: ${group.title}');
+                      return _buildMenuGroup(
+                        group,
+                        isExpanded || isInDrawer,
+                      );
+                    })
                     .toList(),
               ),
             ),
@@ -85,25 +102,73 @@ class ModSidebar extends StatelessWidget {
     );
   }
 
+  bool _hasValidGroupClaim(MenuGroup group) {
+    if (claims == null || claims!.isEmpty) {
+      return true;
+    }
+
+    // Check if MenuGroup has claimName and validate it
+    if (group.claimName != null) {
+      return claims!.contains(group.claimName!);
+    }
+
+    // If no claimName, check if any items are visible
+    return group.items.any((item) => _hasValidClaim(item));
+  }
+
   Widget _buildMenuGroup(MenuGroup group, bool showTitle) {
+    debugPrint('[ModSidebar] Building group with ${group.items.length} items, showTitle: $showTitle');
+    
+    // Check if the group should be visible
+    if (!_hasValidGroupClaim(group)) {
+      return const SizedBox.shrink();
+    }
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (showTitle)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: group.title,
+            child: DefaultTextStyle(
+              style: TextStyle(
+                color: Theme.of(Get.context!).textTheme.bodyMedium?.color,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+              child: group.title,
+            ),
           ),
-        ...group.items.map((item) => _buildMenuItem(item, 0, group)),
+        ...group.items.map((item) {
+          debugPrint('[ModSidebar] Building menu item: ${item.title}');
+          return _buildMenuItem(item, 0, group);
+        }),
       ],
     );
   }
 
+  bool _hasValidClaim(MenuItem item) {
+    if (claims == null || claims!.isEmpty) {
+      return true;
+    }
+
+    // First priority: check claimName
+    if (item.claimName != null) {
+      return claims!.contains(item.claimName!);
+    }
+
+    // Second priority: check type:value combination
+    if (item.type != null && item.value != null) {
+      return claims!.contains("${item.type}:${item.value}");
+    }
+
+    // If both are null and claims exist, don't show the item
+    return false;
+  }
+
   Widget _buildMenuItem(MenuItem item, int level, MenuGroup group) {
-    if (claims != null && claims!.isNotEmpty) {
-      if (!claims!.contains("${item.type}:${item.value}")) {
-        return const SizedBox.shrink();
-      }
+    if (!_hasValidClaim(item)) {
+      return const SizedBox.shrink();
     }
 
     return _ExpandableMenuItem(
@@ -290,7 +355,16 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
   @override
   Widget build(BuildContext context) {
     final LayoutController controller = Get.find();
+    final bool isInDrawer = context.findAncestorWidgetOfExactType<Drawer>() != null;
+    
+    debugPrint('[_ExpandableMenuItem] Building item: ${widget.item.title}, isInDrawer: $isInDrawer');
 
+    // For drawer on mobile/tablet, simplify the widget tree
+    if (isInDrawer) {
+      return _buildSimpleMenuItem(context, controller);
+    }
+
+    // For desktop, keep the reactive Obx
     return Obx(() {
       final isMenuExpanded = controller.isMenuExpanded.value;
       final isSelected = widget.item.route != null &&
@@ -307,33 +381,34 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
             ),
             leading: Icon(
               widget.item.icon,
-              size: widget.iconSize,
+              size: widget.iconSize ?? 24.0,
               color: isSelected
-                  ? widget.selectedColor ?? Get.theme.primaryIconTheme.color
-                  : widget.unselectedColor ?? Get.theme.iconTheme.color,
+                  ? widget.selectedColor ?? Theme.of(context).colorScheme.primary
+                  : widget.unselectedColor ?? Theme.of(context).iconTheme.color,
             ),
             title: isMenuExpanded
                 ? Text(
                     widget.item.title,
                     style: TextStyle(
                       color: isSelected
-                          ? widget.selectedColor ??
-                              Get.theme.primaryIconTheme.color
-                          : widget.unselectedColor ?? Get.theme.iconTheme.color,
+                          ? widget.selectedColor ?? Theme.of(context).colorScheme.primary
+                          : widget.unselectedColor ?? Theme.of(context).textTheme.bodyLarge?.color,
                       fontWeight: widget.fontWeight ??
                           (isSelected ? FontWeight.bold : FontWeight.normal),
-                      fontSize: widget.fontSize,
+                      fontSize: widget.fontSize ?? 14.0,
                     ),
                   )
                 : null,
             trailing: hasSubItems && isMenuExpanded
                 ? Icon(
                     _isExpanded ? Icons.expand_less : Icons.expand_more,
-                    color: widget.unselectedColor ?? Get.theme.iconTheme.color,
+                    color: widget.unselectedColor ?? Theme.of(context).iconTheme.color,
                   )
                 : null,
             selected: isSelected,
+            selectedTileColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
             onTap: () {
+              debugPrint('[_ExpandableMenuItem] Tap detected on: ${widget.item.title}');
               if (hasSubItems) {
                 if (!isMenuExpanded && !Get.isDialogOpen!) {
                   _showSubmenuPopup(context, widget.item.subItems!);
@@ -341,8 +416,26 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
                   if (mounted) setState(() => _isExpanded = !_isExpanded);
                 }
               } else if (widget.item.route != null) {
+                debugPrint('[_ExpandableMenuItem] Navigating to: ${widget.item.route}');
                 controller.setSelectedRoute(widget.item.route!);
-                Get.offNamed(widget.item.route!);
+                
+                // Simplified navigation to avoid navigator issues
+                try {
+                  // Only navigate if route is different from current
+                  if (Get.currentRoute != widget.item.route) {
+                    Get.toNamed(widget.item.route!);
+                  }
+                } catch (e) {
+                  debugPrint('[_ExpandableMenuItem] Navigation error: $e');
+                  // Show error instead of trying complex navigation
+                  Get.snackbar(
+                    'Erro de Navegação',
+                    'Não foi possível navegar para ${widget.item.title}',
+                    snackPosition: SnackPosition.BOTTOM,
+                    duration: const Duration(seconds: 2),
+                  );
+                }
+                
                 if (Get.isDialogOpen ?? false) Get.back();
                 if (Get.width < 768 && !isMenuExpanded) Get.back();
               }
@@ -361,5 +454,102 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
         ],
       );
     });
+  }
+
+  Widget _buildSimpleMenuItem(BuildContext context, LayoutController controller) {
+    final isSelected = widget.item.route != null &&
+        controller.selectedRoute.value == widget.item.route;
+    final hasSubItems = widget.item.subItems?.isNotEmpty ?? false;
+    
+    debugPrint('[_ExpandableMenuItem] Simple item - isSelected: $isSelected, hasSubItems: $hasSubItems');
+    
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              debugPrint('[_ExpandableMenuItem] Drawer tap on: ${widget.item.title}');
+              if (hasSubItems) {
+                if (mounted) setState(() => _isExpanded = !_isExpanded);
+              } else if (widget.item.route != null) {
+                debugPrint('[_ExpandableMenuItem] Drawer navigating to: ${widget.item.route}');
+                controller.setSelectedRoute(widget.item.route!);
+                Navigator.of(context).pop(); // Close drawer first
+                
+                // Simplified navigation - avoid complex GetX route manipulations
+                Future.delayed(const Duration(milliseconds: 200), () {
+                  try {
+                    // Only navigate if route is different from current
+                    if (Get.currentRoute != widget.item.route) {
+                      // Use simple navigation to avoid navigator history issues
+                      Get.toNamed(widget.item.route!);
+                    }
+                  } catch (e) {
+                    debugPrint('[_ExpandableMenuItem] Navigation error: $e');
+                    // Show error instead of trying complex navigation
+                    Get.snackbar(
+                      'Erro de Navegação',
+                      'Não foi possível navegar para ${widget.item.title}',
+                      snackPosition: SnackPosition.BOTTOM,
+                      duration: const Duration(seconds: 2),
+                    );
+                  }
+                });
+              }
+            },
+            child: Container(
+              padding: EdgeInsets.only(
+                left: 16.0 + (widget.level * 16.0),
+                right: 16.0,
+                top: 12.0,
+                bottom: 12.0,
+              ),
+              color: isSelected
+                  ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
+                  : null,
+              child: Row(
+                children: [
+                  Icon(
+                    widget.item.icon,
+                    size: widget.iconSize ?? 24.0,
+                    color: isSelected
+                        ? widget.selectedColor ?? Theme.of(context).colorScheme.primary
+                        : widget.unselectedColor ?? Theme.of(context).iconTheme.color,
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      widget.item.title,
+                      style: TextStyle(
+                        color: isSelected
+                            ? widget.selectedColor ?? Theme.of(context).colorScheme.primary
+                            : widget.unselectedColor ?? Theme.of(context).textTheme.bodyLarge?.color,
+                        fontWeight: widget.fontWeight ??
+                            (isSelected ? FontWeight.bold : FontWeight.normal),
+                        fontSize: widget.fontSize ?? 14.0,
+                      ),
+                    ),
+                  ),
+                  if (hasSubItems)
+                    Icon(
+                      _isExpanded ? Icons.expand_less : Icons.expand_more,
+                      color: widget.unselectedColor ?? Theme.of(context).iconTheme.color,
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        if (hasSubItems && _isExpanded)
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: widget.item.subItems!
+                .map((subItem) => widget.buildSubmenu(subItem))
+                .toList(),
+          ),
+      ],
+    );
   }
 }

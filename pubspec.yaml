@@ -1,8 +1,8 @@
 name: mod_layout_one
 description: A comprehensive Flutter layout package with theming and i18n support
-version: 1.0.78
+version: 1.0.83
 homepage: https://github.com/cesarmod2017/mod_layout_one
-
+#proxima sera 1.1.0
 environment:
   sdk: '>=3.0.0 <4.0.0'
   flutter: ">=3.0.0"

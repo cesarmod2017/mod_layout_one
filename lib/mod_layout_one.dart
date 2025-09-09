@@ -23,6 +23,7 @@ export 'controllers/theme_controller.dart';
 export 'layout/base_layout.dart';
 export 'layout/components/footer.dart';
 export 'layout/components/header.dart';
+export 'layout/components/no_access_screen.dart';
 export 'layout/components/sidebar.dart';
 export 'layout/widgets/language_selector.dart';
 // Widgets

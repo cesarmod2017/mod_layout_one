@@ -1,3 +1,38 @@
+## 1.0.83
+* Added no access screen functionality:
+  * Created NoAccessScreen widget for users without any module permissions
+  * Added loginRoute parameter to ModBaseLayout for custom login redirect
+  * Added onNoAccessRedirect callback for custom logout handling
+  * Implemented automatic detection when users have no accessible modules/groups
+  * Added multi-language support with translations for English, Portuguese, and Spanish
+  * Screen displays access restriction message with logout/login button
+  * Seamless integration with existing claims validation system
+  * Provides better user experience for permission-restricted scenarios
+
+## 1.0.82
+* Enhanced claims validation system:
+  * Added claimName field to MenuItem for simplified claim validation
+  * Added claimName field to MenuGroup for group-level claim control
+  * Implemented improved validation logic with priority system:
+    - First priority: claimName field validation
+    - Second priority: type:value combination validation (legacy support)
+    - If both are null and claims exist, item/group is hidden
+  * Enhanced MenuGroup visibility based on claimName or item visibility
+  * Applied validation improvements to both desktop sidebar and mobile drawer
+  * Maintains backward compatibility with existing type/value validation
+  * Improved security and flexibility for permission-based UI rendering
+
+## 1.0.81
+## 1.0.80
+
+## 1.0.79
+* Enhanced drawer functionality for tablet layouts:
+  * Improved drawer responsiveness and tablet-specific layout optimizations
+  * Enhanced drawer menu item organization and visual hierarchy
+  * Added better tablet-specific drawer behavior and interaction patterns
+  * Improved drawer performance on larger screen sizes
+  * Enhanced drawer theming consistency across different device orientations
+
 ## 1.0.78
 * Enhanced ModBarChart widget:
   * Added interactive footer with legend functionality for better data visualization control

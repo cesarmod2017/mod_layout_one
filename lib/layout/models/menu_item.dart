@@ -7,6 +7,7 @@ class MenuItem {
   final List<MenuItem>? subItems;
   final String? type;
   final String? value;
+  final String? claimName;
   final String? url;
   final VoidCallback? onTap;
   final double? fontSize;
@@ -20,6 +21,7 @@ class MenuItem {
     this.subItems,
     this.type,
     this.value,
+    this.claimName,
     this.url,
     this.onTap,
     this.fontSize,

@@ -18,6 +18,10 @@ class BaseTranslations extends Translations {
         'language': 'Language',
         'dark_mode': 'Dark Mode',
         'light_mode': 'Light Mode',
+        'no_access_title': 'Access Restricted',
+        'no_access_message': 'You do not have permission to access any resources. Please contact your administrator or try logging in again.',
+        'logout_button': 'Login Again',
+        'Configuration Error': 'Configuration Error',
       },
       'pt_BR': {
         'home': 'Início',
@@ -28,6 +32,10 @@ class BaseTranslations extends Translations {
         'language': 'Idioma',
         'dark_mode': 'Modo Escuro',
         'light_mode': 'Modo Claro',
+        'no_access_title': 'Acesso Restrito',
+        'no_access_message': 'Você não tem permissão para acessar nenhum recurso. Entre em contato com o administrador ou tente fazer login novamente.',
+        'logout_button': 'Entrar Novamente',
+        'Configuration Error': 'Erro de Configuração',
       },
       'es_ES': {
         'home': 'Inicio',
@@ -38,6 +46,10 @@ class BaseTranslations extends Translations {
         'language': 'Idioma',
         'dark_mode': 'Modo Oscuro',
         'light_mode': 'Modo Claro',
+        'no_access_title': 'Acceso Restringido',
+        'no_access_message': 'No tienes permisos para acceder a ningún recurso. Contacta con el administrador o intenta iniciar sesión nuevamente.',
+        'logout_button': 'Iniciar Sesión',
+        'Configuration Error': 'Error de Configuración',
       },
     };
 

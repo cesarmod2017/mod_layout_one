@@ -4,6 +4,7 @@ import 'package:mod_layout_one/layout/models/menu_item.dart';
 class MenuGroup {
   final Widget title;
   final List<MenuItem> items;
+  final String? claimName;
   final double? fontSize;
   final FontWeight? fontWeight;
   final double? iconSize;
@@ -11,6 +12,7 @@ class MenuGroup {
   const MenuGroup({
     required this.title,
     required this.items,
+    this.claimName,
     this.fontSize,
     this.fontWeight,
     this.iconSize,
