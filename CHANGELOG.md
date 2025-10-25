@@ -1,3 +1,12 @@
+## 1.1.0
+* Enhanced ModColumn widget:
+  * Added visible parameter to control column rendering
+  * Column will not be rendered when visible is set to false
+  * Default value is true to maintain backward compatibility
+  * Returns SizedBox.shrink() when column is hidden
+  * Improves conditional rendering control in grid layouts
+  * Enables dynamic show/hide of columns based on application state
+
 ## 1.0.83
 * Added no access screen functionality:
   * Created NoAccessScreen widget for users without any module permissions

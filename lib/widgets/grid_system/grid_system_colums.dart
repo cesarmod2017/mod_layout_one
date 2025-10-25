@@ -6,6 +6,7 @@ class ModColumn extends StatelessWidget {
   final Map<ScreenSize, ColumnSize> columnSizes;
   final EdgeInsets? padding;
   final Color? backgroundColor;
+  final bool visible;
 
   const ModColumn({
     super.key,
@@ -13,6 +14,7 @@ class ModColumn extends StatelessWidget {
     required this.columnSizes,
     this.padding = EdgeInsets.zero,
     this.backgroundColor,
+    this.visible = true,
   });
 
   double? _getColumnWidth(BuildContext context, BoxConstraints constraints) {
@@ -60,6 +62,10 @@ class ModColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!visible) {
+      return const SizedBox.shrink();
+    }
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final percentage = _getColumnWidth(context, constraints);
