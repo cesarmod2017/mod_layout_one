@@ -37,7 +37,7 @@ class ModalPage extends StatelessWidget {
                       maxWidth: 400,
                       //height: mod.ModModalHeight.normal,
                       body: SizedBox(
-                        height: 200,
+                        height: 400,
                         child: mod.ModContainer(
                           child: mod.ModRow(
                             columns: [
@@ -55,6 +55,7 @@ class ModalPage extends StatelessWidget {
                                     child: mod.ModRow(
                                       columns: [
                                         mod.ModColumn(
+                                          visible: false,
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 10),
                                           columnSizes: const {

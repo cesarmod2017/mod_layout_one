@@ -423,7 +423,10 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
                 try {
                   // Only navigate if route is different from current
                   if (Get.currentRoute != widget.item.route) {
-                    Get.toNamed(widget.item.route!);
+                    Get.toNamed(
+                      widget.item.route!,
+                      arguments: widget.item.arguments,
+                    );
                   }
                 } catch (e) {
                   debugPrint('[_ExpandableMenuItem] Navigation error: $e');
@@ -484,7 +487,10 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
                     // Only navigate if route is different from current
                     if (Get.currentRoute != widget.item.route) {
                       // Use simple navigation to avoid navigator history issues
-                      Get.toNamed(widget.item.route!);
+                      Get.toNamed(
+                        widget.item.route!,
+                        arguments: widget.item.arguments,
+                      );
                     }
                   } catch (e) {
                     debugPrint('[_ExpandableMenuItem] Navigation error: $e');

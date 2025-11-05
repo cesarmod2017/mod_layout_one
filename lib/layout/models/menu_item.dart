@@ -13,6 +13,7 @@ class MenuItem {
   final double? fontSize;
   final FontWeight? fontWeight;
   final double? iconSize;
+  final dynamic arguments;
 
   const MenuItem({
     required this.title,
@@ -27,5 +28,6 @@ class MenuItem {
     this.fontSize,
     this.fontWeight,
     this.iconSize,
+    this.arguments,
   });
 }

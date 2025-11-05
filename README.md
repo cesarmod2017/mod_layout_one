@@ -61,6 +61,13 @@ void main() async {
           icon: Icons.settings,
           route: '/settings',
         ),
+        // MenuItem com arguments para passar dados na navegação
+        MenuItem(
+          title: 'details'.tr,
+          icon: Icons.info,
+          route: '/details',
+          arguments: {'id': 123, 'mode': 'edit'}, // Dados passados para a rota
+        ),
       ],
       customTranslations: AppTranslations().keys,
     ),
@@ -76,6 +83,45 @@ void main() async {
 ### Layout Base
 
 O `ModBaseLayout` é o componente principal que integra sidebar, header e footer com suporte responsivo.
+
+#### Passando Argumentos na Navegação
+
+Os itens de menu suportam o parâmetro `arguments` que permite passar dados ao navegar para uma rota usando GetX:
+
+```dart
+// Definindo MenuItem com arguments
+MenuItem(
+  title: 'Editar Produto',
+  icon: Icons.edit,
+  route: '/product/edit',
+  arguments: {
+    'productId': 42,
+    'mode': 'edit',
+    'returnRoute': '/products',
+  },
+),
+
+// Na página de destino, recupere os argumentos:
+class ProductEditPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Recuperar arguments usando GetX
+    final arguments = Get.arguments as Map<String, dynamic>?;
+    final productId = arguments?['productId'];
+    final mode = arguments?['mode'];
+
+    return CustomLayout(
+      title: 'Editar Produto #$productId',
+      body: ProductEditForm(
+        productId: productId,
+        mode: mode,
+      ),
+    );
+  }
+}
+```
+
+Você pode passar qualquer tipo de dado nos arguments: Map, List, objetos customizados, etc.
 
 ```dart
 ModBaseLayout(

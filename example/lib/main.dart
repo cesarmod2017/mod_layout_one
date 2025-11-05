@@ -258,7 +258,7 @@ class CustomLayout extends StatelessWidget {
       title: title,
       lightBackgroundColor: Colors.blue,
       lightForegroundColor: Colors.white,
-      darkBackgroundColor: Colors.green,
+      darkBackgroundColor: const Color.fromARGB(255, 117, 4, 119),
       darkForegroundColor: Colors.white,
       sidebarSelectedColor: Colors.red,
       appBarActions: const [

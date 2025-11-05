@@ -1,3 +1,20 @@
+## 1.1.1
+* Enhanced MenuItem model:
+  * Added arguments parameter to support navigation with data passing
+  * Allows passing dynamic data to routes using GetX navigation
+  * Supports any data type (Map, List, custom objects, etc.)
+  * Seamlessly integrates with Get.toNamed() for route navigation
+  * Enhanced navigation flexibility for complex routing scenarios
+  * Updated documentation with usage examples and best practices
+* Fixed ModuleSelector overflow issue:
+  * Resolved RenderFlex overflow error when menu is collapsed
+  * Added LayoutBuilder for responsive content rendering
+  * Implemented conditional rendering based on available width
+  * Added maxLines and overflow handling to prevent text overflow
+  * Fixed icon and text layout in collapsed menu state
+  * Improved visual consistency across expanded and collapsed states
+  * Enhanced menu toggle button behavior and responsiveness
+
 ## 1.1.0
 * Enhanced ModColumn widget:
   * Added visible parameter to control column rendering

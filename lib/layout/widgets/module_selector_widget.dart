@@ -105,46 +105,59 @@ class ModuleSelector extends StatelessWidget {
               bottom: BorderSide(color: Theme.of(context).dividerColor),
             ),
           ),
-          child: Row(
-            children: [
-              if (currentModule?.image != null)
-                Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: currentModule!.image!,
-                )
-              else
-                Icon(
-                  currentModule?.icon ?? Icons.apps,
-                  size: currentModule?.iconSize ?? 24,
-                  color: Theme.of(context).iconTheme.color,
-                ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      currentModule?.name ?? 'Selecione um módulo',
-                      style: TextStyle(
-                        fontWeight:
-                            currentModule?.fontWeight ?? FontWeight.bold,
-                        fontSize: currentModule?.fontSize,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (currentModule?.image != null)
+                    SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: currentModule!.image!,
+                    )
+                  else
+                    Icon(
+                      currentModule?.icon ?? Icons.apps,
+                      size: currentModule?.iconSize ?? 24,
+                      color: Theme.of(context).iconTheme.color,
+                    ),
+                  if (constraints.maxWidth > 100) ...[
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            currentModule?.name ?? 'Selecione um módulo',
+                            style: TextStyle(
+                              fontWeight:
+                                  currentModule?.fontWeight ?? FontWeight.bold,
+                              fontSize: currentModule?.fontSize,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (currentModule?.description != null)
+                            Text(
+                              currentModule!.description!,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color:
+                                    Theme.of(context).textTheme.bodySmall?.color,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                        ],
                       ),
                     ),
-                    if (currentModule?.description != null)
-                      Text(
-                        currentModule!.description!,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Theme.of(context).textTheme.bodySmall?.color,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                    const Icon(Icons.arrow_drop_down),
                   ],
-                ),
-              ),
-              const Icon(Icons.arrow_drop_down),
-            ],
+                ],
+              );
+            },
           ),
         ),
       );
