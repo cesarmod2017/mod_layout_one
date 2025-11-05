@@ -574,10 +574,14 @@ class _DrawerMenuItemState extends State<_DrawerMenuItem> {
                     // Only navigate if route is different from current
                     if (Get.currentRoute != widget.item.route) {
                       // Use simple navigation to avoid navigator history issues
-                      Get.toNamed(
-                        widget.item.route!,
-                        arguments: widget.item.arguments,
-                      );
+                      if (widget.item.arguments != null) {
+                        Get.toNamed(
+                          widget.item.route!,
+                          arguments: widget.item.arguments,
+                        );
+                      } else {
+                        Get.toNamed(widget.item.route!);
+                      }
                     }
                   } catch (e) {
                     debugPrint('[_DrawerMenuItem] Navigation error: $e');

@@ -6,6 +6,8 @@
   * Seamlessly integrates with Get.toNamed() for route navigation
   * Enhanced navigation flexibility for complex routing scenarios
   * Updated documentation with usage examples and best practices
+  * Added null check for arguments parameter to prevent navigation errors
+  * Improved error handling when navigating with or without arguments
 * Fixed ModuleSelector overflow issue:
   * Resolved RenderFlex overflow error when menu is collapsed
   * Added LayoutBuilder for responsive content rendering
