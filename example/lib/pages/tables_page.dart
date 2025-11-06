@@ -83,6 +83,7 @@ class _TablesPageState extends State<TablesPage> {
   Widget build(BuildContext context) {
     return CustomLayout(
       title: 'Tables',
+      footer: Text('footer'.tr),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -99,7 +100,11 @@ class _TablesPageState extends State<TablesPage> {
                 ),
               ),
               content: ModDataTable(
-                paginationBorderRadius: 50,
+                paginationBorderRadius: 1,
+                headerBackgroundColor: Get.theme.scaffoldBackgroundColor,
+                footerBackgroundColor: Get.theme.scaffoldBackgroundColor,
+                oddRowColor: Get.theme.colorScheme.surfaceContainerHighest,
+                evenRowColor: Get.theme.scaffoldBackgroundColor,
                 fixedHeader: true,
                 onColumnWidthChanged: (field, width) {
                   log('Column width changed: $field to $width');
@@ -140,9 +145,7 @@ class _TablesPageState extends State<TablesPage> {
                 rowsPerPage: 20,
 
                 totalRecords: _sortedData.length,
-                oddRowColor:
-                    Theme.of(context).colorScheme.surfaceContainerHighest,
-                evenRowColor: Theme.of(context).colorScheme.surfaceContainer,
+
                 onPageChanged: (page) {
                   // Handle page change
                   log('Page changed: $page');
@@ -154,9 +157,7 @@ class _TablesPageState extends State<TablesPage> {
                 rowHeight: 10,
                 paginationText: 'of', // Adicione se necessário
                 rowsPerPageText: 'Linhas por página',
-                paginationBackgroundColor:
-                    Theme.of(context).colorScheme.surface,
-                headerColor: Theme.of(context).colorScheme.surface,
+
                 onRowsPerPageChanged: (rowsPerPage) {
                   // Handle rows per page change
                   log('Rows per page changed: $rowsPerPage');
@@ -416,9 +417,8 @@ class _TablesPageState extends State<TablesPage> {
                 rowHeight: 50,
                 paginationText: 'of',
                 rowsPerPageText: 'Rows per page',
-                paginationBackgroundColor:
-                    Theme.of(context).colorScheme.surface,
-                headerColor: Theme.of(context).colorScheme.surface,
+                footerBackgroundColor: Theme.of(context).colorScheme.surface,
+                headerBackgroundColor: Theme.of(context).colorScheme.surface,
                 onRowsPerPageChanged: (rowsPerPage) {
                   log('Rows per page changed: $rowsPerPage');
                 },
@@ -565,7 +565,8 @@ class _TablesPageState extends State<TablesPage> {
                         Theme.of(context).colorScheme.surfaceContainerHighest,
                     evenRowColor:
                         Theme.of(context).colorScheme.surfaceContainer,
-                    headerColor: Theme.of(context).colorScheme.surfaceContainer,
+                    headerBackgroundColor:
+                        Theme.of(context).colorScheme.surfaceContainer,
                   ),
                 ],
               ),

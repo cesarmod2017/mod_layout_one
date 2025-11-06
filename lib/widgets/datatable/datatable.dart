@@ -30,16 +30,25 @@ class ModDataTable<T> extends StatefulWidget {
   final DataTableSource source;
   final BorderStyle borderStyle;
   final int rowsPerPage;
+
+  /// Cor de fundo para linhas ímpares do body (primeira linha = ímpar)
   final Color? oddRowColor;
+
+  /// Cor de fundo para linhas pares do body (segunda linha = par)
   final Color? evenRowColor;
-  final Color? headerColor;
+
+  /// Cor de fundo do header da tabela
+  final Color? headerBackgroundColor;
+
+  /// Cor de fundo do footer/paginação da tabela
+  final Color? footerBackgroundColor;
+
   final String paginationText;
   final String rowsPerPageText;
   final Function(int page) onPageChanged;
   final Function(String field, SortDirection direction)? onSort;
   final int totalRecords;
   final int currentPage;
-  final Color? paginationBackgroundColor;
   final Function(int rowsPerPage)? onRowsPerPageChanged;
   final List<int> availableRowsPerPage;
   final double? paginationBorderRadius;
@@ -61,14 +70,14 @@ class ModDataTable<T> extends StatefulWidget {
     required this.rowsPerPage,
     this.oddRowColor,
     this.evenRowColor,
-    this.headerColor,
+    this.headerBackgroundColor,
+    this.footerBackgroundColor,
     this.paginationText = 'of',
     this.rowsPerPageText = 'Rows per page',
     required this.onPageChanged,
     this.onSort,
     required this.totalRecords,
     required this.currentPage,
-    this.paginationBackgroundColor,
     this.onRowsPerPageChanged,
     this.availableRowsPerPage = const [5, 10, 15, 20, 50, 100, 200],
     this.paginationBorderRadius = 5,
@@ -428,7 +437,7 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
 
   Widget _buildHeader(List<double> columnWidths) {
     return Container(
-      color: widget.headerColor,
+      color: widget.headerBackgroundColor,
       child: Row(
         children: List.generate(widget.headers.length, (index) {
           final header = widget.headers[index];
@@ -529,7 +538,7 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
 
     return Container(
       decoration: BoxDecoration(
-        color: widget.paginationBackgroundColor,
+        color: widget.footerBackgroundColor,
         borderRadius: BorderRadius.circular(widget.paginationBorderRadius ?? 0),
       ),
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),

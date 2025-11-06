@@ -59,6 +59,18 @@ import 'package:mod_layout_one/layout/widgets/user_profile.dart';
 ///   headerLanguageIconColor: Colors.white,
 /// )
 /// ```
+///
+/// ## Customização de cores do footer:
+/// ```dart
+/// ModBaseLayout(
+///   title: 'App',
+///   body: HomePage(),
+///   menuGroups: myMenuGroups,
+///   footer: Text('© 2024 Minha Empresa'),
+///   footerBackgroundColor: Colors.blueGrey,
+///   footerHeight: 60.0,
+/// )
+/// ```
 class ModBaseLayout extends StatefulWidget {
   /// Título da aplicação exibido no header (quando não há logo)
   final String title;
@@ -110,6 +122,9 @@ class ModBaseLayout extends StatefulWidget {
 
   /// Altura do footer (padrão: 50.0)
   final double footerHeight;
+
+  /// Cor de fundo do footer
+  final Color? footerBackgroundColor;
 
   /// Widget customizado para o cabeçalho do drawer (mobile)
   final Widget? drawerHeader;
@@ -180,6 +195,7 @@ class ModBaseLayout extends StatefulWidget {
     this.sidebarSelectedColor,
     this.sidebarUnselectedColor,
     this.footerHeight = 50.0,
+    this.footerBackgroundColor,
     this.drawerHeader,
     this.lightBackgroundColor,
     this.darkBackgroundColor,
@@ -434,9 +450,11 @@ class _ModBaseLayoutState extends State<ModBaseLayout> {
                   Expanded(child: widget.body ?? const SizedBox.shrink()),
                   if (widget.footer != null)
                     ModFooter(
-                        height: widget.footerHeight,
-                        border: widget.footerBorder,
-                        child: widget.footer)
+                      height: widget.footerHeight,
+                      border: widget.footerBorder,
+                      backgroundColor: widget.footerBackgroundColor,
+                      child: widget.footer,
+                    )
                 ],
               ),
             ),

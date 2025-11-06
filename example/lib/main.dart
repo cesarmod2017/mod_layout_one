@@ -264,6 +264,7 @@ class CustomLayout extends StatelessWidget {
       darkBackgroundColor: const Color.fromARGB(255, 117, 4, 119),
       darkForegroundColor: Colors.white,
       sidebarSelectedColor: Colors.red,
+      footerBackgroundColor: Get.theme.scaffoldBackgroundColor,
       appBarActions: const [
         ProfileWidget(
           showFullProfile: true,
@@ -528,6 +529,7 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomLayout(
       title: 'settings'.tr,
+      footer: Text('footer'.tr),
       body: Center(
         child: ModCard(
           header: Text('settings'.tr),

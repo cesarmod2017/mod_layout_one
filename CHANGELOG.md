@@ -1,3 +1,24 @@
+## 1.1.4
+* Enhanced color customization across components:
+  * **ModButton**: Updated to use Get.theme colors for primary, secondary, and dark button types
+    - ModButtonType.primary now uses Get.theme.colorScheme.primary
+    - ModButtonType.secondary now uses Get.theme.colorScheme.secondary
+    - ModButtonType.dark now uses Get.theme.colorScheme.surface
+    - Applies to both button background and border colors
+    - Ensures consistent theme integration and dynamic color updates
+  * **ModBaseLayout**: Added footerBackgroundColor property
+    - Allows customization of footer background color
+    - Optional parameter for flexible footer styling
+    - Passes color to ModFooter component
+    - Maintains backward compatibility with default theme colors
+  * **ModDataTable**: Improved color property naming and functionality
+    - Renamed headerColor to headerBackgroundColor for clarity
+    - Renamed paginationBackgroundColor to footerBackgroundColor for consistency
+    - Maintained oddRowColor and evenRowColor for body stripe functionality
+    - Added comprehensive documentation for all color properties
+    - Updated example code to use new property names
+    - Provides complete control over table header, body, and footer colors
+
 ## 1.1.3
 * Enhanced MenuItem navigation functionality:
   * Added reloadOnNavigate property to MenuItem model

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 enum ModButtonType {
   none,
@@ -148,9 +149,9 @@ class _ModButtonState extends State<ModButton>
       case ModButtonType.none:
         return Colors.transparent;
       case ModButtonType.primary:
-        return Colors.blue;
+        return Get.theme.colorScheme.primary;
       case ModButtonType.secondary:
-        return Colors.grey;
+        return Get.theme.colorScheme.secondary;
       case ModButtonType.success:
         return Colors.green;
       case ModButtonType.info:
@@ -160,7 +161,7 @@ class _ModButtonState extends State<ModButton>
       case ModButtonType.danger:
         return Colors.red;
       case ModButtonType.dark:
-        return Colors.black87;
+        return Get.theme.colorScheme.surface;
       case ModButtonType.defaultType:
         return Colors.grey.shade300;
       case ModButtonType.custom:
@@ -176,9 +177,9 @@ class _ModButtonState extends State<ModButton>
       case ModButtonType.none:
         return Colors.transparent;
       case ModButtonType.primary:
-        return Colors.blue;
+        return Get.theme.colorScheme.primary;
       case ModButtonType.secondary:
-        return Colors.grey;
+        return Get.theme.colorScheme.secondary;
       case ModButtonType.success:
         return Colors.green;
       case ModButtonType.info:
@@ -188,7 +189,7 @@ class _ModButtonState extends State<ModButton>
       case ModButtonType.danger:
         return Colors.red;
       case ModButtonType.dark:
-        return Colors.black87;
+        return Get.theme.colorScheme.surface;
       case ModButtonType.defaultType:
         return Colors.grey.shade300;
       case ModButtonType.custom:
