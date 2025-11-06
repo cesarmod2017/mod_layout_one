@@ -12,34 +12,154 @@ import 'package:mod_layout_one/layout/models/module_model.dart';
 import 'package:mod_layout_one/layout/widgets/module_selector_widget.dart';
 import 'package:mod_layout_one/layout/widgets/user_profile.dart';
 
+/// Widget base para criar layouts responsivos com menu lateral, header e footer.
+///
+/// O [ModBaseLayout] oferece uma estrutura completa de layout com suporte a:
+/// - Menu lateral colapsável (desktop) e drawer (mobile)
+/// - Sistema de módulos e grupos de menu
+/// - Validação de permissões baseada em claims
+/// - Temas claro/escuro dinâmicos
+/// - Internacionalização (i18n)
+/// - Header customizável com logo, ações e perfil de usuário
+/// - Footer opcional
+///
+/// ## Exemplo básico:
+/// ```dart
+/// ModBaseLayout(
+///   title: 'Minha Aplicação',
+///   body: MinhaHomePage(),
+///   menuGroups: [
+///     MenuGroup(
+///       title: Text('Menu Principal'),
+///       items: [
+///         MenuItem(title: 'Dashboard', icon: Icons.dashboard, route: '/dashboard'),
+///         MenuItem(title: 'Configurações', icon: Icons.settings, route: '/settings'),
+///       ],
+///     ),
+///   ],
+///   userProfile: UserProfile(
+///     userName: 'João Silva',
+///     userEmail: 'joao@example.com',
+///     onLogout: () => Get.offNamed('/login'),
+///   ),
+/// )
+/// ```
+///
+/// ## Customização de cores do header:
+/// ```dart
+/// ModBaseLayout(
+///   title: 'App',
+///   body: HomePage(),
+///   menuGroups: myMenuGroups,
+///   // Customizar cores dos elementos do header
+///   headerMenuIconColor: Colors.white,
+///   headerTitleColor: Colors.white,
+///   headerThemeIconColor: Colors.amber,
+///   headerProfileColor: Colors.white,
+///   headerLanguageIconColor: Colors.white,
+/// )
+/// ```
 class ModBaseLayout extends StatefulWidget {
+  /// Título da aplicação exibido no header (quando não há logo)
   final String title;
+
+  /// Widget de logo customizado para o header (substitui o título quando fornecido)
   final Widget? logo;
+
+  /// Conteúdo principal da aplicação
   final Widget? body;
+
+  /// Lista de claims para validação de permissões (ex: ['admin', 'user:read'])
   final List<String>? claims;
+
+  /// Grupos de menu para navegação (usado quando não há módulos)
   final List<MenuGroup>? menuGroups;
+
+  /// Sistema de módulos com múltiplos grupos de menu
   final List<ModuleMenu>? moduleMenuGroups;
+
+  /// Widget de perfil do usuário exibido no header
   final UserProfile? userProfile;
+
+  /// Ações customizadas adicionais para o AppBar
   final List<Widget>? appBarActions;
+
+  /// Se true, mostra botões de tema e idioma no header (padrão: true)
   final bool showDefaultActions;
+
+  /// Widget customizado para o cabeçalho do menu lateral (desktop)
   final Widget? sidebarHeader;
+
+  /// Widget customizado para o rodapé do menu lateral (desktop)
   final Widget? sidebarFooter;
+
+  /// Widget customizado para o footer da aplicação
   final Widget? footer;
+
+  /// Borda customizada para o footer
   final Border? footerBorder;
+
+  /// Cor de fundo do menu lateral
   final Color? sidebarBackgroundColor;
+
+  /// Cor do item de menu selecionado
   final Color? sidebarSelectedColor;
+
+  /// Cor dos itens de menu não selecionados
   final Color? sidebarUnselectedColor;
+
+  /// Altura do footer (padrão: 50.0)
   final double footerHeight;
+
+  /// Widget customizado para o cabeçalho do drawer (mobile)
   final Widget? drawerHeader;
+
+  /// Cor de fundo do header no tema claro
   final Color? lightBackgroundColor;
+
+  /// Cor de fundo do header no tema escuro
   final Color? darkBackgroundColor;
+
+  /// Cor de primeiro plano do header no tema claro
   final Color? lightForegroundColor;
+
+  /// Cor de primeiro plano do header no tema escuro
   final Color? darkForegroundColor;
+
+  /// Se true, exibe o AppBar (padrão: true)
   final bool showAppBar;
+
+  /// Cor de fundo do drawer mobile
   final Color? drawerBackgroundColor;
+
+  /// Rota para redirect quando usuário não tem acesso
   final String? loginRoute;
+
+  /// Callback executado quando usuário sem acesso tenta fazer logout
   final VoidCallback? onNoAccessRedirect;
+
+  /// Se true, desabilita validação de claims (padrão: false)
   final bool disableClaimsValidation;
+
+  /// Cor opcional para o ícone do menu no header.
+  /// Se não informado, usa Get.theme.colorScheme.onPrimary
+  final Color? headerMenuIconColor;
+
+  /// Cor opcional para o texto do título no header.
+  /// Se não informado, usa Get.theme.colorScheme.onPrimary
+  final Color? headerTitleColor;
+
+  /// Cor opcional para o ícone de tema (light/dark) no header.
+  /// Se não informado, usa Get.theme.colorScheme.onPrimary
+  final Color? headerThemeIconColor;
+
+  /// Cor opcional para os elementos do perfil no header.
+  /// Se não informado, usa Get.theme.colorScheme.onPrimary
+  final Color? headerProfileColor;
+
+  /// Cor opcional para o ícone de idioma no header.
+  /// Se não informado, usa Get.theme.colorScheme.onPrimary
+  final Color? headerLanguageIconColor;
 
   const ModBaseLayout({
     super.key,
@@ -70,6 +190,11 @@ class ModBaseLayout extends StatefulWidget {
     this.loginRoute,
     this.onNoAccessRedirect,
     this.disableClaimsValidation = false,
+    this.headerMenuIconColor,
+    this.headerTitleColor,
+    this.headerThemeIconColor,
+    this.headerProfileColor,
+    this.headerLanguageIconColor,
   }) : assert(menuGroups != null || moduleMenuGroups != null,
             'Pelo menos um de menuGroups ou moduleMenuGroups deve ser fornecido');
 
@@ -239,6 +364,11 @@ class _ModBaseLayoutState extends State<ModBaseLayout> {
                   darkBackgroundColor: widget.darkBackgroundColor,
                   lightForegroundColor: widget.lightForegroundColor,
                   darkForegroundColor: widget.darkForegroundColor,
+                  menuIconColor: widget.headerMenuIconColor,
+                  titleColor: widget.headerTitleColor,
+                  themeIconColor: widget.headerThemeIconColor,
+                  profileColor: widget.headerProfileColor,
+                  languageIconColor: widget.headerLanguageIconColor,
                 ),
               )
             : null,

@@ -8,6 +8,7 @@ Um pacote Flutter completo para construir layouts responsivos com suporte integr
 - [Configuração Inicial](#configuração-inicial)
 - [Componentes](#componentes)
   - [Layout Base](#layout-base)
+  - [📖 Documentação Completa do ModBaseLayout](MODBASELAYOUT.md)
   - [Botões](#botões)
   - [Caixas de Texto](#caixas-de-texto)
   - [Dropdown](#dropdown)

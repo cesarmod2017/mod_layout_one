@@ -1,61 +1,88 @@
 import 'package:flutter/material.dart';
 
 class MyAppTheme {
-  // Cor primária customizada
-  static const Color primaryColor = Color.fromARGB(255, 1, 79, 203);
+  // ========== TEMA LIGHT ==========
+  // Background: #F0F0F0
+  static const Color lightBackground = Color(0xFFF0F0F0);
 
-  // Cores do VS Code Light Theme
-  static const Color lightBackground = Color(0xFFFFFFFF);
-  static const Color lightSurface = Color(0xFFF3F3F3);
-  static const Color lightSidebar = Color(0xFFF3F3F3);
-  static const Color lightBorder = Color(0xFFE5E5E5);
-  static const Color lightText = Color(0xFF24292F);
-  static const Color lightTextSecondary = Color(0xFF656D76);
+  // Card: #FEFEFE
+  static const Color lightCard = Color(0xFFFEFEFE);
 
-  // Cores do VS Code Dark Theme
-  static const Color darkBackground = Color(0xFF1E1E1E);
-  static const Color darkSurface = Color(0xFF2D2D30);
-  static const Color darkSidebar = Color(0xFF252526);
-  static const Color darkBorder = Color(0xFF3E3E42);
-  static const Color darkText = Color(0xFFCCCCCC);
-  static const Color darkTextSecondary = Color(0xFF969696);
+  // Títulos de texto: #0C0C0C
+  static const Color lightTitleText = Color(0xFF0C0C0C);
+
+  // Cor primária: #411E5A
+  static const Color lightPrimary = Color(0xFF411E5A);
+
+  // Cor secundária: #FFB200
+  static const Color lightSecondary = Color(0xFFFFB200);
+
+  // Cores auxiliares para bordas e textos secundários
+  static const Color lightBorder = Color(0xFFE0E0E0);
+  static const Color lightTextSecondary = Color(0xFF757575);
+
+  // ========== TEMA DARK ==========
+  // Background: #0C0C0C
+  static const Color darkBackground = Color(0xFF0C0C0C);
+
+  // Card: #4F4F4F
+  static const Color darkCard = Color(0xFF4F4F4F);
+
+  // Títulos de texto: #E0E0E0
+  static const Color darkTitleText = Color(0xFFE0E0E0);
+
+  // Cor primária: #FFB200
+  static const Color darkPrimary = Color(0xFFFFB200);
+
+  // Cor secundária: #411E5A
+  static const Color darkSecondary = Color(0xFF411E5A);
+
+  // Cores auxiliares para bordas e textos secundários
+  static const Color darkBorder = Color(0xFF3A3A3A);
+  static const Color darkTextSecondary = Color(0xFF9E9E9E);
 
   static final light = ThemeData(
     brightness: Brightness.light,
     useMaterial3: true,
-    primaryColor: primaryColor,
+    primaryColor: lightPrimary,
     scaffoldBackgroundColor: lightBackground,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: primaryColor,
-      brightness: Brightness.light,
-      surface: lightSurface,
-      onSurface: lightText,
+    colorScheme: ColorScheme.light(
+      primary: lightPrimary,
+      onPrimary: Colors.white, // Texto sobre a cor primária
+      secondary: lightSecondary,
+      onSecondary: lightTitleText, // Texto sobre a cor secundária
+      surface: lightCard,
+      onSurface: lightTitleText,
+      background: lightBackground,
+      onBackground: lightTitleText,
+      error: const Color(0xFFD32F2F),
+      onError: Colors.white,
+      outline: lightBorder,
     ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: lightBackground,
-      foregroundColor: lightText,
-      elevation: 1,
-      shadowColor: lightBorder,
+      backgroundColor: lightPrimary,
+      foregroundColor: Colors.white,
+      elevation: 0,
       surfaceTintColor: Colors.transparent,
+      iconTheme: IconThemeData(color: Colors.white),
     ),
     drawerTheme: const DrawerThemeData(
-      backgroundColor: lightSidebar,
+      backgroundColor: lightCard,
       surfaceTintColor: Colors.transparent,
     ),
     cardTheme: CardThemeData(
-      color: lightBackground,
-      elevation: 1,
+      color: lightCard,
+      elevation: 2,
       shadowColor: lightBorder,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: BorderSide(color: lightBorder, width: 1),
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: primaryColor,
+        backgroundColor: lightPrimary,
         foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(6),
         ),
@@ -64,7 +91,7 @@ class MyAppTheme {
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: primaryColor,
+        foregroundColor: lightPrimary,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(6),
@@ -73,9 +100,9 @@ class MyAppTheme {
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: lightText,
-        side: BorderSide(color: lightBorder, width: 1),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        foregroundColor: lightPrimary,
+        side: const BorderSide(color: lightPrimary, width: 1.5),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(6),
         ),
@@ -86,22 +113,22 @@ class MyAppTheme {
       size: 20,
     ),
     primaryIconTheme: const IconThemeData(
-      color: primaryColor,
+      color: lightPrimary,
       size: 20,
     ),
     textTheme: const TextTheme(
-      headlineLarge: TextStyle(color: lightText, fontWeight: FontWeight.w600),
-      headlineMedium: TextStyle(color: lightText, fontWeight: FontWeight.w600),
-      headlineSmall: TextStyle(color: lightText, fontWeight: FontWeight.w600),
-      titleLarge: TextStyle(color: lightText, fontWeight: FontWeight.w600),
-      titleMedium: TextStyle(color: lightText, fontWeight: FontWeight.w500),
-      titleSmall: TextStyle(color: lightText, fontWeight: FontWeight.w500),
-      bodyLarge: TextStyle(color: lightText),
-      bodyMedium: TextStyle(color: lightText),
-      bodySmall: TextStyle(color: lightTextSecondary),
-      labelLarge: TextStyle(color: lightText, fontWeight: FontWeight.w500),
-      labelMedium: TextStyle(color: lightText, fontWeight: FontWeight.w500),
-      labelSmall: TextStyle(color: lightTextSecondary),
+      headlineLarge: TextStyle(color: lightTitleText, fontWeight: FontWeight.w700, fontSize: 32),
+      headlineMedium: TextStyle(color: lightTitleText, fontWeight: FontWeight.w700, fontSize: 28),
+      headlineSmall: TextStyle(color: lightTitleText, fontWeight: FontWeight.w600, fontSize: 24),
+      titleLarge: TextStyle(color: lightTitleText, fontWeight: FontWeight.w600, fontSize: 22),
+      titleMedium: TextStyle(color: lightTitleText, fontWeight: FontWeight.w600, fontSize: 16),
+      titleSmall: TextStyle(color: lightTitleText, fontWeight: FontWeight.w500, fontSize: 14),
+      bodyLarge: TextStyle(color: lightTitleText, fontSize: 16),
+      bodyMedium: TextStyle(color: lightTitleText, fontSize: 14),
+      bodySmall: TextStyle(color: lightTextSecondary, fontSize: 12),
+      labelLarge: TextStyle(color: lightTitleText, fontWeight: FontWeight.w500, fontSize: 14),
+      labelMedium: TextStyle(color: lightTextSecondary, fontWeight: FontWeight.w500, fontSize: 12),
+      labelSmall: TextStyle(color: lightTextSecondary, fontSize: 11),
     ),
     dividerTheme: const DividerThemeData(
       color: lightBorder,
@@ -118,49 +145,55 @@ class MyAppTheme {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
-        borderSide: const BorderSide(color: primaryColor, width: 2),
+        borderSide: const BorderSide(color: lightPrimary, width: 2),
       ),
       filled: true,
-      fillColor: lightBackground,
+      fillColor: Colors.white,
     ),
   );
 
   static final dark = ThemeData(
     brightness: Brightness.dark,
     useMaterial3: true,
-    primaryColor: primaryColor,
+    primaryColor: darkPrimary,
     scaffoldBackgroundColor: darkBackground,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: primaryColor,
-      brightness: Brightness.dark,
-      surface: darkSurface,
-      onSurface: darkText,
+    colorScheme: ColorScheme.dark(
+      primary: darkPrimary,
+      onPrimary: darkTitleText, // Texto sobre a cor primária
+      secondary: darkSecondary,
+      onSecondary: Colors.white, // Texto sobre a cor secundária
+      surface: darkCard,
+      onSurface: darkTitleText,
+      background: darkBackground,
+      onBackground: darkTitleText,
+      error: const Color(0xFFEF5350),
+      onError: Colors.white,
+      outline: darkBorder,
     ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: darkBackground,
-      foregroundColor: darkText,
-      elevation: 1,
-      shadowColor: darkBorder,
+      backgroundColor: darkPrimary,
+      foregroundColor: darkTitleText,
+      elevation: 0,
       surfaceTintColor: Colors.transparent,
+      iconTheme: IconThemeData(color: darkTitleText),
     ),
     drawerTheme: const DrawerThemeData(
-      backgroundColor: darkSidebar,
+      backgroundColor: darkCard,
       surfaceTintColor: Colors.transparent,
     ),
     cardTheme: CardThemeData(
-      color: darkSurface,
-      elevation: 0,
-      shadowColor: Colors.transparent,
+      color: darkCard,
+      elevation: 2,
+      shadowColor: Colors.black54,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: BorderSide(color: darkBorder, width: 1),
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: primaryColor,
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        backgroundColor: darkPrimary,
+        foregroundColor: darkTitleText,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(6),
         ),
@@ -169,7 +202,7 @@ class MyAppTheme {
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: primaryColor,
+        foregroundColor: darkPrimary,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(6),
@@ -178,9 +211,9 @@ class MyAppTheme {
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: darkText,
-        side: BorderSide(color: darkBorder, width: 1),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        foregroundColor: darkPrimary,
+        side: const BorderSide(color: darkPrimary, width: 1.5),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(6),
         ),
@@ -191,22 +224,22 @@ class MyAppTheme {
       size: 20,
     ),
     primaryIconTheme: const IconThemeData(
-      color: primaryColor,
+      color: darkPrimary,
       size: 20,
     ),
     textTheme: const TextTheme(
-      headlineLarge: TextStyle(color: darkText, fontWeight: FontWeight.w600),
-      headlineMedium: TextStyle(color: darkText, fontWeight: FontWeight.w600),
-      headlineSmall: TextStyle(color: darkText, fontWeight: FontWeight.w600),
-      titleLarge: TextStyle(color: darkText, fontWeight: FontWeight.w600),
-      titleMedium: TextStyle(color: darkText, fontWeight: FontWeight.w500),
-      titleSmall: TextStyle(color: darkText, fontWeight: FontWeight.w500),
-      bodyLarge: TextStyle(color: darkText),
-      bodyMedium: TextStyle(color: darkText),
-      bodySmall: TextStyle(color: darkTextSecondary),
-      labelLarge: TextStyle(color: darkText, fontWeight: FontWeight.w500),
-      labelMedium: TextStyle(color: darkText, fontWeight: FontWeight.w500),
-      labelSmall: TextStyle(color: darkTextSecondary),
+      headlineLarge: TextStyle(color: darkTitleText, fontWeight: FontWeight.w700, fontSize: 32),
+      headlineMedium: TextStyle(color: darkTitleText, fontWeight: FontWeight.w700, fontSize: 28),
+      headlineSmall: TextStyle(color: darkTitleText, fontWeight: FontWeight.w600, fontSize: 24),
+      titleLarge: TextStyle(color: darkTitleText, fontWeight: FontWeight.w600, fontSize: 22),
+      titleMedium: TextStyle(color: darkTitleText, fontWeight: FontWeight.w600, fontSize: 16),
+      titleSmall: TextStyle(color: darkTitleText, fontWeight: FontWeight.w500, fontSize: 14),
+      bodyLarge: TextStyle(color: darkTitleText, fontSize: 16),
+      bodyMedium: TextStyle(color: darkTitleText, fontSize: 14),
+      bodySmall: TextStyle(color: darkTextSecondary, fontSize: 12),
+      labelLarge: TextStyle(color: darkTitleText, fontWeight: FontWeight.w500, fontSize: 14),
+      labelMedium: TextStyle(color: darkTextSecondary, fontWeight: FontWeight.w500, fontSize: 12),
+      labelSmall: TextStyle(color: darkTextSecondary, fontSize: 11),
     ),
     dividerTheme: const DividerThemeData(
       color: darkBorder,
@@ -223,14 +256,14 @@ class MyAppTheme {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
-        borderSide: const BorderSide(color: primaryColor, width: 2),
+        borderSide: const BorderSide(color: darkPrimary, width: 2),
       ),
       filled: true,
-      fillColor: darkSurface,
+      fillColor: darkCard,
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: darkSurface,
-      selectedItemColor: primaryColor,
+      backgroundColor: darkCard,
+      selectedItemColor: darkPrimary,
       unselectedItemColor: darkTextSecondary,
       selectedIconTheme: IconThemeData(size: 20),
       unselectedIconTheme: IconThemeData(size: 20),

@@ -5,7 +5,10 @@ import 'package:get/get.dart';
 import '../../controllers/language_controller.dart';
 
 class LanguageSelector extends GetView<LanguageController> {
-  const LanguageSelector({super.key});
+  /// Cor opcional para o ícone. Se não informado, usa Get.theme.colorScheme.onPrimary
+  final Color? iconColor;
+
+  const LanguageSelector({super.key, this.iconColor});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +24,7 @@ class LanguageSelector extends GetView<LanguageController> {
               )
             : Icon(
                 Icons.language,
-                color: Get.theme.appBarTheme.foregroundColor,
+                color: iconColor ?? Get.theme.colorScheme.onPrimary,
               );
       }),
       tooltip: 'language'.tr,

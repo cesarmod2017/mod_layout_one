@@ -20,6 +20,21 @@ class ModHeader extends StatelessWidget {
   final Color? lightForegroundColor;
   final Color? darkForegroundColor;
 
+  /// Cor opcional para o ícone do menu. Se não informado, usa Get.theme.colorScheme.onPrimary
+  final Color? menuIconColor;
+
+  /// Cor opcional para o texto do título. Se não informado, usa Get.theme.colorScheme.onPrimary
+  final Color? titleColor;
+
+  /// Cor opcional para o ícone de tema (light/dark). Se não informado, usa Get.theme.colorScheme.onPrimary
+  final Color? themeIconColor;
+
+  /// Cor opcional para os elementos do perfil. Se não informado, usa Get.theme.colorScheme.onPrimary
+  final Color? profileColor;
+
+  /// Cor opcional para o ícone de idioma. Se não informado, usa Get.theme.colorScheme.onPrimary
+  final Color? languageIconColor;
+
   const ModHeader({
     super.key,
     required this.title,
@@ -34,6 +49,11 @@ class ModHeader extends StatelessWidget {
     this.darkBackgroundColor,
     this.lightForegroundColor,
     this.darkForegroundColor,
+    this.menuIconColor,
+    this.titleColor,
+    this.themeIconColor,
+    this.profileColor,
+    this.languageIconColor,
   });
 
   @override
@@ -41,8 +61,15 @@ class ModHeader extends StatelessWidget {
     final LayoutController layoutController = Get.find<LayoutController>();
     final brightness = Theme.of(context).brightness;
 
+    // Cor padrão para todos os elementos do header
+    final defaultOnPrimaryColor = Get.theme.colorScheme.onPrimary;
+
     return AppBar(
-      title: logo ?? Text(title),
+      title: logo ??
+          Text(
+            title,
+            style: TextStyle(color: titleColor ?? defaultOnPrimaryColor),
+          ),
       backgroundColor: brightness == Brightness.light
           ? lightBackgroundColor
           : darkBackgroundColor,
@@ -51,7 +78,10 @@ class ModHeader extends StatelessWidget {
           : darkForegroundColor,
       leading: showMenuButton
           ? IconButton(
-              icon: const Icon(Icons.menu),
+              icon: Icon(
+                Icons.menu,
+                color: menuIconColor ?? defaultOnPrimaryColor,
+              ),
               onPressed: () {
                 if (layoutController.isMobile.value) {
                   scaffoldKey.currentState?.openDrawer();
@@ -63,11 +93,21 @@ class ModHeader extends StatelessWidget {
           : null,
       actions: [
         if (showDefaultActions && !layoutController.isMobile.value) ...[
-          const ThemeToggle(),
-          const LanguageSelector(),
+          ThemeToggle(iconColor: themeIconColor ?? defaultOnPrimaryColor),
+          LanguageSelector(iconColor: languageIconColor ?? defaultOnPrimaryColor),
         ],
         if (actions != null) ...actions!,
-        if (userProfile != null) userProfile!,
+        if (userProfile != null)
+          UserProfile(
+            userName: userProfile!.userName,
+            userEmail: userProfile!.userEmail,
+            avatarUrl: userProfile!.avatarUrl,
+            onProfileTap: userProfile!.onProfileTap,
+            onLogout: userProfile!.onLogout,
+            showFullProfile: userProfile!.showFullProfile,
+            textColor: profileColor ?? defaultOnPrimaryColor,
+            iconColor: profileColor ?? defaultOnPrimaryColor,
+          ),
         const SizedBox(width: 16),
       ],
     );

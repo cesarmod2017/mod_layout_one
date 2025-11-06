@@ -1,3 +1,24 @@
+## 1.1.2
+* Enhanced theme color management in header components:
+  * Refactored all header elements to use Get.theme.colorScheme.onPrimary as default color
+  * Added optional color parameters to ModBaseLayout for header customization:
+    - headerMenuIconColor: Custom color for menu icon
+    - headerTitleColor: Custom color for title text
+    - headerThemeIconColor: Custom color for theme toggle icon
+    - headerProfileColor: Custom color for profile elements
+    - headerLanguageIconColor: Custom color for language selector icon
+  * Added corresponding optional color parameters to ModHeader widget
+  * Updated ThemeToggle widget to accept optional iconColor parameter
+  * Updated LanguageSelector widget to accept optional iconColor parameter
+  * Updated UserProfile widget to accept optional textColor and iconColor parameters
+  * Improved color consistency across light and dark themes
+  * All color parameters default to Get.theme.colorScheme.onPrimary when not specified
+  * Ensured dynamic theme switching updates all header colors automatically
+  * Enhanced documentation with clear parameter descriptions
+  * Added comprehensive documentation to ModBaseLayout with usage examples
+  * All parameters now have detailed documentation visible in IDE autocomplete
+  * Maintained backward compatibility with existing implementations
+
 ## 1.1.1
 * Enhanced MenuItem model:
   * Added arguments parameter to support navigation with data passing

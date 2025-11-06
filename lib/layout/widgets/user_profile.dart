@@ -9,6 +9,12 @@ class UserProfile extends StatelessWidget {
   final VoidCallback? onLogout;
   final bool showFullProfile;
 
+  /// Cor opcional para o texto. Se não informado, usa Get.theme.colorScheme.onPrimary
+  final Color? textColor;
+
+  /// Cor opcional para o ícone. Se não informado, usa Get.theme.colorScheme.onPrimary
+  final Color? iconColor;
+
   const UserProfile({
     super.key,
     required this.userName,
@@ -17,10 +23,16 @@ class UserProfile extends StatelessWidget {
     this.onProfileTap,
     this.onLogout,
     this.showFullProfile = true,
+    this.textColor,
+    this.iconColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Cor padrão baseada no tema
+    final defaultColor = textColor ?? Get.theme.colorScheme.onPrimary;
+    final defaultIconColor = iconColor ?? Get.theme.colorScheme.onPrimary;
+
     return InkWell(
       onTap: () => _showProfileMenu(context),
       child: Padding(
@@ -46,7 +58,7 @@ class UserProfile extends StatelessWidget {
                   Text(
                     userName,
                     style: TextStyle(
-                      color: Get.theme.appBarTheme.foregroundColor,
+                      color: defaultColor,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -54,14 +66,13 @@ class UserProfile extends StatelessWidget {
                     Text(
                       userEmail!,
                       style: TextStyle(
-                        color: Get.theme.appBarTheme.foregroundColor
-                            ?.withOpacity(0.7),
+                        color: defaultColor.withValues(alpha: 0.7),
                         fontSize: 12,
                       ),
                     ),
                 ],
               ),
-              const Icon(Icons.arrow_drop_down),
+              Icon(Icons.arrow_drop_down, color: defaultIconColor),
             ],
           ],
         ),
