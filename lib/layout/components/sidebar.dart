@@ -315,7 +315,20 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
         onTap: () {
           if (item.route != null) {
             controller.setSelectedRoute(item.route!);
-            Get.offNamed(item.route!);
+
+            // Check if should reload on navigate
+            if (item.reloadOnNavigate) {
+              // Force reload by using offAllNamed to clear navigation stack
+              // and then navigate to the route
+              if (item.arguments != null) {
+                Get.offAllNamed(item.route!, arguments: item.arguments);
+              } else {
+                Get.offAllNamed(item.route!);
+              }
+            } else {
+              // Normal navigation
+              Get.offNamed(item.route!);
+            }
             _removeOverlay();
           }
         },
@@ -418,19 +431,33 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
               } else if (widget.item.route != null) {
                 debugPrint('[_ExpandableMenuItem] Navigating to: ${widget.item.route}');
                 controller.setSelectedRoute(widget.item.route!);
-                
+
                 // Simplified navigation to avoid navigator issues
                 try {
-                  // Only navigate if route is different from current
-                  if (Get.currentRoute != widget.item.route) {
-                    // Check if route exists before navigating
+                  // Check if should reload on navigate
+                  if (widget.item.reloadOnNavigate) {
+                    // Force reload by using offAllNamed to clear navigation stack
+                    debugPrint('[_ExpandableMenuItem] Reloading route: ${widget.item.route}');
                     if (widget.item.arguments != null) {
-                      Get.toNamed(
+                      Get.offAllNamed(
                         widget.item.route!,
                         arguments: widget.item.arguments,
                       );
                     } else {
-                      Get.toNamed(widget.item.route!);
+                      Get.offAllNamed(widget.item.route!);
+                    }
+                  } else {
+                    // Only navigate if route is different from current
+                    if (Get.currentRoute != widget.item.route) {
+                      // Check if route exists before navigating
+                      if (widget.item.arguments != null) {
+                        Get.toNamed(
+                          widget.item.route!,
+                          arguments: widget.item.arguments,
+                        );
+                      } else {
+                        Get.toNamed(widget.item.route!);
+                      }
                     }
                   }
                 } catch (e) {
@@ -443,7 +470,7 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
                     duration: const Duration(seconds: 2),
                   );
                 }
-                
+
                 if (Get.isDialogOpen ?? false) Get.back();
                 if (Get.width < 768 && !isMenuExpanded) Get.back();
               }
@@ -485,20 +512,34 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
                 debugPrint('[_ExpandableMenuItem] Drawer navigating to: ${widget.item.route}');
                 controller.setSelectedRoute(widget.item.route!);
                 Navigator.of(context).pop(); // Close drawer first
-                
+
                 // Simplified navigation - avoid complex GetX route manipulations
                 Future.delayed(const Duration(milliseconds: 200), () {
                   try {
-                    // Only navigate if route is different from current
-                    if (Get.currentRoute != widget.item.route) {
-                      // Use simple navigation to avoid navigator history issues
+                    // Check if should reload on navigate
+                    if (widget.item.reloadOnNavigate) {
+                      // Force reload by using offAllNamed to clear navigation stack
+                      debugPrint('[_ExpandableMenuItem] Reloading route: ${widget.item.route}');
                       if (widget.item.arguments != null) {
-                        Get.toNamed(
+                        Get.offAllNamed(
                           widget.item.route!,
                           arguments: widget.item.arguments,
                         );
                       } else {
-                        Get.toNamed(widget.item.route!);
+                        Get.offAllNamed(widget.item.route!);
+                      }
+                    } else {
+                      // Only navigate if route is different from current
+                      if (Get.currentRoute != widget.item.route) {
+                        // Use simple navigation to avoid navigator history issues
+                        if (widget.item.arguments != null) {
+                          Get.toNamed(
+                            widget.item.route!,
+                            arguments: widget.item.arguments,
+                          );
+                        } else {
+                          Get.toNamed(widget.item.route!);
+                        }
                       }
                     }
                   } catch (e) {

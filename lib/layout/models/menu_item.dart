@@ -14,6 +14,7 @@ class MenuItem {
   final FontWeight? fontWeight;
   final double? iconSize;
   final dynamic arguments;
+  final bool reloadOnNavigate;
 
   const MenuItem({
     required this.title,
@@ -29,5 +30,6 @@ class MenuItem {
     this.fontWeight,
     this.iconSize,
     this.arguments,
+    this.reloadOnNavigate = false,
   });
 }

@@ -560,27 +560,41 @@ class _DrawerMenuItemState extends State<_DrawerMenuItem> {
           child: InkWell(
             onTap: () {
               debugPrint('[_DrawerMenuItem] Tap on: ${widget.item.title}');
-              
+
               if (hasSubItems) {
                 setState(() => _isExpanded = !_isExpanded);
               } else if (widget.item.route != null) {
                 debugPrint('[_DrawerMenuItem] Navigating to: ${widget.item.route}');
                 controller.setSelectedRoute(widget.item.route!);
                 Navigator.of(context).pop(); // Close drawer first
-                
+
                 // Simplified navigation - avoid complex GetX route manipulations
                 Future.delayed(const Duration(milliseconds: 200), () {
                   try {
-                    // Only navigate if route is different from current
-                    if (Get.currentRoute != widget.item.route) {
-                      // Use simple navigation to avoid navigator history issues
+                    // Check if should reload on navigate
+                    if (widget.item.reloadOnNavigate) {
+                      // Force reload by using offAllNamed to clear navigation stack
+                      debugPrint('[_DrawerMenuItem] Reloading route: ${widget.item.route}');
                       if (widget.item.arguments != null) {
-                        Get.toNamed(
+                        Get.offAllNamed(
                           widget.item.route!,
                           arguments: widget.item.arguments,
                         );
                       } else {
-                        Get.toNamed(widget.item.route!);
+                        Get.offAllNamed(widget.item.route!);
+                      }
+                    } else {
+                      // Only navigate if route is different from current
+                      if (Get.currentRoute != widget.item.route) {
+                        // Use simple navigation to avoid navigator history issues
+                        if (widget.item.arguments != null) {
+                          Get.toNamed(
+                            widget.item.route!,
+                            arguments: widget.item.arguments,
+                          );
+                        } else {
+                          Get.toNamed(widget.item.route!);
+                        }
                       }
                     }
                   } catch (e) {

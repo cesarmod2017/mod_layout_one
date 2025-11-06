@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:example/controllers/app_controller.dart';
+import 'package:example/controllers/textcopy_binding.dart';
 import 'package:example/pages/avatars_page.dart';
 import 'package:example/pages/buttons_page.dart';
 import 'package:example/pages/card_page.dart';
@@ -52,6 +53,7 @@ void main() async {
           title: 'textCopy'.tr,
           icon: Icons.text_decrease,
           route: '/textCopy',
+          reloadOnNavigate: true,
         ),
         MenuItem(
           title: 'buttons'.tr,
@@ -187,6 +189,7 @@ class MyApp extends StatelessWidget {
             GetPage(
               name: '/textCopy',
               page: () => const TextCopyPage(),
+              binding: TextCopyBinding(),
               transition: Transition.noTransition,
               preventDuplicates: true,
             ),
@@ -353,6 +356,7 @@ class CustomLayout extends StatelessWidget {
                   route: '/textCopy',
                   type: 'menu',
                   value: 'textCopy',
+                  reloadOnNavigate: true,
                 ),
                 MenuItem(
                   title: 'avatars',
@@ -504,6 +508,7 @@ class CustomLayout extends StatelessWidget {
                   route: '/textCopy',
                   type: 'menu',
                   value: 'textCopy',
+                  reloadOnNavigate: true,
                 ),
               ],
             ),

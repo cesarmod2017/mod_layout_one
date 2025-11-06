@@ -1,3 +1,16 @@
+## 1.1.3
+* Enhanced MenuItem navigation functionality:
+  * Added reloadOnNavigate property to MenuItem model
+  * Allows forcing complete page reload on navigation when set to true
+  * Default value is false to maintain backward compatibility
+  * Uses Get.offAllNamed() when reloadOnNavigate is true to clear navigation stack
+  * Forces recreation of bindings, controllers, and page state
+  * Implemented across all navigation contexts (desktop sidebar, mobile drawer, popup menus)
+  * Added debug logging for reload navigation tracking
+  * Improves data refresh scenarios when navigating to the same route
+  * Supports both routes with and without arguments
+  * Enhanced navigation flexibility for complex state management scenarios
+
 ## 1.1.2
 * Enhanced theme color management in header components:
   * Refactored all header elements to use Get.theme.colorScheme.onPrimary as default color
