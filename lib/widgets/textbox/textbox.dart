@@ -264,10 +264,10 @@ class _ModTextBoxState extends State<ModTextBox> {
       final brightness = theme.brightness;
       if (brightness == Brightness.dark) {
         // Para tema escuro, usar uma cor mais clara que o fundo
-        return theme.colorScheme.surface.withOpacity(0.8);
+        return theme.scaffoldBackgroundColor.withValues(alpha: 0.7);
       } else {
         // Para tema claro, usar uma cor mais escura que o branco
-        return theme.colorScheme.onSurface.withOpacity(0.05);
+        return theme.scaffoldBackgroundColor;
       }
     }
 

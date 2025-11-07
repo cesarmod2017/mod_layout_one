@@ -1,3 +1,13 @@
+## 1.1.5
+* Fixed deprecation warnings and improved background color handling:
+  * **ModTextBox**: Replaced deprecated withOpacity() with withValues() method
+    - Updated dark theme background color to use scaffoldBackgroundColor with alpha 0.7
+    - Updated light theme background color to use scaffoldBackgroundColor directly
+    - Improved color consistency across themes
+    - Fixed Flutter SDK deprecation warnings
+    - Enhanced theme integration with better background color handling
+    - Maintains backward compatibility with existing implementations
+
 ## 1.1.4
 * Enhanced color customization across components:
   * **ModButton**: Updated to use Get.theme colors for primary, secondary, and dark button types
