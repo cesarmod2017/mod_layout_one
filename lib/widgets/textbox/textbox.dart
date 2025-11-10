@@ -1,5 +1,4 @@
-import 'dart:io' show Platform;
-
+import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -252,8 +251,12 @@ class _ModTextBoxState extends State<ModTextBox> {
                 : null)
         : null;
 
-    final bool isDesktop =
-        Platform.isWindows || Platform.isMacOS || Platform.isLinux;
+    // Em desktop (Windows, macOS, Linux), usar tooltip
+    // Em web, iOS e Android, mostrar erro abaixo do campo
+    final bool isDesktop = !kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.windows ||
+         defaultTargetPlatform == TargetPlatform.macOS ||
+         defaultTargetPlatform == TargetPlatform.linux);
 
     // Definir cor de fundo padrão baseada no tema
     Color getDefaultBackgroundColor() {

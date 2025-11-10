@@ -1,3 +1,14 @@
+## 1.1.6
+* Fixed web platform compatibility in ModTextBox:
+  * **ModTextBox**: Replaced dart:io Platform imports with foundation.dart for cross-platform support
+    - Fixed "Unsupported operation: Platform._operatingSystem" error on web
+    - Replaced Platform.isWindows/isMacOS/isLinux with defaultTargetPlatform checks
+    - Added kIsWeb check for proper web platform detection
+    - Now fully compatible with web, Windows, macOS, Linux, Android, and iOS
+    - Desktop platforms (Windows, macOS, Linux) show validation errors in tooltips
+    - Web, Android, and iOS platforms show validation errors below the field
+    - Maintains consistent behavior across all supported platforms
+
 ## 1.1.5
 * Fixed deprecation warnings and improved background color handling:
   * **ModTextBox**: Replaced deprecated withOpacity() with withValues() method
