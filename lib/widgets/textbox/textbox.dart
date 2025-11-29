@@ -50,6 +50,10 @@ class ModTextBox extends StatefulWidget {
   final bool multiline;
   final bool autoHeight;
 
+  // Parâmetros para customização do evento Enter
+  final bool enableEnterAction;
+  final Future<void> Function()? enterOnPressed;
+
   // Novos parâmetros para customização
   final bool showBorder;
   final Color? backgroundColor;
@@ -100,6 +104,8 @@ class ModTextBox extends StatefulWidget {
     this.fixedHeight,
     this.multiline = false,
     this.autoHeight = false,
+    this.enableEnterAction = false,
+    this.enterOnPressed,
     this.showBorder = false,
     this.backgroundColor,
     this.borderColor,
@@ -116,6 +122,19 @@ class _ModTextBoxState extends State<ModTextBox> {
   bool _obscureText = true;
   bool _hasFocus = false;
   bool _showValidationError = false;
+  bool _isProcessingEnter = false;
+
+  // Verifica se a plataforma suporta o evento Enter customizado
+  bool get _shouldEnableEnterAction {
+    if (!widget.enableEnterAction || widget.enterOnPressed == null) {
+      return false;
+    }
+    // Habilitar para Web e Desktop (Windows, macOS, Linux)
+    return kIsWeb ||
+        defaultTargetPlatform == TargetPlatform.windows ||
+        defaultTargetPlatform == TargetPlatform.macOS ||
+        defaultTargetPlatform == TargetPlatform.linux;
+  }
 
   @override
   void initState() {
@@ -131,6 +150,50 @@ class _ModTextBoxState extends State<ModTextBox> {
     // Inicializar o focusNode
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(_onFocusChange);
+
+    // Registrar o handler de teclas para o evento Enter
+    if (widget.enableEnterAction && widget.enterOnPressed != null) {
+      _focusNode.onKeyEvent = _onKeyEvent;
+    }
+  }
+
+  Future<void> _handleEnterKey() async {
+    if (_isProcessingEnter || widget.enterOnPressed == null) return;
+
+    setState(() {
+      _isProcessingEnter = true;
+    });
+
+    try {
+      await widget.enterOnPressed!();
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isProcessingEnter = false;
+        });
+      }
+    }
+  }
+
+  KeyEventResult _onKeyEvent(FocusNode node, KeyEvent event) {
+    if (!_shouldEnableEnterAction) {
+      return KeyEventResult.ignored;
+    }
+
+    // Detectar tecla Enter (KeyDown para evitar duplicação)
+    if (event is KeyDownEvent &&
+        (event.logicalKey == LogicalKeyboardKey.enter ||
+            event.logicalKey == LogicalKeyboardKey.numpadEnter)) {
+      // Se for multiline, não interceptar o Enter (permite nova linha)
+      if (widget.multiline) {
+        return KeyEventResult.ignored;
+      }
+
+      _handleEnterKey();
+      return KeyEventResult.handled;
+    }
+
+    return KeyEventResult.ignored;
   }
 
   void _onFocusChange() {
@@ -147,6 +210,10 @@ class _ModTextBoxState extends State<ModTextBox> {
   @override
   void dispose() {
     _focusNode.removeListener(_onFocusChange);
+    // Remover o handler de teclas se foi registrado
+    if (widget.enableEnterAction && widget.enterOnPressed != null) {
+      _focusNode.onKeyEvent = null;
+    }
     // Só dispose do focusNode se ele foi criado internamente
     if (widget.focusNode == null) {
       _focusNode.dispose();

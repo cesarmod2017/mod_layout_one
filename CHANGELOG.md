@@ -1,3 +1,12 @@
+## 1.1.7
+* Enhanced ModTextBox with Enter key action support:
+  * Added enableEnterAction property to enable custom Enter key handling
+  * Added enterOnPressed callback for async Enter key actions
+  * Works on Web and Desktop platforms (Windows, macOS, Linux)
+  * Automatically disabled for multiline text fields to preserve newline behavior
+  * Includes processing state management to prevent duplicate triggers
+  * Proper cleanup of key event handlers on widget disposal
+
 ## 1.1.6
 * Fixed web platform compatibility in ModTextBox:
   * **ModTextBox**: Replaced dart:io Platform imports with foundation.dart for cross-platform support

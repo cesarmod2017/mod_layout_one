@@ -38,6 +38,10 @@ class _TextBoxPageState extends State<TextBoxPage> {
                 label: "Name",
                 hint: "Enter your name",
                 controller: TextEditingController(),
+                enableEnterAction: true,
+                enterOnPressed: () async {
+                  log('Enter disparado');
+                },
                 onChange: (text) {
                   // This ensures the text is updated in the TextBox
                   log("Name: $text");
