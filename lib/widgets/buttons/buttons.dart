@@ -18,10 +18,13 @@ enum ModBorderType { none, solid }
 
 enum ModButtonSize { lg, md, sm, xs }
 
+enum ModIconCenterAlign { top, bottom }
+
 class ModButton extends StatefulWidget {
   final String? title;
   final IconData? leftIcon;
   final IconData? rightIcon;
+  final IconData? centerIcon;
   final IconData? loadingIcon;
   final double borderRadius;
   final ModButtonType type;
@@ -35,12 +38,15 @@ class ModButton extends StatefulWidget {
   final bool disabled;
   final bool autosize;
   final TextAlign textAlign;
+  final ModIconCenterAlign iconCenterAlign;
+  final double? fontSize;
 
   const ModButton({
     super.key,
     this.title,
     this.leftIcon,
     this.rightIcon,
+    this.centerIcon,
     this.loadingIcon = Icons.refresh,
     this.borderRadius = 4.0,
     this.type = ModButtonType.defaultType,
@@ -54,6 +60,8 @@ class ModButton extends StatefulWidget {
     this.disabled = false,
     this.autosize = true,
     this.textAlign = TextAlign.center,
+    this.iconCenterAlign = ModIconCenterAlign.top,
+    this.fontSize,
   });
 
   @override
@@ -129,6 +137,9 @@ class _ModButtonState extends State<ModButton>
   }
 
   double _getFontSize() {
+    if (widget.fontSize != null) {
+      return widget.fontSize!;
+    }
     switch (widget.size) {
       case ModButtonSize.lg:
         return 18;
@@ -230,6 +241,116 @@ class _ModButtonState extends State<ModButton>
     return Colors.white;
   }
 
+  Widget _buildCenterIconLayout() {
+    final iconWidget = Icon(
+      widget.centerIcon,
+      color: _getTextColor(),
+      size: _getIconSize(),
+    );
+
+    final titleWidget = widget.title != null
+        ? Text(
+            widget.title!,
+            style: TextStyle(
+              color: _getTextColor(),
+              fontSize: _getFontSize(),
+            ),
+            textAlign: widget.textAlign,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+          )
+        : null;
+
+    final children = <Widget>[];
+
+    if (widget.iconCenterAlign == ModIconCenterAlign.top) {
+      children.add(iconWidget);
+      if (titleWidget != null) {
+        children.add(const SizedBox(height: 4));
+        children.add(titleWidget);
+      }
+    } else {
+      if (titleWidget != null) {
+        children.add(titleWidget);
+        children.add(const SizedBox(height: 4));
+      }
+      children.add(iconWidget);
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: children,
+    );
+  }
+
+  Widget _buildDefaultLayout() {
+    return Row(
+      mainAxisSize: widget.autosize ? MainAxisSize.min : MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        if (widget.leftIcon != null && !_isLoading)
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: Icon(
+              widget.leftIcon,
+              color: _getTextColor(),
+              size: _getIconSize(),
+            ),
+          ),
+        if (_isLoading)
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: RotationTransition(
+              turns: _rotationAnimation,
+              child: Icon(
+                widget.loadingIcon,
+                color: _getTextColor(),
+                size: _getIconSize(),
+              ),
+            ),
+          ),
+        if (_isLoading && widget.loadingText != null)
+          Flexible(
+            child: Text(
+              widget.loadingText!,
+              style: TextStyle(
+                color: _getTextColor(),
+                fontSize: _getFontSize(),
+              ),
+              textAlign: widget.textAlign,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
+          )
+        else if (widget.title != null)
+          Flexible(
+            child: Text(
+              widget.title!,
+              style: TextStyle(
+                color: _getTextColor(),
+                fontSize: _getFontSize(),
+              ),
+              textAlign: widget.textAlign,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
+          ),
+        if (widget.rightIcon != null && !_isLoading)
+          Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: Icon(
+              widget.rightIcon,
+              color: _getTextColor(),
+              size: _getIconSize(),
+            ),
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final height = _getHeight();
@@ -262,69 +383,9 @@ class _ModButtonState extends State<ModButton>
             borderRadius: BorderRadius.circular(widget.borderRadius),
             border: _getBorder(),
           ),
-          child: Row(
-            mainAxisSize: widget.autosize ? MainAxisSize.min : MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              if (widget.leftIcon != null && !_isLoading)
-                Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: Icon(
-                    widget.leftIcon,
-                    color: _getTextColor(),
-                    size: _getIconSize(),
-                  ),
-                ),
-              if (_isLoading)
-                Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: RotationTransition(
-                    turns: _rotationAnimation,
-                    child: Icon(
-                      widget.loadingIcon,
-                      color: _getTextColor(),
-                      size: _getIconSize(),
-                    ),
-                  ),
-                ),
-              if (_isLoading && widget.loadingText != null)
-                Flexible(
-                  child: Text(
-                    widget.loadingText!,
-                    style: TextStyle(
-                      color: _getTextColor(),
-                      fontSize: _getFontSize(),
-                    ),
-                    textAlign: widget.textAlign,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                  ),
-                )
-              else if (widget.title != null)
-                Flexible(
-                  child: Text(
-                    widget.title!,
-                    style: TextStyle(
-                      color: _getTextColor(),
-                      fontSize: _getFontSize(),
-                    ),
-                    textAlign: widget.textAlign,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                  ),
-                ),
-              if (widget.rightIcon != null && !_isLoading)
-                Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: Icon(
-                    widget.rightIcon,
-                    color: _getTextColor(),
-                    size: _getIconSize(),
-                  ),
-                ),
-            ],
-          ),
+          child: widget.centerIcon != null
+              ? _buildCenterIconLayout()
+              : _buildDefaultLayout(),
         ),
       ),
     );
