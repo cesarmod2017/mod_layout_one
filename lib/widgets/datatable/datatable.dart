@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:mod_layout_one/widgets/buttons/icon_buttom.dart';
 
 enum BorderStyle { none, topBottom, topLeftRightBottom }
 
@@ -22,6 +23,83 @@ class ModDataHeader {
     this.sortable = false,
     required this.field,
   });
+}
+
+/// Configuration class for the DataTable action bar
+class ModDataTableActionBarConfig {
+  /// Enable PDF export button
+  final bool enablePdf;
+
+  /// Callback when PDF button is pressed
+  final Future<void> Function()? pdfOnPressed;
+
+  /// Icon widget for the PDF button. Defaults to Icon(Icons.picture_as_pdf) if not provided.
+  final Widget? pdfIcon;
+
+  /// Tooltip for the PDF button
+  final String? pdfTooltip;
+
+  /// Enable XLS export button
+  final bool enableXls;
+
+  /// Callback when XLS button is pressed
+  final Future<void> Function()? xlsOnPressed;
+
+  /// Icon widget for the XLS button. Defaults to Icon(Icons.table_chart) if not provided.
+  final Widget? xlsIcon;
+
+  /// Tooltip for the XLS button
+  final String? xlsTooltip;
+
+  /// Enable settings/column configuration button
+  final bool enableSettings;
+
+  /// Callback when column selection is confirmed in settings modal
+  final Function(List<String>)? settingsOnChange;
+
+  /// Icon widget for the settings button. Defaults to Icon(Icons.settings) if not provided.
+  final Widget? settingsIcon;
+
+  /// Tooltip for the settings button
+  final String? settingsTooltip;
+
+  /// Title for the settings modal
+  final String settingsModalTitle;
+
+  /// Confirm button text for the settings modal
+  final String settingsModalConfirmText;
+
+  /// Cancel button text for the settings modal
+  final String settingsModalCancelText;
+
+  /// Background color for the action bar
+  final Color? background;
+
+  /// Border radius for the action bar
+  final BorderRadius? borderRadius;
+
+  const ModDataTableActionBarConfig({
+    this.enablePdf = false,
+    this.pdfOnPressed,
+    this.pdfIcon,
+    this.pdfTooltip,
+    this.enableXls = false,
+    this.xlsOnPressed,
+    this.xlsIcon,
+    this.xlsTooltip,
+    this.enableSettings = false,
+    this.settingsOnChange,
+    this.settingsIcon,
+    this.settingsTooltip,
+    this.settingsModalTitle = 'Column Settings',
+    this.settingsModalConfirmText = 'Confirm',
+    this.settingsModalCancelText = 'Cancel',
+    this.background,
+    this.borderRadius,
+  });
+
+  /// Returns true if at least one action button is enabled
+  bool get hasAnyAction => enablePdf || enableXls || enableSettings;
 }
 
 class ModDataTable<T> extends StatefulWidget {
@@ -61,6 +139,12 @@ class ModDataTable<T> extends StatefulWidget {
   final bool enableColumnResize;
   final bool showHorizontalScrollbar;
 
+  /// Configuration for the action bar (PDF, XLS, Settings buttons)
+  final ModDataTableActionBarConfig? actionBarConfig;
+
+  /// List of column field names to display. If null or empty, all columns are shown.
+  final List<String>? columnsShow;
+
   const ModDataTable({
     super.key,
     required this.headers,
@@ -89,6 +173,8 @@ class ModDataTable<T> extends StatefulWidget {
     this.onColumnWidthChanged,
     this.enableColumnResize = false,
     this.showHorizontalScrollbar = true,
+    this.actionBarConfig,
+    this.columnsShow,
   });
 
   @override
@@ -104,6 +190,36 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
   bool _isDragging = false;
   bool _isHorizontalDragging = false;
   double? _lastPanPosition;
+
+  /// Returns the list of visible headers based on columnsShow
+  List<ModDataHeader> get _visibleHeaders {
+    if (widget.columnsShow == null || widget.columnsShow!.isEmpty) {
+      return widget.headers;
+    }
+    return widget.headers
+        .where((header) => widget.columnsShow!.contains(header.field))
+        .toList();
+  }
+
+  /// Returns the indices of visible columns in the original headers list
+  List<int> get _visibleColumnIndices {
+    if (widget.columnsShow == null || widget.columnsShow!.isEmpty) {
+      return List.generate(widget.headers.length, (index) => index);
+    }
+    final indices = <int>[];
+    for (int i = 0; i < widget.headers.length; i++) {
+      if (widget.columnsShow!.contains(widget.headers[i].field)) {
+        indices.add(i);
+      }
+    }
+    return indices;
+  }
+
+  /// Returns the widths of visible columns
+  List<double> get _visibleColumnWidths {
+    final indices = _visibleColumnIndices;
+    return indices.map((i) => _columnWidths[i]).toList();
+  }
 
   @override
   void initState() {
@@ -305,15 +421,227 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
     }
   }
 
+  /// Shows the column settings modal
+  void _showColumnSettingsModal(BuildContext context) {
+    final config = widget.actionBarConfig!;
+    final allHeaders = widget.headers;
+    final currentColumnsShow = widget.columnsShow;
+
+    // Initialize selected columns: if columnsShow is null/empty, all columns are selected
+    final selectedColumns = <String>{};
+    if (currentColumnsShow == null || currentColumnsShow.isEmpty) {
+      selectedColumns.addAll(allHeaders.map((h) => h.field));
+    } else {
+      selectedColumns.addAll(currentColumnsShow);
+    }
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return Dialog(
+              backgroundColor: Colors.transparent,
+              child: Container(
+                width: 400,
+                constraints: const BoxConstraints(maxHeight: 500),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Header
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Theme.of(context).dividerColor,
+                          ),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            config.settingsModalTitle,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: () => Navigator.of(dialogContext).pop(),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Body - Column checkboxes
+                    Flexible(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: allHeaders.map((header) {
+                            final isSelected =
+                                selectedColumns.contains(header.field);
+                            return CheckboxListTile(
+                              title: Text(header.field),
+                              value: isSelected,
+                              onChanged: (value) {
+                                setDialogState(() {
+                                  if (value == true) {
+                                    selectedColumns.add(header.field);
+                                  } else {
+                                    // Prevent unchecking the last column
+                                    if (selectedColumns.length > 1) {
+                                      selectedColumns.remove(header.field);
+                                    }
+                                  }
+                                });
+                              },
+                              controlAffinity: ListTileControlAffinity.leading,
+                              dense: true,
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                    // Footer
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(
+                            color: Theme.of(context).dividerColor,
+                          ),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.of(dialogContext).pop(),
+                            child: Text(config.settingsModalCancelText),
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            onPressed: () {
+                              // Maintain original order based on headers
+                              final orderedSelection = allHeaders
+                                  .where(
+                                      (h) => selectedColumns.contains(h.field))
+                                  .map((h) => h.field)
+                                  .toList();
+                              config.settingsOnChange?.call(orderedSelection);
+                              Navigator.of(dialogContext).pop();
+                            },
+                            child: Text(config.settingsModalConfirmText),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  /// Extracts IconData from a Widget if it's an Icon, otherwise returns the default
+  IconData _extractIconData(Widget? iconWidget, IconData defaultIcon) {
+    if (iconWidget is Icon) {
+      return iconWidget.icon ?? defaultIcon;
+    }
+    return defaultIcon;
+  }
+
+  /// Extracts the color from a Widget if it's an Icon
+  Color? _extractIconColor(Widget? iconWidget) {
+    if (iconWidget is Icon) {
+      return iconWidget.color;
+    }
+    return null;
+  }
+
+  /// Extracts the size from a Widget if it's an Icon
+  double? _extractIconSize(Widget? iconWidget) {
+    if (iconWidget is Icon) {
+      return iconWidget.size;
+    }
+    return null;
+  }
+
+  /// Builds the action bar with PDF, XLS, and Settings buttons
+  Widget _buildActionBar() {
+    final config = widget.actionBarConfig;
+    if (config == null || !config.hasAnyAction) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      decoration: BoxDecoration(
+        color: config.background,
+        borderRadius: config.borderRadius,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          if (config.enablePdf)
+            ModIconButton(
+              icon: _extractIconData(config.pdfIcon, Icons.picture_as_pdf),
+              color: _extractIconColor(config.pdfIcon),
+              iconSize: _extractIconSize(config.pdfIcon),
+              tooltip: config.pdfTooltip,
+              onPressed: config.pdfOnPressed ?? () async {},
+            ),
+          if (config.enableXls)
+            ModIconButton(
+              icon: _extractIconData(config.xlsIcon, Icons.table_chart),
+              color: _extractIconColor(config.xlsIcon),
+              iconSize: _extractIconSize(config.xlsIcon),
+              tooltip: config.xlsTooltip,
+              onPressed: config.xlsOnPressed ?? () async {},
+            ),
+          if (config.enableSettings)
+            Builder(
+              builder: (context) => ModIconButton(
+                icon: _extractIconData(config.settingsIcon, Icons.settings),
+                color: _extractIconColor(config.settingsIcon),
+                iconSize: _extractIconSize(config.settingsIcon),
+                tooltip: config.settingsTooltip,
+                onPressed: () async => _showColumnSettingsModal(context),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     const headerHeight = 40.0;
     const paginationHeight = 56.0;
+    final hasActionBar = widget.actionBarConfig?.hasAnyAction ?? false;
+    const actionBarHeight = 48.0;
     final totalHeight =
         (widget.rowHeight * min(widget.rowsPerPage, widget.source.rowCount)) +
             headerHeight +
             paginationHeight +
-            25;
+            25 +
+            (hasActionBar ? actionBarHeight : 0);
 
     return SizedBox(
       height: totalHeight,
@@ -323,7 +651,9 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
           double totalFixedWidth = 0;
           double totalPercentage = 0;
 
-          for (var header in widget.headers) {
+          // Use visible headers for width calculations
+          final visibleHeaders = _visibleHeaders;
+          for (var header in visibleHeaders) {
             if (header.widthType == WidthType.fixed) {
               totalFixedWidth += header.width;
             } else {
@@ -332,14 +662,14 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
           }
 
           final remainingWidth = max(0.0, screenWidth - totalFixedWidth);
-          final columnWidths = widget.headers.map((header) {
+          final columnWidths = visibleHeaders.map((header) {
             return header.widthType == WidthType.fixed
                 ? header.width
                 : remainingWidth * (header.width / totalPercentage);
           }).toList();
 
           final totalWidth =
-              _columnWidths.fold(0.0, (sum, width) => sum + width);
+              _visibleColumnWidths.fold(0.0, (sum, width) => sum + width);
 
           Widget buildScrollableContent() {
             final scrollableContent = GestureDetector(
@@ -382,6 +712,8 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
 
             return Column(
               children: [
+                // Action bar above the table header
+                if (hasActionBar) _buildActionBar(),
                 if (widget.fixedHeader)
                   GestureDetector(
                     onPanStart: (details) {
@@ -436,12 +768,16 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
   }
 
   Widget _buildHeader(List<double> columnWidths) {
+    final visibleHeaders = _visibleHeaders;
+    final visibleIndices = _visibleColumnIndices;
+
     return Container(
       color: widget.headerBackgroundColor,
       child: Row(
-        children: List.generate(widget.headers.length, (index) {
-          final header = widget.headers[index];
-          final width = _columnWidths[index];
+        children: List.generate(visibleHeaders.length, (visibleIndex) {
+          final header = visibleHeaders[visibleIndex];
+          final originalIndex = visibleIndices[visibleIndex];
+          final width = _columnWidths[originalIndex];
 
           Widget headerContent = GestureDetector(
             onTap: () {
@@ -486,9 +822,9 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
             headerContent = GestureDetector(
               onHorizontalDragUpdate: (details) {
                 setState(() {
-                  final newWidth =
-                      max(50.0, _columnWidths[index] + details.delta.dx);
-                  _columnWidths[index] = newWidth;
+                  final newWidth = max(
+                      50.0, _columnWidths[originalIndex] + details.delta.dx);
+                  _columnWidths[originalIndex] = newWidth;
                   if (widget.onColumnWidthChanged != null) {
                     widget.onColumnWidthChanged!(header.field, newWidth);
                   }
@@ -508,18 +844,21 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
   }
 
   Widget _buildRows(List<T> visibleData, List<double> columnWidths) {
+    final visibleIndices = _visibleColumnIndices;
+
     return Column(
       children: List.generate(visibleData.length, (index) {
         final row = widget.source.getRow(index);
         return Container(
           color: index % 2 == 0 ? widget.evenRowColor : widget.oddRowColor,
           child: Row(
-            children: List.generate(widget.headers.length, (cellIndex) {
+            children: List.generate(visibleIndices.length, (visibleIndex) {
+              final originalIndex = visibleIndices[visibleIndex];
               return Container(
-                width: _columnWidths[cellIndex],
+                width: _columnWidths[originalIndex],
                 decoration: _getBorderDecoration(),
                 padding: const EdgeInsets.all(8),
-                child: row?.cells[cellIndex].child ?? const SizedBox(),
+                child: row?.cells[originalIndex].child ?? const SizedBox(),
               );
             }),
           ),

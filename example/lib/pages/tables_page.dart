@@ -18,6 +18,9 @@ class _TablesPageState extends State<TablesPage> {
   final int _sortColumnIndex = 0;
   final int _rowsPerPage = 5;
 
+  // State for action bar example
+  List<String>? _visibleColumns = ['name', 'city'];
+
   final List<Map<String, dynamic>> _data = [
     {'name': 'John Doe', 'age': 30, 'city': 'New York'},
     {'name': 'Jane Smith', 'age': 25, 'city': 'Los Angeles'},
@@ -567,6 +570,128 @@ class _TablesPageState extends State<TablesPage> {
                         Theme.of(context).colorScheme.surfaceContainer,
                     headerBackgroundColor:
                         Theme.of(context).colorScheme.surfaceContainer,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            ModCard(
+              header: const Text(
+                "DataTable with Action Bar",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Action Bar Features:",
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        const Text("• PDF export button"),
+                        const Text("• XLS export button"),
+                        const Text(
+                            "• Settings button to configure visible columns"),
+                        const Text(
+                            "• columnsShow parameter for column filtering"),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Visible columns: ${_visibleColumns?.join(', ') ?? 'All columns'}",
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                  ModDataTable(
+                    fixedHeader: true,
+                    showHorizontalScrollbar: true,
+                    columnsShow: _visibleColumns,
+                    actionBarConfig: ModDataTableActionBarConfig(
+                      enablePdf: true,
+                      pdfIcon: const Icon(Icons.picture_as_pdf_outlined,
+                          color: Colors.red, size: 20),
+                      pdfTooltip: 'Export to PDF',
+                      pdfOnPressed: () async {
+                        log('[ModDataTable]: PDF export clicked');
+                        await Future.delayed(const Duration(seconds: 5));
+                        log('[ModDataTable]: PDF export completed');
+                      },
+                      enableXls: true,
+                      xlsIcon: const Icon(Icons.table_chart,
+                          color: Colors.green, size: 20),
+                      xlsTooltip: 'Export to Excel',
+                      xlsOnPressed: () async {
+                        log('[ModDataTable]: XLS export clicked');
+                        await Future.delayed(const Duration(seconds: 5));
+                        log('[ModDataTable]: XLS export completed');
+                      },
+                      enableSettings: true,
+                      settingsIcon: const Icon(Icons.settings,
+                          color: Colors.blue, size: 20),
+                      settingsTooltip: 'Configure columns',
+                      settingsModalTitle: 'Selecione as colunas visiveis',
+                      settingsModalConfirmText: 'Aplicar',
+                      settingsModalCancelText: 'Cancelar',
+                      settingsOnChange: (selectedColumns) {
+                        setState(() {
+                          _visibleColumns = selectedColumns;
+                        });
+                        log('[ModDataTable]: Selected columns: $selectedColumns');
+                      },
+                      background: Theme.of(context).scaffoldBackgroundColor,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    headers: [
+                      ModDataHeader(
+                        child: const SelectableText('Name'),
+                        widthType: WidthType.fixed,
+                        width: 150,
+                        sortable: true,
+                        field: 'name',
+                      ),
+                      ModDataHeader(
+                        child: const SelectableText('Age'),
+                        widthType: WidthType.fixed,
+                        width: 100,
+                        sortable: true,
+                        field: 'age',
+                      ),
+                      ModDataHeader(
+                        child: const SelectableText('City'),
+                        widthType: WidthType.fixed,
+                        width: 150,
+                        sortable: true,
+                        field: 'city',
+                      ),
+                    ],
+                    data: _sortedData.take(10).toList(),
+                    source: _DataSource(_sortedData.take(10).toList()),
+                    currentPage: 0,
+                    rowsPerPage: 10,
+                    totalRecords: 10,
+                    onPageChanged: (page) {
+                      log('[ModDataTable]: Page changed: $page');
+                    },
+                    onSort: (field, direction) {
+                      log('[ModDataTable]: Sorting by $field in $direction direction');
+                    },
+                    rowHeight: 35,
+                    oddRowColor:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
+                    evenRowColor:
+                        Theme.of(context).colorScheme.surfaceContainer,
+                    headerBackgroundColor:
+                        Theme.of(context).colorScheme.surfaceContainer,
+                    footerBackgroundColor:
+                        Theme.of(context).colorScheme.surface,
                   ),
                 ],
               ),
