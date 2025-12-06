@@ -1,6 +1,6 @@
 name: mod_layout_one
 description: A comprehensive Flutter layout package with theming and i18n support
-version: 1.2.1
+version: 1.2.3
 homepage: https://github.com/cesarmod2017/mod_layout_one
 
 environment:

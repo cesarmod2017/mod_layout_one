@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart' hide BorderStyle;
 import 'package:mod_layout_one/widgets/buttons/icon_buttom.dart';
+import 'package:mod_layout_one/widgets/grid_system/grid_system.dart';
 import 'package:mod_layout_one/widgets/modal/modal.dart';
 
 import 'datatable.dart';
@@ -562,12 +563,47 @@ class _ModDataTableModalState<T> extends State<ModDataTableModal<T>> {
 
   /// Builds the action bar with dynamic actions and the settings button.
   /// Custom actions are rendered in order, followed by the settings button (if enabled).
+  /// If actionsModColumn is provided, it renders using ModContainer > ModRow > columns structure.
   Widget _buildActionBar() {
     final config = widget.actionBarConfig;
     if (config == null || !config.hasAnyAction) {
       return const SizedBox.shrink();
     }
 
+    // If actionsModColumn is provided, render using ModContainer > ModRow structure
+    if (config.actionsModColumn != null && config.actionsModColumn!.isNotEmpty) {
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        decoration: BoxDecoration(
+          color: config.background,
+          borderRadius: config.borderRadius,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: ModContainer(
+                child: ModRow(
+                  columns: config.actionsModColumn!,
+                ),
+              ),
+            ),
+            // Settings button is always rendered last (rightmost position)
+            if (config.enableSettings)
+              Builder(
+                builder: (context) => ModIconButton(
+                  icon: _extractIconData(config.settingsIcon, Icons.settings),
+                  color: _extractIconColor(config.settingsIcon),
+                  iconSize: _extractIconSize(config.settingsIcon),
+                  tooltip: config.settingsTooltip,
+                  onPressed: () async => _showColumnSettingsModal(context),
+                ),
+              ),
+          ],
+        ),
+      );
+    }
+
+    // Default behavior: render actions as a Row
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
       decoration: BoxDecoration(

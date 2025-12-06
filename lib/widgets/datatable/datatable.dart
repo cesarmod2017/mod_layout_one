@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:mod_layout_one/widgets/buttons/icon_buttom.dart';
+import 'package:mod_layout_one/widgets/grid_system/grid_system.dart';
 
 enum BorderStyle { none, topBottom, topLeftRightBottom }
 
@@ -32,6 +33,9 @@ class ModDataHeader {
 /// allowing developers to add any widget (buttons, inputs, icons, etc.).
 /// The settings button (when enabled) is always positioned at the rightmost position.
 ///
+/// Alternatively, you can use [actionsModColumn] to render actions within a
+/// responsive grid system using ModContainer > ModRow > columns structure.
+///
 /// Example usage:
 /// ```dart
 /// ModDataTableActionBarConfig(
@@ -59,7 +63,13 @@ class ModDataTableActionBarConfig {
   /// List of custom action widgets to display in the action bar.
   /// These widgets are rendered in order, from left to right.
   /// The settings button (if enabled) is always rendered after all actions.
+  /// This is optional - if not provided, an empty list is used.
   final List<Widget> actions;
+
+  /// List of ModColumn widgets to display in the action bar using a responsive grid.
+  /// When provided, these are rendered inside a ModContainer > ModRow structure.
+  /// This takes precedence over [actions] if both are provided.
+  final List<ModColumn>? actionsModColumn;
 
   /// Enable settings/column configuration button.
   /// This button is always positioned at the rightmost position of the action bar.
@@ -91,6 +101,7 @@ class ModDataTableActionBarConfig {
 
   const ModDataTableActionBarConfig({
     this.actions = const [],
+    this.actionsModColumn,
     this.enableSettings = false,
     this.settingsOnChange,
     this.settingsIcon,
@@ -102,8 +113,11 @@ class ModDataTableActionBarConfig {
     this.borderRadius,
   });
 
-  /// Returns true if there are any actions or if settings is enabled
-  bool get hasAnyAction => actions.isNotEmpty || enableSettings;
+  /// Returns true if there are any actions, actionsModColumn, or if settings is enabled
+  bool get hasAnyAction =>
+      actions.isNotEmpty ||
+      (actionsModColumn != null && actionsModColumn!.isNotEmpty) ||
+      enableSettings;
 }
 
 class ModDataTable<T> extends StatefulWidget {
@@ -603,12 +617,48 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
 
   /// Builds the action bar with dynamic actions and the settings button.
   /// Custom actions are rendered in order, followed by the settings button (if enabled).
+  /// If actionsModColumn is provided, it renders using ModContainer > ModRow > columns structure.
   Widget _buildActionBar() {
     final config = widget.actionBarConfig;
     if (config == null || !config.hasAnyAction) {
       return const SizedBox.shrink();
     }
 
+    // If actionsModColumn is provided, render using ModContainer > ModRow structure
+    if (config.actionsModColumn != null &&
+        config.actionsModColumn!.isNotEmpty) {
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        decoration: BoxDecoration(
+          color: config.background,
+          borderRadius: config.borderRadius,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: ModContainer(
+                child: ModRow(
+                  columns: config.actionsModColumn!,
+                ),
+              ),
+            ),
+            // Settings button is always rendered last (rightmost position)
+            if (config.enableSettings)
+              Builder(
+                builder: (context) => ModIconButton(
+                  icon: _extractIconData(config.settingsIcon, Icons.settings),
+                  color: _extractIconColor(config.settingsIcon),
+                  iconSize: _extractIconSize(config.settingsIcon),
+                  tooltip: config.settingsTooltip,
+                  onPressed: () async => _showColumnSettingsModal(context),
+                ),
+              ),
+          ],
+        ),
+      );
+    }
+
+    // Default behavior: render actions as a Row
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
       decoration: BoxDecoration(
@@ -857,13 +907,15 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
       children: List.generate(visibleData.length, (index) {
         final row = widget.source.getRow(index);
         final isHovered = _hoveredRowIndex == index;
-        final baseColor = index % 2 == 0 ? widget.evenRowColor : widget.oddRowColor;
+        final baseColor =
+            index % 2 == 0 ? widget.evenRowColor : widget.oddRowColor;
 
         // Determina a cor de hover: usa a cor personalizada ou a cor padrão do tema
         final effectiveHoverColor = widget.hoverColor ?? theme.hoverColor;
 
         // Aplica a cor de hover apenas se estiver habilitado e a linha estiver com hover
-        final rowColor = (_isHoverEnabled && isHovered) ? effectiveHoverColor : baseColor;
+        final rowColor =
+            (_isHoverEnabled && isHovered) ? effectiveHoverColor : baseColor;
 
         Widget rowWidget = Container(
           color: rowColor,

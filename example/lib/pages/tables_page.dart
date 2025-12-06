@@ -753,6 +753,44 @@ ModDataTable(
                     showHorizontalScrollbar: true,
                     columnsShow: _visibleColumns,
                     actionBarConfig: ModDataTableActionBarConfig(
+                      actionsModColumn: [
+                        ModColumn(
+                          columnSizes: const {
+                            ScreenSize.xs: ColumnSize.col12,
+                            ScreenSize.sm: ColumnSize.col6,
+                            ScreenSize.md: ColumnSize.col6,
+                            ScreenSize.lg: ColumnSize.col6,
+                          },
+                          child: IconButton(
+                            icon: const Icon(Icons.picture_as_pdf_outlined,
+                                color: Colors.red, size: 20),
+                            tooltip: 'Export to PDF',
+                            onPressed: () async {
+                              log('[ModDataTable]: PDF export clicked');
+                              await Future.delayed(const Duration(seconds: 5));
+                              log('[ModDataTable]: PDF export completed');
+                            },
+                          ),
+                        ),
+                        ModColumn(
+                          columnSizes: const {
+                            ScreenSize.xs: ColumnSize.col12,
+                            ScreenSize.sm: ColumnSize.col6,
+                            ScreenSize.md: ColumnSize.col6,
+                            ScreenSize.lg: ColumnSize.col6,
+                          },
+                          child: IconButton(
+                            icon: const Icon(Icons.picture_as_pdf_outlined,
+                                color: Colors.red, size: 20),
+                            tooltip: 'Export to PDF',
+                            onPressed: () async {
+                              log('[ModDataTable]: PDF export clicked');
+                              await Future.delayed(const Duration(seconds: 5));
+                              log('[ModDataTable]: PDF export completed');
+                            },
+                          ),
+                        )
+                      ],
                       actions: [
                         // PDF export button
                         IconButton(

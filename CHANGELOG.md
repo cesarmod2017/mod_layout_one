@@ -1,3 +1,20 @@
+## 1.2.3
+* Enhanced ModDataTableActionBarConfig with responsive grid support:
+  * Added actionsModColumn property for responsive action bar layouts
+  * Supports ModColumn widgets with responsive column sizes (xs, sm, md, lg, xl)
+  * Actions are rendered inside ModContainer > ModRow > ModColumn structure
+  * actionsModColumn takes precedence over actions when both are provided
+  * Settings button remains at rightmost position when enabled
+  * Applied to both ModDataTable and ModDataTableModal widgets
+  * Improved flexibility for complex action bar layouts
+  * Better responsive behavior across different screen sizes
+
+## 1.2.1
+* Enhanced sidebar navigation functionality:
+  * Improved navigation using Get.offNamed() for better route management
+  * Enhanced navigation stack handling for cleaner route history
+  * Better memory management when navigating between routes
+
 ## 1.2.0
 * Added ModProgress widget:
   * New comprehensive progress indicator system with circular and linear types
