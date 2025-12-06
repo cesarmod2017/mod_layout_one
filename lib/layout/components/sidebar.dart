@@ -36,10 +36,11 @@ class ModSidebar extends StatelessWidget {
     final LayoutController controller = Get.find();
     final bool isInDrawer =
         context.findAncestorWidgetOfExactType<Drawer>() != null;
-    
+
     // Debug logs
     debugPrint('[ModSidebar] Building sidebar - isInDrawer: $isInDrawer');
-    debugPrint('[ModSidebar] Device width: ${MediaQuery.of(context).size.width}');
+    debugPrint(
+        '[ModSidebar] Device width: ${MediaQuery.of(context).size.width}');
     debugPrint('[ModSidebar] Is mobile: ${controller.isMobile.value}');
     debugPrint('[ModSidebar] Theme mode: ${Theme.of(context).brightness}');
 
@@ -62,13 +63,15 @@ class ModSidebar extends StatelessWidget {
     final width = isInDrawer
         ? MediaQuery.of(context).size.width * 0.85
         : (isExpanded ? 240.0 : 70.0);
-    
-    debugPrint('[ModSidebar] Content - width: $width, isExpanded: $isExpanded, isInDrawer: $isInDrawer');
+
+    debugPrint(
+        '[ModSidebar] Content - width: $width, isExpanded: $isExpanded, isInDrawer: $isInDrawer');
     debugPrint('[ModSidebar] Menu groups count: ${menuGroups.length}');
-    
+
     // Get proper colors for drawer
     final drawerBackgroundColor = isInDrawer
-        ? Theme.of(context).drawerTheme.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor
+        ? Theme.of(context).drawerTheme.backgroundColor ??
+            Theme.of(context).scaffoldBackgroundColor
         : (backgroundColor ?? Theme.of(context).drawerTheme.backgroundColor);
 
     // Find the first valid group to mark it for auto-expanding
@@ -93,20 +96,17 @@ class ModSidebar extends StatelessWidget {
               child: ListView(
                 padding: EdgeInsets.zero,
                 physics: const AlwaysScrollableScrollPhysics(),
-                children: menuGroups
-                    .asMap()
-                    .entries
-                    .map((entry) {
-                      final index = entry.key;
-                      final group = entry.value;
-                      debugPrint('[ModSidebar] Building menu group: ${group.title}');
-                      return _buildMenuGroup(
-                        group,
-                        isExpanded || isInDrawer,
-                        isFirstGroup: index == firstValidGroupIndex,
-                      );
-                    })
-                    .toList(),
+                children: menuGroups.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final group = entry.value;
+                  debugPrint(
+                      '[ModSidebar] Building menu group: ${group.title}');
+                  return _buildMenuGroup(
+                    group,
+                    isExpanded || isInDrawer,
+                    isFirstGroup: index == firstValidGroupIndex,
+                  );
+                }).toList(),
               ),
             ),
             if (footer != null) footer!,
@@ -130,8 +130,10 @@ class ModSidebar extends StatelessWidget {
     return group.items.any((item) => _hasValidClaim(item));
   }
 
-  Widget _buildMenuGroup(MenuGroup group, bool showTitle, {bool isFirstGroup = false}) {
-    debugPrint('[ModSidebar] Building group with ${group.items.length} items, showTitle: $showTitle, isFirstGroup: $isFirstGroup');
+  Widget _buildMenuGroup(MenuGroup group, bool showTitle,
+      {bool isFirstGroup = false}) {
+    debugPrint(
+        '[ModSidebar] Building group with ${group.items.length} items, showTitle: $showTitle, isFirstGroup: $isFirstGroup');
 
     // Check if the group should be visible
     if (!_hasValidGroupClaim(group)) {
@@ -160,11 +162,15 @@ class ModSidebar extends StatelessWidget {
           debugPrint('[ModSidebar] Building menu item: ${item.title}');
           // Check if this item should be initially expanded (first expandable item in the first group)
           final hasSubItems = item.subItems?.isNotEmpty ?? false;
-          final shouldExpandInitially = isFirstGroup && hasSubItems && !firstExpandableFound && _hasValidClaim(item);
+          final shouldExpandInitially = isFirstGroup &&
+              hasSubItems &&
+              !firstExpandableFound &&
+              _hasValidClaim(item);
           if (shouldExpandInitially) {
             firstExpandableFound = true;
           }
-          return _buildMenuItem(item, 0, group, initiallyExpanded: shouldExpandInitially);
+          return _buildMenuItem(item, 0, group,
+              initiallyExpanded: shouldExpandInitially);
         }),
       ],
     );
@@ -189,7 +195,8 @@ class ModSidebar extends StatelessWidget {
     return false;
   }
 
-  Widget _buildMenuItem(MenuItem item, int level, MenuGroup group, {bool initiallyExpanded = false}) {
+  Widget _buildMenuItem(MenuItem item, int level, MenuGroup group,
+      {bool initiallyExpanded = false}) {
     if (!_hasValidClaim(item)) {
       return const SizedBox.shrink();
     }
@@ -355,9 +362,9 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
               // Force reload by using offAllNamed to clear navigation stack
               // and then navigate to the route
               if (item.arguments != null) {
-                Get.offAllNamed(item.route!, arguments: item.arguments);
+                Get.offNamed(item.route!, arguments: item.arguments);
               } else {
-                Get.offAllNamed(item.route!);
+                Get.offNamed(item.route!);
               }
             } else {
               // Normal navigation
@@ -402,9 +409,11 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
   @override
   Widget build(BuildContext context) {
     final LayoutController controller = Get.find();
-    final bool isInDrawer = context.findAncestorWidgetOfExactType<Drawer>() != null;
-    
-    debugPrint('[_ExpandableMenuItem] Building item: ${widget.item.title}, isInDrawer: $isInDrawer');
+    final bool isInDrawer =
+        context.findAncestorWidgetOfExactType<Drawer>() != null;
+
+    debugPrint(
+        '[_ExpandableMenuItem] Building item: ${widget.item.title}, isInDrawer: $isInDrawer');
 
     // For drawer on mobile/tablet, simplify the widget tree
     if (isInDrawer) {
@@ -430,7 +439,8 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
               widget.item.icon,
               size: widget.iconSize ?? 24.0,
               color: isSelected
-                  ? widget.selectedColor ?? Theme.of(context).colorScheme.primary
+                  ? widget.selectedColor ??
+                      Theme.of(context).colorScheme.primary
                   : widget.unselectedColor ?? Theme.of(context).iconTheme.color,
             ),
             title: isMenuExpanded
@@ -438,8 +448,10 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
                     widget.item.title,
                     style: TextStyle(
                       color: isSelected
-                          ? widget.selectedColor ?? Theme.of(context).colorScheme.primary
-                          : widget.unselectedColor ?? Theme.of(context).textTheme.bodyLarge?.color,
+                          ? widget.selectedColor ??
+                              Theme.of(context).colorScheme.primary
+                          : widget.unselectedColor ??
+                              Theme.of(context).textTheme.bodyLarge?.color,
                       fontWeight: widget.fontWeight ??
                           (isSelected ? FontWeight.bold : FontWeight.normal),
                       fontSize: widget.fontSize ?? 14.0,
@@ -449,13 +461,16 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
             trailing: hasSubItems && isMenuExpanded
                 ? Icon(
                     _isExpanded ? Icons.expand_less : Icons.expand_more,
-                    color: widget.unselectedColor ?? Theme.of(context).iconTheme.color,
+                    color: widget.unselectedColor ??
+                        Theme.of(context).iconTheme.color,
                   )
                 : null,
             selected: isSelected,
-            selectedTileColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+            selectedTileColor:
+                Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
             onTap: () {
-              debugPrint('[_ExpandableMenuItem] Tap detected on: ${widget.item.title}');
+              debugPrint(
+                  '[_ExpandableMenuItem] Tap detected on: ${widget.item.title}');
               if (hasSubItems) {
                 if (!isMenuExpanded && !Get.isDialogOpen!) {
                   _showSubmenuPopup(context, widget.item.subItems!);
@@ -463,7 +478,8 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
                   if (mounted) setState(() => _isExpanded = !_isExpanded);
                 }
               } else if (widget.item.route != null) {
-                debugPrint('[_ExpandableMenuItem] Navigating to: ${widget.item.route}');
+                debugPrint(
+                    '[_ExpandableMenuItem] Navigating to: ${widget.item.route}');
                 controller.setSelectedRoute(widget.item.route!);
 
                 // Simplified navigation to avoid navigator issues
@@ -471,7 +487,8 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
                   // Check if should reload on navigate
                   if (widget.item.reloadOnNavigate) {
                     // Force reload by using offAllNamed to clear navigation stack
-                    debugPrint('[_ExpandableMenuItem] Reloading route: ${widget.item.route}');
+                    debugPrint(
+                        '[_ExpandableMenuItem] Reloading route: ${widget.item.route}');
                     if (widget.item.arguments != null) {
                       Get.offAllNamed(
                         widget.item.route!,
@@ -525,13 +542,15 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
     });
   }
 
-  Widget _buildSimpleMenuItem(BuildContext context, LayoutController controller) {
+  Widget _buildSimpleMenuItem(
+      BuildContext context, LayoutController controller) {
     final isSelected = widget.item.route != null &&
         controller.selectedRoute.value == widget.item.route;
     final hasSubItems = widget.item.subItems?.isNotEmpty ?? false;
-    
-    debugPrint('[_ExpandableMenuItem] Simple item - isSelected: $isSelected, hasSubItems: $hasSubItems');
-    
+
+    debugPrint(
+        '[_ExpandableMenuItem] Simple item - isSelected: $isSelected, hasSubItems: $hasSubItems');
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -539,11 +558,13 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
           color: Colors.transparent,
           child: InkWell(
             onTap: () {
-              debugPrint('[_ExpandableMenuItem] Drawer tap on: ${widget.item.title}');
+              debugPrint(
+                  '[_ExpandableMenuItem] Drawer tap on: ${widget.item.title}');
               if (hasSubItems) {
                 if (mounted) setState(() => _isExpanded = !_isExpanded);
               } else if (widget.item.route != null) {
-                debugPrint('[_ExpandableMenuItem] Drawer navigating to: ${widget.item.route}');
+                debugPrint(
+                    '[_ExpandableMenuItem] Drawer navigating to: ${widget.item.route}');
                 controller.setSelectedRoute(widget.item.route!);
                 Navigator.of(context).pop(); // Close drawer first
 
@@ -553,7 +574,8 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
                     // Check if should reload on navigate
                     if (widget.item.reloadOnNavigate) {
                       // Force reload by using offAllNamed to clear navigation stack
-                      debugPrint('[_ExpandableMenuItem] Reloading route: ${widget.item.route}');
+                      debugPrint(
+                          '[_ExpandableMenuItem] Reloading route: ${widget.item.route}');
                       if (widget.item.arguments != null) {
                         Get.offAllNamed(
                           widget.item.route!,
@@ -605,8 +627,10 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
                     widget.item.icon,
                     size: widget.iconSize ?? 24.0,
                     color: isSelected
-                        ? widget.selectedColor ?? Theme.of(context).colorScheme.primary
-                        : widget.unselectedColor ?? Theme.of(context).iconTheme.color,
+                        ? widget.selectedColor ??
+                            Theme.of(context).colorScheme.primary
+                        : widget.unselectedColor ??
+                            Theme.of(context).iconTheme.color,
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -614,8 +638,10 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
                       widget.item.title,
                       style: TextStyle(
                         color: isSelected
-                            ? widget.selectedColor ?? Theme.of(context).colorScheme.primary
-                            : widget.unselectedColor ?? Theme.of(context).textTheme.bodyLarge?.color,
+                            ? widget.selectedColor ??
+                                Theme.of(context).colorScheme.primary
+                            : widget.unselectedColor ??
+                                Theme.of(context).textTheme.bodyLarge?.color,
                         fontWeight: widget.fontWeight ??
                             (isSelected ? FontWeight.bold : FontWeight.normal),
                         fontSize: widget.fontSize ?? 14.0,
@@ -625,7 +651,8 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
                   if (hasSubItems)
                     Icon(
                       _isExpanded ? Icons.expand_less : Icons.expand_more,
-                      color: widget.unselectedColor ?? Theme.of(context).iconTheme.color,
+                      color: widget.unselectedColor ??
+                          Theme.of(context).iconTheme.color,
                     ),
                 ],
               ),
