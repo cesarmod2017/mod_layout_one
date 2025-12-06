@@ -176,6 +176,60 @@ class _TablesPageState extends State<TablesPage> {
                 ], // Adicione se necessário
               ),
             ),
+            const SizedBox(height: 8),
+            const ModCodeExample(
+              code: '''// ModDataTable Customizado
+ModDataTable(
+  paginationBorderRadius: 1,
+  headerBackgroundColor: Get.theme.scaffoldBackgroundColor,
+  footerBackgroundColor: Get.theme.scaffoldBackgroundColor,
+  oddRowColor: Get.theme.colorScheme.surfaceContainerHighest,
+  evenRowColor: Get.theme.scaffoldBackgroundColor,
+  fixedHeader: true,
+  enableColumnResize: true,
+  headers: [
+    ModDataHeader(
+      child: SelectableText('Name'),
+      widthType: WidthType.fixed,
+      width: 150,
+      sortable: true,
+      field: 'name',
+    ),
+    ModDataHeader(
+      child: SelectableText('Age'),
+      widthType: WidthType.fixed,
+      width: 100,
+      sortable: true,
+      field: 'age',
+    ),
+    ModDataHeader(
+      child: const SelectableText('City'),
+      widthType: WidthType.fixed,
+      width: 150,
+      sortable: true,
+      field: 'city',
+    ),
+  ],
+  data: dataList,
+  source: _DataSource(dataList),
+  currentPage: 0,
+  rowsPerPage: 20,
+  totalRecords: dataList.length,
+  onPageChanged: (page) {
+    log('Page changed: \$page');
+  },
+  onSort: (field, direction) {
+    log('Sorting by \$field in \$direction direction');
+  },
+  rowHeight: 10,
+  paginationText: 'of',
+  rowsPerPageText: 'Linhas por página',
+  onRowsPerPageChanged: (rowsPerPage) {
+    log('Rows per page changed: \$rowsPerPage');
+  },
+  availableRowsPerPage: const [5, 10, 15, 20, 50, 100],
+),''',
+            ),
             const SizedBox(height: 20),
             ModCard(
               header: const Text(
@@ -428,6 +482,45 @@ class _TablesPageState extends State<TablesPage> {
                 availableRowsPerPage: const [1, 5, 10, 15, 20],
               ),
             ),
+            const SizedBox(height: 8),
+            const ModCodeExample(
+              code: '''// Wide Table with Horizontal Scroll
+ModDataTable(
+  fixedHeader: true,
+  showHorizontalScrollbar: true,
+  headers: [
+    ModDataHeader(
+      child: const SelectableText('ID'),
+      widthType: WidthType.fixed,
+      width: 80,
+      sortable: true,
+      field: 'id',
+    ),
+    ModDataHeader(
+      child: const SelectableText('Name'),
+      widthType: WidthType.fixed,
+      width: 150,
+      sortable: true,
+      field: 'name',
+    ),
+    // ... more headers
+  ],
+  data: employeeData,
+  source: _WideDataSource(employeeData),
+  currentPage: 0,
+  rowsPerPage: 5,
+  totalRecords: 0,
+  enableSimplePagination: true,
+  oddRowColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+  evenRowColor: Theme.of(context).colorScheme.surfaceContainer,
+  onPageChanged: (page) {
+    log('Page changed: \$page');
+  },
+  onSort: (field, direction) {
+    log('Sorting by \$field in \$direction direction');
+  },
+),''',
+            ),
             const SizedBox(height: 20),
             ModCard(
               header: const Text(
@@ -574,6 +667,51 @@ class _TablesPageState extends State<TablesPage> {
                 ],
               ),
             ),
+            const SizedBox(height: 8),
+            const ModCodeExample(
+              code: '''// DataTable com Action Bar - Dynamic Actions
+ModDataTable(
+  fixedHeader: true,
+  showHorizontalScrollbar: true,
+  columnsShow: visibleColumns,
+  actionBarConfig: ModDataTableActionBarConfig(
+    // Add any widgets to the actions list
+    actions: [
+      IconButton(
+        icon: Icon(Icons.picture_as_pdf, color: Colors.red),
+        tooltip: 'Export to PDF',
+        onPressed: () => exportToPdf(),
+      ),
+      IconButton(
+        icon: Icon(Icons.table_chart, color: Colors.green),
+        tooltip: 'Export to Excel',
+        onPressed: () => exportToExcel(),
+      ),
+      IconButton(
+        icon: Icon(Icons.refresh),
+        tooltip: 'Refresh',
+        onPressed: () => refreshData(),
+      ),
+    ],
+    // Settings button is always positioned last
+    enableSettings: true,
+    settingsIcon: const Icon(Icons.settings, color: Colors.blue),
+    settingsTooltip: 'Configure columns',
+    settingsModalTitle: 'Select visible columns',
+    settingsOnChange: (selectedColumns) {
+      setState(() {
+        visibleColumns = selectedColumns;
+      });
+    },
+    background: Theme.of(context).scaffoldBackgroundColor,
+    borderRadius: BorderRadius.circular(8),
+  ),
+  headers: [...],
+  data: dataList,
+  source: _DataSource(dataList),
+  ...
+),''',
+            ),
             const SizedBox(height: 20),
             ModCard(
               header: const Text(
@@ -615,24 +753,50 @@ class _TablesPageState extends State<TablesPage> {
                     showHorizontalScrollbar: true,
                     columnsShow: _visibleColumns,
                     actionBarConfig: ModDataTableActionBarConfig(
-                      enablePdf: true,
-                      pdfIcon: const Icon(Icons.picture_as_pdf_outlined,
-                          color: Colors.red, size: 20),
-                      pdfTooltip: 'Export to PDF',
-                      pdfOnPressed: () async {
-                        log('[ModDataTable]: PDF export clicked');
-                        await Future.delayed(const Duration(seconds: 5));
-                        log('[ModDataTable]: PDF export completed');
-                      },
-                      enableXls: true,
-                      xlsIcon: const Icon(Icons.table_chart,
-                          color: Colors.green, size: 20),
-                      xlsTooltip: 'Export to Excel',
-                      xlsOnPressed: () async {
-                        log('[ModDataTable]: XLS export clicked');
-                        await Future.delayed(const Duration(seconds: 5));
-                        log('[ModDataTable]: XLS export completed');
-                      },
+                      actions: [
+                        // PDF export button
+                        IconButton(
+                          icon: const Icon(Icons.picture_as_pdf_outlined,
+                              color: Colors.red, size: 20),
+                          tooltip: 'Export to PDF',
+                          onPressed: () async {
+                            log('[ModDataTable]: PDF export clicked');
+                            await Future.delayed(const Duration(seconds: 5));
+                            log('[ModDataTable]: PDF export completed');
+                          },
+                        ),
+                        Spacer(),
+                        // PDF export button
+                        IconButton(
+                          icon: const Icon(Icons.picture_as_pdf_outlined,
+                              color: Colors.red, size: 20),
+                          tooltip: 'Export to PDF',
+                          onPressed: () async {
+                            log('[ModDataTable]: PDF export clicked');
+                            await Future.delayed(const Duration(seconds: 5));
+                            log('[ModDataTable]: PDF export completed');
+                          },
+                        ),
+                        // XLS export button
+                        IconButton(
+                          icon: const Icon(Icons.table_chart,
+                              color: Colors.green, size: 20),
+                          tooltip: 'Export to Excel',
+                          onPressed: () async {
+                            log('[ModDataTable]: XLS export clicked');
+                            await Future.delayed(const Duration(seconds: 5));
+                            log('[ModDataTable]: XLS export completed');
+                          },
+                        ),
+                        // Custom refresh button
+                        IconButton(
+                          icon: const Icon(Icons.refresh, size: 20),
+                          tooltip: 'Refresh data',
+                          onPressed: () {
+                            log('[ModDataTable]: Refresh clicked');
+                          },
+                        ),
+                      ],
                       enableSettings: true,
                       settingsIcon: const Icon(Icons.settings,
                           color: Colors.blue, size: 20),
@@ -696,9 +860,208 @@ class _TablesPageState extends State<TablesPage> {
                 ],
               ),
             ),
+            const SizedBox(height: 8),
+            const ModCodeExample(
+              code: '''// DataTable Modal
+ModDataTableModal.show<Map<String, dynamic>, void>(
+  context: context,
+  header: const Text('Employee Data'),
+  size: ModModalSize.lg,
+  height: ModModalHeight.auto,
+  maxHeight: MediaQuery.of(context).size.height * 0.8,
+  modalHeaderColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+  headers: [
+    ModDataHeader(
+      child: const SelectableText('Name'),
+      widthType: WidthType.fixed,
+      width: 200,
+      sortable: true,
+      field: 'name',
+    ),
+    // ... more headers
+  ],
+  data: employeeData,
+  source: _DataSource(employeeData),
+  currentPage: 0,
+  rowsPerPage: 5,
+  totalRecords: employeeData.length,
+  fixedHeader: true,
+  showHorizontalScrollbar: true,
+  footerConfig: ModDataTableModalFooterConfig(
+    showCloseButton: true,
+    closeButtonText: 'Close',
+    buttons: [
+      ElevatedButton(
+        onPressed: () { /* action */ },
+        child: const Text('Export Selected'),
+      ),
+    ],
+  ),
+  onClose: () {
+    log('Modal closed');
+  },
+);''',
+            ),
+            const SizedBox(height: 20),
+            ModCard(
+              header: const Text(
+                "DataTable Modal Example",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "DataTableModal Features:",
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        const Text("• Combines ModDataTable with ModModal"),
+                        const Text(
+                            "• Pagination controls positioned on the left of the footer"),
+                        const Text(
+                            "• Action buttons positioned on the right of the footer"),
+                        const Text(
+                            "• Supports all ModDataTable features (sorting, column resize, etc.)"),
+                        const Text(
+                            "• Configurable modal size, position, and appearance"),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ElevatedButton.icon(
+                      onPressed: () => _showDataTableModal(context),
+                      icon: const Icon(Icons.table_chart),
+                      label: const Text('Open DataTable Modal'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  void _showDataTableModal(BuildContext context) {
+    ModDataTableModal.show<Map<String, dynamic>, void>(
+      context: context,
+      // Modal properties
+      header: const Text(
+        'Employee Data',
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      size: ModModalSize.lg,
+      height: ModModalHeight.auto,
+      maxHeight: MediaQuery.of(context).size.height * 0.8,
+      modalHeaderColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      modalBodyColor: Theme.of(context).colorScheme.surface,
+      modalFooterColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+
+      // DataTable properties
+      headers: [
+        ModDataHeader(
+          child: const SelectableText('Name'),
+          widthType: WidthType.fixed,
+          width: 200,
+          sortable: true,
+          field: 'name',
+        ),
+        ModDataHeader(
+          child: const SelectableText('Age'),
+          widthType: WidthType.fixed,
+          width: 100,
+          sortable: true,
+          field: 'age',
+        ),
+        ModDataHeader(
+          child: const SelectableText('City'),
+          widthType: WidthType.fixed,
+          width: 200,
+          sortable: true,
+          field: 'city',
+        ),
+      ],
+      // Pass ALL data - the modal handles pagination internally
+      data: _data,
+      source: _DataSource(_data),
+      currentPage: 0,
+      rowsPerPage: 5,
+      totalRecords: _data.length,
+      onPageChanged: (page) {
+        log('[DataTableModal]: Page changed to $page');
+      },
+      onRowsPerPageChanged: (rows) {
+        log('[DataTableModal]: Rows per page changed to $rows');
+      },
+      onSort: (field, direction) {
+        log('[DataTableModal]: Sorting by $field in $direction direction');
+      },
+      rowHeight: 40,
+      fixedHeader: true,
+      showHorizontalScrollbar: true,
+      oddRowColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      evenRowColor: Theme.of(context).colorScheme.surfaceContainer,
+      headerBackgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+      paginationText: 'of',
+      rowsPerPageText: 'Rows',
+      availableRowsPerPage: const [5, 10, 15, 20],
+      // Action bar configuration with dynamic actions
+      actionBarConfig: ModDataTableActionBarConfig(
+        actions: [
+          // PDF export button
+          IconButton(
+            icon: const Icon(Icons.picture_as_pdf, color: Colors.red, size: 20),
+            tooltip: 'Export to PDF',
+            onPressed: () {
+              log('[DataTableModal]: PDF export clicked');
+            },
+          ),
+          // XLS export button
+          IconButton(
+            icon: const Icon(Icons.table_chart, color: Colors.green, size: 20),
+            tooltip: 'Export to Excel',
+            onPressed: () {
+              log('[DataTableModal]: XLS export clicked');
+            },
+          ),
+        ],
+        enableSettings: true,
+        settingsOnChange: (columns) {
+          log('[DataTableModal]: Settings changed - visible columns: $columns');
+        },
+        background: Theme.of(context).colorScheme.surface,
+      ),
+      // Footer configuration
+      footerConfig: ModDataTableModalFooterConfig(
+        showCloseButton: true,
+        closeButtonText: 'Close',
+        buttons: [
+          ElevatedButton(
+            onPressed: () {
+              log('[DataTableModal]: Custom action button clicked');
+            },
+            child: const Text('Export Selected'),
+          ),
+        ],
+      ),
+      onClose: () {
+        log('[DataTableModal]: Modal closed');
+      },
     );
   }
 }

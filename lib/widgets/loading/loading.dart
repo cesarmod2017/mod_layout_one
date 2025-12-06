@@ -2,6 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
+/// Navigator observer that automatically closes loading overlays on navigation.
+/// Add this to your app's navigatorObservers to enable auto-close on route changes.
+class ModLoadingNavigatorObserver extends NavigatorObserver {
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    super.didPush(route, previousRoute);
+    ModLoading.closeAll();
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    super.didPop(route, previousRoute);
+    ModLoading.closeAll();
+  }
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
+    ModLoading.closeAll();
+  }
+
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    super.didRemove(route, previousRoute);
+    ModLoading.closeAll();
+  }
+}
+
 enum ModLoadingPosition {
   center,
   left,
@@ -101,6 +129,21 @@ class ModLoading {
       }
     } catch (e) {
       Get.printError(info: 'ModLoading: Error closing loading - $e');
+    }
+  }
+
+  /// Closes all active loading overlays.
+  /// Called automatically by ModLoadingNavigatorObserver on navigation events.
+  static void closeAll() {
+    try {
+      final entries = Map<int, OverlayEntry>.from(_entries);
+      for (final entry in entries.values) {
+        entry.remove();
+      }
+      _entries.clear();
+      instance._overlayEntry = null;
+    } catch (e) {
+      Get.printError(info: 'ModLoading: Error closing all loadings - $e');
     }
   }
 }

@@ -163,6 +163,44 @@ class ToastPage extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 8),
+            const ModCodeExample(
+              code: '''// Toast de Sucesso
+ToastManager.success(
+  context: context,
+  title: 'Success!',
+  message: 'Operation completed successfully.',
+);
+
+// Toast de Erro
+ToastManager.error(
+  context: context,
+  title: 'Error!',
+  message: 'Something went wrong. Please try again.',
+);
+
+// Toast de Warning
+ToastManager.warning(
+  context: context,
+  title: 'Warning!',
+  message: 'Please check your input data.',
+);
+
+// Toast de Info
+ToastManager.info(
+  context: context,
+  title: 'Information',
+  message: 'Here is some useful information.',
+);
+
+// Toast com Duração Personalizada
+ToastManager.info(
+  context: context,
+  title: 'Quick Info',
+  message: 'This toast will disappear in 2 seconds.',
+  duration: const Duration(seconds: 2),
+);''',
+            ),
             const SizedBox(height: 24),
             ModCard(
               header: const Text(
@@ -311,6 +349,27 @@ class ToastPage extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
+            const SizedBox(height: 8),
+            const ModCodeExample(
+              code: '''// Toast em diferentes posições
+ToastManager.info(
+  context: context,
+  message: 'Toast at top left position',
+  position: ToastPosition.topLeft,
+);
+
+ToastManager.info(
+  context: context,
+  message: 'Toast at center position',
+  position: ToastPosition.center,
+);
+
+ToastManager.success(
+  context: context,
+  message: 'Toast at bottom right position',
+  position: ToastPosition.bottomRight,
+);''',
             ),
             const SizedBox(height: 24),
             ModCard(
@@ -518,6 +577,37 @@ class ToastPage extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
+            const SizedBox(height: 8),
+            const ModCodeExample(
+              code: '''// Toast Customizado
+ToastManager.custom(
+  context: context,
+  title: 'Custom Purple',
+  message: 'This is a custom purple toast.',
+  icon: Icons.star,
+  backgroundColor: Colors.purple,
+  textColor: Colors.white,
+);
+
+// Toast sem botão de fechar
+ToastManager.custom(
+  context: context,
+  title: 'Auto Close',
+  message: 'This toast has no close button.',
+  showCloseButton: false,
+);
+
+// Toast com largura máxima
+ToastManager.success(
+  context: context,
+  title: 'Constrained Width',
+  message: 'This toast has a maximum width of 400px.',
+  maxWidth: 400,
+);
+
+// Limpar todos os toasts
+ToastManager().clearAll();''',
             ),
             const SizedBox(height: 24),
             ModCard(

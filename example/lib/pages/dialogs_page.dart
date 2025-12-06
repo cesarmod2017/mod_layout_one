@@ -354,6 +354,65 @@ class DialogsPage extends StatelessWidget {
                       );
                     },
                   ),
+                  const SizedBox(height: 16),
+                  const ModCodeExample(
+                    code: '''// Dialog Básico
+showDialog(
+  context: context,
+  builder: (context) => ModDialog(
+    title: 'Confirmation',
+    maxWidth: 400,
+    minWidth: 150,
+    content: const Text('Are you sure you want to proceed?'),
+    buttons: [
+      ModButton(
+        title: 'Cancel',
+        onPressed: () async => Get.back(),
+      ),
+      ModButton(
+        title: 'Confirm',
+        type: ModButtonType.primary,
+        onPressed: () async => Get.back(),
+      ),
+    ],
+  ),
+);
+
+// Dialog com Ícone
+showDialog(
+  context: context,
+  builder: (context) => ModDialog(
+    title: 'Warning',
+    icon: Icons.warning_amber_rounded,
+    content: const Text('This is a warning message'),
+    buttons: [
+      ModButton(
+        title: 'OK',
+        type: ModButtonType.warning,
+        onPressed: () async => Get.back(),
+      ),
+    ],
+  ),
+);
+
+// Dialog Personalizado
+showDialog(
+  context: context,
+  builder: (context) => ModDialog(
+    title: 'Full Featured Dialog',
+    content: const Text('Custom styled dialog'),
+    buttons: [...],
+    buttonAlignment: ButtonAlignment.center,
+    dismissible: false,
+    size: DialogSize.lg,
+    position: DialogPosition.topCenter,
+    headerColor: Colors.amber[100],
+    contentColor: Colors.amber[50],
+    footerColor: Colors.amber[100],
+    borderRadius: 50,
+  ),
+);''',
+                  ),
                 ],
               ),
             ),

@@ -326,6 +326,58 @@ class ButtonsPage extends StatelessWidget {
                       ModPopupMenuItem(value: 'Item 3', text: 'Item 3'),
                     ],
                   ),
+                  const SizedBox(height: 16),
+                  const ModCodeExample(
+                    code: '''// Botão Simples
+ModButton(
+  title: 'Simple Button',
+  type: ModButtonType.primary,
+  onPressed: () async {},
+),
+
+// Botão com Ícones
+ModButton(
+  title: 'Click Me',
+  type: ModButtonType.success,
+  leftIcon: Icons.add,
+  rightIcon: Icons.arrow_forward,
+  onPressed: () async {},
+),
+
+// Botão com Loading
+ModButton(
+  title: 'Submit',
+  type: ModButtonType.info,
+  leftIcon: Icons.save,
+  onPressed: () async {
+    await Future.delayed(const Duration(seconds: 2));
+  },
+  loadingText: 'Saving...',
+),
+
+// Tipos de Botão
+ModButton(
+  title: 'Primary',
+  type: ModButtonType.primary,
+  onPressed: () async {},
+),
+
+// Tamanhos de Botão
+ModButton(
+  title: 'Large Button',
+  type: ModButtonType.primary,
+  size: ModButtonSize.lg,
+  onPressed: () async {},
+),
+
+// Botão Desabilitado
+ModButton(
+  title: 'Disabled',
+  type: ModButtonType.primary,
+  disabled: true,
+  onPressed: () async {},
+),''',
+                  ),
                 ],
               ),
             ),
@@ -1097,6 +1149,84 @@ class ButtonsPage extends StatelessWidget {
                       ),
                     ],
                     onSelected: (value) {},
+                  ),
+                  const SizedBox(height: 16),
+                  const ModCodeExample(
+                    code: '''// Popup Button Básico
+ModPopupButton<String>(
+  title: 'Ações',
+  leftIcon: Icons.menu,
+  popupIcon: Icons.arrow_drop_down,
+  type: ModButtonType.primary,
+  items: [
+    ModPopupMenuItem<String>(
+      value: 'edit',
+      text: 'Editar',
+      icon: Icons.edit,
+    ),
+    ModPopupMenuItem<String>(
+      value: 'delete',
+      text: 'Excluir',
+      icon: Icons.delete,
+    ),
+  ],
+  onSelected: (value) {
+    // Handle selection
+  },
+),
+
+// Popup Button com Submenu
+ModPopupButton<String>(
+  title: 'Configurações',
+  leftIcon: Icons.settings,
+  popupIcon: Icons.arrow_drop_down,
+  type: ModButtonType.secondary,
+  items: [
+    ModPopupMenuItem<String>(
+      value: 'perfil',
+      text: 'Perfil',
+      icon: Icons.person,
+      submenu: [
+        ModPopupMenuItem<String>(
+          value: 'edit_profile',
+          text: 'Editar Perfil',
+          icon: Icons.edit,
+        ),
+        ModPopupMenuItem<String>(
+          value: 'change_password',
+          text: 'Alterar Senha',
+          icon: Icons.lock,
+        ),
+      ],
+    ),
+  ],
+  onSelected: (value) {
+    // Handle selection
+  },
+),
+
+// Popup Button com Widget Customizado
+ModPopupButton<int>(
+  title: 'Advanced',
+  leftIcon: Icons.auto_awesome,
+  popupIcon: Icons.expand_more,
+  type: ModButtonType.secondary,
+  items: [
+    ModPopupMenuItem<int>(
+      value: 1,
+      child: Row(
+        children: [
+          Icon(Icons.favorite, color: Colors.red),
+          const SizedBox(width: 8),
+          const Text('Favorito'),
+        ],
+      ),
+    ),
+  ],
+  onSelected: (value) {
+    // Handle selection
+  },
+),''',
                   ),
                 ],
               ),

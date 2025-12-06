@@ -97,6 +97,33 @@ class _TabsPageState extends State<TabsPage> {
                   ],
                 ),
               ),
+              const SizedBox(height: 8),
+              const mod.ModCodeExample(
+                code: '''// Tabs Básico
+ModTabs(
+  borderType: TabBorderType.all,
+  orientation: TabOrientation.horizontalTop,
+  tabs: const [
+    ModTab(id: 'tab1', text: 'Tab 1'),
+    ModTab(id: 'tab2', text: 'Tab 2'),
+    ModTab(id: 'tab3', text: 'Tab 3'),
+  ],
+  children: [
+    Container(
+      padding: const EdgeInsets.all(16),
+      child: const Text('Content 1'),
+    ),
+    Container(
+      padding: const EdgeInsets.all(16),
+      child: const Text('Content 2'),
+    ),
+    Container(
+      padding: const EdgeInsets.all(16),
+      child: const Text('Content 3'),
+    ),
+  ],
+),''',
+              ),
               const SizedBox(height: 16),
               mod.ModCard(
                 header: const Text(
@@ -154,6 +181,29 @@ class _TabsPageState extends State<TabsPage> {
                   ),
                 ),
               ),
+              const SizedBox(height: 8),
+              const mod.ModCodeExample(
+                code: '''// Tabs com diferentes orientações
+// Bottom Tabs
+ModTabs(
+  orientation: TabOrientation.horizontalBottom,
+  tabs: const [
+    ModTab(id: 'tab1', text: 'Tab 1'),
+    ModTab(id: 'tab2', text: 'Tab 2'),
+  ],
+  children: [...],
+),
+
+// Vertical Left Tabs
+ModTabs(
+  orientation: TabOrientation.verticalLeft,
+  tabs: const [
+    ModTab(id: 'tab1', text: 'Tab 1'),
+    ModTab(id: 'tab2', text: 'Tab 2'),
+  ],
+  children: [...],
+),''',
+              ),
               const SizedBox(height: 16),
               mod.ModCard(
                 header: const Text(
@@ -198,6 +248,45 @@ class _TabsPageState extends State<TabsPage> {
                     ),
                   ],
                 ),
+              ),
+              const SizedBox(height: 8),
+              const mod.ModCodeExample(
+                code: '''// Tabs com Ícones
+ModTabs(
+  tabs: const [
+    ModTab(
+      id: 'home',
+      text: 'Home',
+      icon: Icon(
+        Icons.home,
+        size: 18,
+        color: Colors.blue,
+      ),
+      style: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+      ),
+    ),
+    ModTab(
+      id: 'settings',
+      text: 'Settings',
+      style: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+      ),
+    ),
+  ],
+  children: [
+    Container(
+      padding: const EdgeInsets.all(16),
+      child: const Text('Home Content'),
+    ),
+    Container(
+      padding: const EdgeInsets.all(16),
+      child: const Text('Settings Content'),
+    ),
+  ],
+),''',
               ),
               const SizedBox(height: 16),
               mod.ModCard(
@@ -266,6 +355,27 @@ class _TabsPageState extends State<TabsPage> {
                     ],
                   ),
                 ),
+              ),
+              const SizedBox(height: 8),
+              const mod.ModCodeExample(
+                code: '''// Tabs com Estilos Customizados
+ModTabs(
+  selectedTabColor: Colors.red,
+  unselectedTabColor: Colors.transparent,
+  selectedTextColor: Colors.red,
+  unselectedTextColor: Colors.grey,
+  selectedBackgroundColor: Colors.black45,
+  alignment: TabAlignment.justify,
+  orientation: TabOrientation.horizontalTop,
+  minTabWidth: 200,
+  shrinkToFit: true,
+  tabs: const [
+    ModTab(id: 'tab1', text: 'Tab 1', closeable: true),
+    ModTab(id: 'tab2', text: 'Tab 2', closeable: true),
+    // ...
+  ],
+  children: [...],
+),''',
               ),
               const SizedBox(height: 16),
               mod.ModCard(

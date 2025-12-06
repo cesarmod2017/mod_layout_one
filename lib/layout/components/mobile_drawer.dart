@@ -51,7 +51,8 @@ class MobileDrawer extends StatelessWidget {
         child: Column(
           children: [
             if (header != null) header!,
-            if (moduleMenuGroups != null && _filteredModules.isNotEmpty)
+            // Only show module selector if there's more than one visible module
+            if (moduleMenuGroups != null && _filteredModules.length > 1)
               _buildModuleSelector(context),
             Expanded(
               child: _buildMenuContent(context),
@@ -83,14 +84,14 @@ class MobileDrawer extends StatelessWidget {
   Widget _buildMenuContent(BuildContext context) {
     // Get current menu groups based on selected module
     final LayoutController controller = Get.find();
-    
+
     return Obx(() {
       // Get current menu groups from selected module or fallback to provided menuGroups
       final currentMenuGroups = controller.selectedModule.value?.menuGroups ?? menuGroups;
-      
+
       debugPrint('[MobileDrawer] Building menu content with ${currentMenuGroups.length} groups');
       debugPrint('[MobileDrawer] Selected module: ${controller.selectedModule.value?.name}');
-      
+
       if (currentMenuGroups.isEmpty) {
         return Center(
           child: Text(
@@ -101,11 +102,22 @@ class MobileDrawer extends StatelessWidget {
           ),
         );
       }
-      
+
+      // Find the first valid group to mark it for auto-expanding
+      int firstValidGroupIndex = -1;
+      for (int i = 0; i < currentMenuGroups.length; i++) {
+        if (_hasValidGroupClaim(currentMenuGroups[i])) {
+          firstValidGroupIndex = i;
+          break;
+        }
+      }
+
       return ListView(
         padding: EdgeInsets.zero,
         physics: const AlwaysScrollableScrollPhysics(),
-        children: currentMenuGroups.map((group) {
+        children: currentMenuGroups.asMap().entries.map((entry) {
+          final index = entry.key;
+          final group = entry.value;
           debugPrint('[MobileDrawer] Building group: ${group.title}');
           return _DrawerMenuGroup(
             group: group,
@@ -115,6 +127,7 @@ class MobileDrawer extends StatelessWidget {
             fontSize: fontSize,
             fontWeight: fontWeight,
             iconSize: iconSize,
+            isFirstGroup: index == firstValidGroupIndex,
           );
         }).toList(),
       );
@@ -391,6 +404,7 @@ class _DrawerMenuGroup extends StatelessWidget {
   final double? fontSize;
   final FontWeight? fontWeight;
   final double? iconSize;
+  final bool isFirstGroup;
 
   const _DrawerMenuGroup({
     required this.group,
@@ -400,6 +414,7 @@ class _DrawerMenuGroup extends StatelessWidget {
     this.fontSize,
     this.fontWeight,
     this.iconSize,
+    this.isFirstGroup = false,
   });
 
   bool _hasValidClaim(MenuItem item) {
@@ -437,13 +452,16 @@ class _DrawerMenuGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('[_DrawerMenuGroup] Building group with ${group.items.length} items');
-    
+    debugPrint('[_DrawerMenuGroup] Building group with ${group.items.length} items, isFirstGroup: $isFirstGroup');
+
     // Check if the group should be visible
     if (!_hasValidGroupClaim(group)) {
       return const SizedBox.shrink();
     }
-    
+
+    // Track if we've found the first expandable item in the first group
+    bool firstExpandableFound = false;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -459,17 +477,26 @@ class _DrawerMenuGroup extends StatelessWidget {
             child: group.title,
           ),
         ),
-        ...group.items.map((item) => _DrawerMenuItem(
-          item: item,
-          level: 0,
-          group: group,
-          claims: claims,
-          selectedColor: selectedColor,
-          unselectedColor: unselectedColor,
-          fontSize: fontSize,
-          fontWeight: fontWeight,
-          iconSize: iconSize,
-        )),
+        ...group.items.map((item) {
+          // Check if this item should be initially expanded (first expandable item in the first group)
+          final hasSubItems = item.subItems?.isNotEmpty ?? false;
+          final shouldExpandInitially = isFirstGroup && hasSubItems && !firstExpandableFound && _hasValidClaim(item);
+          if (shouldExpandInitially) {
+            firstExpandableFound = true;
+          }
+          return _DrawerMenuItem(
+            item: item,
+            level: 0,
+            group: group,
+            claims: claims,
+            selectedColor: selectedColor,
+            unselectedColor: unselectedColor,
+            fontSize: fontSize,
+            fontWeight: fontWeight,
+            iconSize: iconSize,
+            initiallyExpanded: shouldExpandInitially,
+          );
+        }),
       ],
     );
   }
@@ -485,6 +512,7 @@ class _DrawerMenuItem extends StatefulWidget {
   final double? fontSize;
   final FontWeight? fontWeight;
   final double? iconSize;
+  final bool initiallyExpanded;
 
   const _DrawerMenuItem({
     required this.item,
@@ -496,6 +524,7 @@ class _DrawerMenuItem extends StatefulWidget {
     this.fontSize,
     this.fontWeight,
     this.iconSize,
+    this.initiallyExpanded = false,
   });
 
   @override
@@ -504,6 +533,13 @@ class _DrawerMenuItem extends StatefulWidget {
 
 class _DrawerMenuItemState extends State<_DrawerMenuItem> {
   bool _isExpanded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Use initiallyExpanded to set the initial state
+    _isExpanded = widget.initiallyExpanded;
+  }
 
   bool _hasValidClaim(MenuItem item) {
     if (widget.claims == null || widget.claims!.isEmpty) {

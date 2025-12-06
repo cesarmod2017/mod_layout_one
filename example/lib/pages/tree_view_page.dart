@@ -498,6 +498,56 @@ class _TreeViewPageState extends State<TreeViewPage> {
               ),
             ),
           ),
+          const SizedBox(height: 16),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: ModCodeExample(
+              code: '''// TreeView Básico
+ModTreeView(
+  nodes: nodes,
+  showIcons: true,
+  showCheckboxes: true,
+  theme: TreeViewTheme(
+    indentation: 24.0,
+    iconSize: 20.0,
+    selectionColor: Theme.of(context).highlightColor,
+    expanderType: ExpanderType.triangle,
+    showLines: true,
+    lineColor: Colors.red,
+    textColor: Theme.of(context).textTheme.bodyMedium?.color,
+    iconColor: Colors.yellow,
+  ),
+  onNodeSelected: (node) {
+    log('Selected: \${node.label}');
+  },
+  onNodeExpanded: (node) {
+    log('Expanded: \${node.label}');
+  },
+  onNodeCollapsed: (node) {
+    log('Collapsed: \${node.label}');
+  },
+  onNodeDropped: (source, target) {
+    log('Dropped \${source.label} into \${target.label}');
+  },
+  onNodeCheckChanged: (node, isSelected) {
+    log('Check changed: \${node.label}, \$isSelected');
+  },
+  getContextMenuItems: _getContextMenuItems,
+  onContextMenuItemSelected: _handleContextMenuItemSelected,
+),
+
+// TreeNode
+TreeNode(
+  id: 'unique_id',
+  label: 'File Name',
+  iconData: Icons.folder,
+  iconColor: Colors.amber,
+  isFolder: true,
+  isExpanded: false,
+  children: [],
+),''',
+            ),
+          ),
         ],
       ),
     );

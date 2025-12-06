@@ -48,6 +48,7 @@ export 'widgets/charts/charts.dart';
 export 'widgets/charts/mod_bar_chart.dart';
 export 'widgets/charts/models/chart_action_button_theme.dart';
 export 'widgets/datatable/datatable.dart';
+export 'widgets/datatable/datatable_modal.dart';
 export 'widgets/dialogs/dialog.dart';
 export 'widgets/dropdown/dropdown.dart';
 export 'widgets/dropdown_search/dropdown_search.dart';
@@ -71,6 +72,12 @@ export 'widgets/textbox/textbox.dart';
 export 'widgets/toast/mod_toast.dart';
 export 'widgets/toast/toast_manager.dart';
 export 'widgets/treeview/mod_treeview.dart';
+// Code Example
+export 'widgets/code_example/code_example.dart';
+// Progress
+export 'widgets/progress/mod_progress.dart';
+export 'widgets/progress/mod_progress_controller.dart';
+export 'widgets/progress/mod_progress_manager.dart';
 
 // Configuration
 class ModLayoutConfig {

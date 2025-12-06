@@ -34,18 +34,38 @@ class _TextBoxPageState extends State<TextBoxPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              content: mod.ModTextBox(
-                label: "Name",
-                hint: "Enter your name",
-                controller: TextEditingController(),
-                enableEnterAction: true,
-                enterOnPressed: () async {
-                  log('Enter disparado');
-                },
-                onChange: (text) {
-                  // This ensures the text is updated in the TextBox
-                  log("Name: $text");
-                },
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  mod.ModTextBox(
+                    label: "Name",
+                    hint: "Enter your name",
+                    controller: TextEditingController(),
+                    enableEnterAction: true,
+                    enterOnPressed: () async {
+                      log('Enter disparado');
+                    },
+                    onChange: (text) {
+                      // This ensures the text is updated in the TextBox
+                      log("Name: $text");
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  const mod.ModCodeExample(
+                    code: '''ModTextBox(
+  label: "Name",
+  hint: "Enter your name",
+  controller: TextEditingController(),
+  enableEnterAction: true,
+  enterOnPressed: () async {
+    // Ação ao pressionar Enter
+  },
+  onChange: (text) {
+    print("Name: \$text");
+  },
+),''',
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 16),
@@ -57,15 +77,32 @@ class _TextBoxPageState extends State<TextBoxPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              content: mod.ModTextBox(
-                label: "Password",
-                hint: "Enter your password",
-                isPassword: true,
-                controller: TextEditingController(text: "dada"),
-                onChange: (text) {
-                  // This ensures the text is updated in the TextBox
-                  log("Password: $text");
-                },
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  mod.ModTextBox(
+                    label: "Password",
+                    hint: "Enter your password",
+                    isPassword: true,
+                    controller: TextEditingController(text: "dada"),
+                    onChange: (text) {
+                      // This ensures the text is updated in the TextBox
+                      log("Password: $text");
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  const mod.ModCodeExample(
+                    code: '''ModTextBox(
+  label: "Password",
+  hint: "Enter your password",
+  isPassword: true,
+  controller: TextEditingController(),
+  onChange: (text) {
+    print("Password: \$text");
+  },
+),''',
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 16),
@@ -77,17 +114,37 @@ class _TextBoxPageState extends State<TextBoxPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              content: mod.ModTextBox(
-                label: "Email",
-                hint: "Enter your email",
-                style: const TextStyle(color: Colors.green),
-                borderRadius: 16.0,
-                keyboardType: TextInputType.emailAddress,
-                readOnly: false,
-                controller: TextEditingController(),
-                onChange: (text) {
-                  log("Email: $text");
-                },
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  mod.ModTextBox(
+                    label: "Email",
+                    hint: "Enter your email",
+                    style: const TextStyle(color: Colors.green),
+                    borderRadius: 16.0,
+                    keyboardType: TextInputType.emailAddress,
+                    readOnly: false,
+                    controller: TextEditingController(),
+                    onChange: (text) {
+                      log("Email: $text");
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  const mod.ModCodeExample(
+                    code: '''ModTextBox(
+  label: "Email",
+  hint: "Enter your email",
+  style: const TextStyle(color: Colors.green),
+  borderRadius: 16.0,
+  keyboardType: TextInputType.emailAddress,
+  readOnly: false,
+  controller: TextEditingController(),
+  onChange: (text) {
+    print("Email: \$text");
+  },
+),''',
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 16),
@@ -283,6 +340,51 @@ class _TextBoxPageState extends State<TextBoxPage> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 16),
+                  const mod.ModCodeExample(
+                    code: '''// Diferentes tamanhos de TextBox
+ModTextBox(
+  label: "Large TextBox",
+  hint: "Enter text",
+  size: ModTextBoxSize.lg,
+  controller: TextEditingController(),
+),
+
+ModTextBox(
+  label: "Medium TextBox",
+  hint: "Enter text",
+  size: ModTextBoxSize.md,
+  controller: TextEditingController(),
+),
+
+ModTextBox(
+  label: "Small TextBox",
+  hint: "Enter text",
+  size: ModTextBoxSize.sm,
+  controller: TextEditingController(),
+),
+
+ModTextBox(
+  label: "Extra Small TextBox",
+  hint: "Enter text",
+  size: ModTextBoxSize.xs,
+  controller: TextEditingController(),
+),
+
+// TextBox com botão suffix
+ModTextBox(
+  label: "With Suffix Button",
+  hint: "Enter text",
+  size: ModTextBoxSize.sm,
+  controller: TextEditingController(),
+  suffixButton: ModButton(
+    title: 'Action',
+    type: ModButtonType.danger,
+    size: ModButtonSize.xs,
+    onPressed: () async {},
+  ),
+),''',
+                  ),
                 ],
               ),
             ),
@@ -295,15 +397,34 @@ class _TextBoxPageState extends State<TextBoxPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              content: mod.ModTextBox(
-                label: "Input",
-                hint: "Enter text here",
-                multiline: true,
-                autoHeight: true,
-                controller: TextEditingController(),
-                onChange: (text) {
-                  log("Input: $text");
-                },
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  mod.ModTextBox(
+                    label: "Input",
+                    hint: "Enter text here",
+                    multiline: true,
+                    autoHeight: true,
+                    controller: TextEditingController(),
+                    onChange: (text) {
+                      log("Input: $text");
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  const mod.ModCodeExample(
+                    code: '''// TextBox multiline com altura automática
+ModTextBox(
+  label: "Input",
+  hint: "Enter text here",
+  multiline: true,
+  autoHeight: true,
+  controller: TextEditingController(),
+  onChange: (text) {
+    print("Input: \$text");
+  },
+),''',
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 16),
@@ -335,6 +456,24 @@ class _TextBoxPageState extends State<TextBoxPage> {
                     onChange: (text) {
                       log("Label Fixo: $text");
                     },
+                  ),
+                  const SizedBox(height: 16),
+                  const mod.ModCodeExample(
+                    code: '''// Floating Label ativo
+ModTextBox(
+  label: "Floating Label (true)",
+  hint: "Digite aqui...",
+  floatingLabel: true,
+  controller: TextEditingController(),
+),
+
+// Floating Label desativado
+ModTextBox(
+  label: "Label Fixo (false)",
+  hint: "Digite aqui...",
+  floatingLabel: false,
+  controller: TextEditingController(),
+),''',
                   ),
                 ],
               ),
@@ -401,6 +540,40 @@ class _TextBoxPageState extends State<TextBoxPage> {
                   const Text(
                     "Floating Label: Quando ativo (floatingLabel: true), o label flutua para cima quando há um valor selecionado ou quando o campo tem foco. Quando inativo (floatingLabel: false), o label permanece fixo no topo.",
                     style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 16),
+                  const mod.ModCodeExample(
+                    code: '''// DropDown com Floating Label ativo
+ModDropDown<String>(
+  label: "Floating Label (true)",
+  hint: "Choose an option...",
+  floatingLabel: true,
+  value: selectedValue,
+  items: options.map((opt) => DropdownMenuItem(
+    value: opt,
+    child: Text(opt),
+  )).toList(),
+  onChanged: (value) => setState(() => selectedValue = value),
+  size: ModDropDownSize.md,
+  borderRadius: 8,
+  hasBorder: true,
+),
+
+// DropDown com Floating Label desativado
+ModDropDown<String>(
+  label: "Label Fixo (false)",
+  hint: "Choose an option...",
+  floatingLabel: false,
+  value: selectedValue,
+  items: options.map((opt) => DropdownMenuItem(
+    value: opt,
+    child: Text(opt),
+  )).toList(),
+  onChanged: (value) => setState(() => selectedValue = value),
+  size: ModDropDownSize.md,
+  borderRadius: 8,
+  hasBorder: true,
+),''',
                   ),
                 ],
               ),

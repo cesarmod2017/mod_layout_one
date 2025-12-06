@@ -20,6 +20,16 @@ class CardPage extends StatelessWidget {
                     Text("This is a simple card with just header and content"),
               ),
             ),
+            const SizedBox(height: 8),
+            const ModCodeExample(
+              code: '''// Card Básico
+ModCard(
+  header: Text("Basic Card Example"),
+  content: Center(
+    child: Text("This is a simple card with just header and content"),
+  ),
+),''',
+            ),
             const SizedBox(height: 16),
             const ModCard(
               header: Text("Card with Footer"),
@@ -28,6 +38,17 @@ class CardPage extends StatelessWidget {
                     "This card demonstrates the usage with a footer section"),
               ),
               footer: Text("Additional information in footer"),
+            ),
+            const SizedBox(height: 8),
+            const ModCodeExample(
+              code: '''// Card com Footer
+ModCard(
+  header: Text("Card with Footer"),
+  content: Center(
+    child: Text("This card demonstrates the usage with a footer section"),
+  ),
+  footer: Text("Additional information in footer"),
+),''',
             ),
             const SizedBox(height: 16),
             const ModCard(
@@ -41,6 +62,20 @@ class CardPage extends StatelessWidget {
               isAccordion: true,
               initiallyExpanded: true,
             ),
+            const SizedBox(height: 8),
+            const ModCodeExample(
+              code: '''// Card Accordion (Expansível)
+ModCard(
+  header: Text("Accordion Card"),
+  content: Center(
+    child: Text("This card can be collapsed and expanded."),
+  ),
+  footer: Text("Footer is hidden when collapsed"),
+  borderRadius: 16,
+  isAccordion: true,
+  initiallyExpanded: true,
+),''',
+            ),
             const SizedBox(height: 16),
             const ModCard(
               header: Text("Accordion with Visible Footer"),
@@ -53,9 +88,23 @@ class CardPage extends StatelessWidget {
               isAccordion: true,
               showFooterWhenCollapsed: true,
             ),
+            const SizedBox(height: 8),
+            const ModCodeExample(
+              code: '''// Accordion com Footer Visível quando Colapsado
+ModCard(
+  header: Text("Accordion with Visible Footer"),
+  content: Center(
+    child: Text("This card shows the footer even when content is collapsed"),
+  ),
+  footer: Text("This footer stays visible when collapsed"),
+  borderRadius: 16,
+  isAccordion: true,
+  showFooterWhenCollapsed: true,
+),''',
+            ),
             const SizedBox(height: 16),
             ModCard(
-              header: const Text("Accordion with Visible Footer"),
+              header: const Text("Card with Toolbar"),
               disableModCard: true,
               toolbar: [
                 IconButton(
@@ -73,6 +122,29 @@ class CardPage extends StatelessWidget {
               borderRadius: 16,
               isAccordion: true,
               showFooterWhenCollapsed: true,
+            ),
+            const SizedBox(height: 8),
+            const ModCodeExample(
+              code: '''// Card com Toolbar
+ModCard(
+  header: const Text("Card with Toolbar"),
+  disableModCard: true,
+  toolbar: [
+    IconButton(
+      onPressed: () {
+        print("add");
+      },
+      icon: const Icon(Icons.add),
+    ),
+  ],
+  content: const Center(
+    child: Text("Content here"),
+  ),
+  footer: const Text("Footer text"),
+  borderRadius: 16,
+  isAccordion: true,
+  showFooterWhenCollapsed: true,
+),''',
             ),
           ],
         ),

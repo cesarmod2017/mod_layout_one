@@ -163,10 +163,11 @@ class _ModDropDownState<T> extends State<ModDropDown<T>> {
     // Definir cor de fundo padrão baseada no tema
     Color defaultBackgroundColor;
     if (theme.brightness == Brightness.dark) {
-      defaultBackgroundColor = theme.colorScheme.surface.withValues(alpha: 0.8);
+      defaultBackgroundColor =
+          theme.scaffoldBackgroundColor.withValues(alpha: 0.8);
     } else {
       defaultBackgroundColor =
-          theme.colorScheme.onSurface.withValues(alpha: 0.05);
+          theme.scaffoldBackgroundColor.withValues(alpha: 0.05);
     }
 
     final backgroundColor = widget.backgroundColor ?? defaultBackgroundColor;
@@ -197,7 +198,7 @@ class _ModDropDownState<T> extends State<ModDropDown<T>> {
             borderRadius: BorderRadius.circular(4),
           ),
           child: DropdownButtonFormField<T>(
-            value: widget.value,
+            initialValue: widget.value,
             items: widget.items,
             onChanged: widget.readOnly ? null : widget.onChanged,
             style: widget.style?.copyWith(fontSize: _getEffectiveFontSize()) ??

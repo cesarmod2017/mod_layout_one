@@ -117,91 +117,105 @@ class ModModal extends StatelessWidget {
     return calculatedHeight;
   }
 
+  Alignment _getAlignment() {
+    switch (position) {
+      case ModModalPosition.top:
+        return Alignment.topCenter;
+      case ModModalPosition.bottom:
+        return Alignment.bottomCenter;
+      case ModModalPosition.center:
+        return Alignment.center;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: fullScreen
-          ? EdgeInsets.zero
-          : const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-      child: Container(
-        width: _getModalWidth(context),
-        constraints: BoxConstraints(
-          maxHeight: _getModalHeight(context),
-          minWidth: minWidth ?? 0,
-          maxWidth: maxWidth ?? double.infinity,
-          minHeight: minHeight ?? 0,
-        ),
-        decoration: BoxDecoration(
-          borderRadius: fullScreen
-              ? BorderRadius.zero
-              : BorderRadius.circular(borderRadius),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: headerColor ?? theme.colorScheme.surface,
-                borderRadius: fullScreen
-                    ? BorderRadius.zero
-                    : BorderRadius.only(
-                        topLeft: Radius.circular(borderRadius),
-                        topRight: Radius.circular(borderRadius),
-                      ),
+    return Align(
+      alignment: _getAlignment(),
+      child: Material(
+        type: MaterialType.transparency,
+        child: Container(
+          margin: fullScreen
+              ? EdgeInsets.zero
+              : const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          width: _getModalWidth(context),
+          constraints: BoxConstraints(
+            maxHeight: _getModalHeight(context),
+            minWidth: minWidth ?? 0,
+            maxWidth: maxWidth ?? double.infinity,
+            minHeight: minHeight ?? 0,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: fullScreen
+                ? BorderRadius.zero
+                : BorderRadius.circular(borderRadius),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(child: header),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () {
-                      if (onClose != null) {
-                        onClose!();
-                      }
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              ),
-            ),
-            const Divider(height: 1, thickness: 1),
-            Flexible(
-              child: Container(
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
                 width: double.infinity,
-                color: bodyColor ?? theme.colorScheme.surface,
-                padding: padding ?? const EdgeInsets.all(16),
-                child: body,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: headerColor ?? theme.colorScheme.surface,
+                  borderRadius: fullScreen
+                      ? BorderRadius.zero
+                      : BorderRadius.only(
+                          topLeft: Radius.circular(borderRadius),
+                          topRight: Radius.circular(borderRadius),
+                        ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(child: header),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () {
+                        if (onClose != null) {
+                          onClose!();
+                        }
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const Divider(height: 1, thickness: 1),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: footerColor ?? theme.colorScheme.surface,
-                borderRadius: fullScreen
-                    ? BorderRadius.zero
-                    : BorderRadius.only(
-                        bottomLeft: Radius.circular(borderRadius),
-                        bottomRight: Radius.circular(borderRadius),
-                      ),
+              const Divider(height: 1, thickness: 1),
+              Flexible(
+                child: Container(
+                  width: double.infinity,
+                  color: bodyColor ?? theme.colorScheme.surface,
+                  padding: padding ?? const EdgeInsets.all(16),
+                  child: body,
+                ),
               ),
-              child: footer,
-            ),
-          ],
+              const Divider(height: 1, thickness: 1),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: footerColor ?? theme.colorScheme.surface,
+                  borderRadius: fullScreen
+                      ? BorderRadius.zero
+                      : BorderRadius.only(
+                          bottomLeft: Radius.circular(borderRadius),
+                          bottomRight: Radius.circular(borderRadius),
+                        ),
+                ),
+                child: footer,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -228,37 +242,28 @@ class ModModal extends StatelessWidget {
     double? minHeight,
     EdgeInsets? padding,
   }) {
-    final modalAlignment = position == ModModalPosition.top
-        ? Alignment.topCenter
-        : position == ModModalPosition.bottom
-            ? Alignment.bottomCenter
-            : Alignment.center;
-
     return showDialog<T>(
       context: context,
       barrierDismissible: barrierDismissible,
-      builder: (context) => Align(
-        alignment: modalAlignment,
-        child: ModModal(
-          header: header,
-          body: body,
-          padding: padding,
-          footer: footer,
-          headerColor: headerColor,
-          bodyColor: bodyColor,
-          footerColor: footerColor,
-          position: position,
-          size: size,
-          height: height,
-          fullScreen: fullScreen,
-          borderRadius: borderRadius,
-          barrierDismissible: barrierDismissible,
-          onClose: onClose,
-          maxWidth: maxWidth,
-          minWidth: minWidth,
-          maxHeight: maxHeight,
-          minHeight: minHeight,
-        ),
+      builder: (context) => ModModal(
+        header: header,
+        body: body,
+        padding: padding,
+        footer: footer,
+        headerColor: headerColor,
+        bodyColor: bodyColor,
+        footerColor: footerColor,
+        position: position,
+        size: size,
+        height: height,
+        fullScreen: fullScreen,
+        borderRadius: borderRadius,
+        barrierDismissible: barrierDismissible,
+        onClose: onClose,
+        maxWidth: maxWidth,
+        minWidth: minWidth,
+        maxHeight: maxHeight,
+        minHeight: minHeight,
       ),
     );
   }

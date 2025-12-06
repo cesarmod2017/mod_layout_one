@@ -7,10 +7,12 @@ import 'package:example/pages/buttons_page.dart';
 import 'package:example/pages/card_page.dart';
 import 'package:example/pages/charts_page.dart';
 import 'package:example/pages/dialogs_page.dart';
+import 'package:example/pages/dropdown_page.dart';
 import 'package:example/pages/home_page.dart';
 import 'package:example/pages/loading_page.dart';
 import 'package:example/pages/login_page.dart';
 import 'package:example/pages/modal_page.dart';
+import 'package:example/pages/progress_page.dart';
 import 'package:example/pages/tables_page.dart';
 import 'package:example/pages/tabs_page.dart';
 import 'package:example/pages/textbox_page.dart';
@@ -96,6 +98,11 @@ void main() async {
           route: '/textboxes',
         ),
         MenuItem(
+          title: 'dropdowns'.tr,
+          icon: Icons.arrow_drop_down_circle,
+          route: '/dropdowns',
+        ),
+        MenuItem(
           title: 'tables'.tr,
           icon: Icons.table_chart,
           route: '/tables',
@@ -109,6 +116,11 @@ void main() async {
           title: 'toast'.tr,
           icon: Icons.notifications,
           route: '/toast',
+        ),
+        MenuItem(
+          title: 'progress'.tr,
+          icon: Icons.trending_up,
+          route: '/progress',
         ),
       ],
       customTranslations:
@@ -134,6 +146,9 @@ class MyApp extends StatelessWidget {
           themeMode: themeController.isDarkMode.value
               ? ThemeMode.dark
               : ThemeMode.light,
+          navigatorObservers: [
+            ModLoadingNavigatorObserver(),
+          ],
           translations: AppTranslations(),
           locale: Get.find<LanguageController>().currentLocale.value.isNotEmpty
               ? Locale(
@@ -206,6 +221,12 @@ class MyApp extends StatelessWidget {
               preventDuplicates: true,
             ),
             GetPage(
+              name: '/dropdowns',
+              page: () => const DropdownPage(),
+              transition: Transition.noTransition,
+              preventDuplicates: true,
+            ),
+            GetPage(
               name: '/tables',
               page: () => const TablesPage(),
               transition: Transition.noTransition,
@@ -238,6 +259,12 @@ class MyApp extends StatelessWidget {
             GetPage(
               name: '/toast',
               page: () => const ToastPage(),
+              transition: Transition.noTransition,
+              preventDuplicates: true,
+            ),
+            GetPage(
+              name: '/progress',
+              page: () => const ProgressPage(),
               transition: Transition.noTransition,
               preventDuplicates: true,
             ),
@@ -291,11 +318,13 @@ class CustomLayout extends StatelessWidget {
         'menu:tabs',
         'menu:modals',
         'menu:textboxes',
+        'menu:dropdowns',
         'menu:tables',
         'menu:loading',
         'menu:treeview',
         'menu:charts',
         'menu:toast',
+        'menu:progress',
         'module:administrativo',
         'module:documentos',
       ],
@@ -416,6 +445,13 @@ class CustomLayout extends StatelessWidget {
                   value: 'textboxes',
                 ),
                 MenuItem(
+                  title: 'dropdowns',
+                  icon: Icons.arrow_drop_down_circle,
+                  route: '/dropdowns',
+                  type: 'menu',
+                  value: 'dropdowns',
+                ),
+                MenuItem(
                   title: 'tables',
                   icon: Icons.table_chart,
                   route: '/tables',
@@ -449,6 +485,13 @@ class CustomLayout extends StatelessWidget {
                   route: '/toast',
                   type: 'menu',
                   value: 'toast',
+                ),
+                MenuItem(
+                  title: 'progress',
+                  icon: Icons.telegram,
+                  route: '/progress',
+                  type: 'menu',
+                  value: 'progress',
                 ),
               ],
             ),
@@ -529,7 +572,15 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomLayout(
       title: 'settings'.tr,
-      footer: Text('footer'.tr),
+      footer: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('footer'.tr),
+          Spacer(),
+          Text('footer'.tr),
+        ],
+      ),
       body: Center(
         child: ModCard(
           header: Text('settings'.tr),

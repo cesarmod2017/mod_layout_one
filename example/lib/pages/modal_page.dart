@@ -187,6 +187,32 @@ class ModalPage extends StatelessWidget {
                 ),
               ),
             ),
+            const SizedBox(height: 8),
+            const mod.ModCodeExample(
+              code: '''// Modal Básico
+await ModModal.show(
+  context: context,
+  header: const Text('Basic Modal'),
+  height: ModModalHeight.normal,
+  maxHeight: 300,
+  maxWidth: 400,
+  body: Container(
+    child: Text('Modal content here'),
+  ),
+  footer: Row(
+    mainAxisAlignment: MainAxisAlignment.end,
+    children: [
+      ModButton(
+        title: 'Close',
+        type: ModButtonType.none,
+        borderType: ModBorderType.solid,
+        borderColor: ModButtonType.primary,
+        onPressed: () async => Navigator.pop(context),
+      ),
+    ],
+  ),
+);''',
+            ),
             const SizedBox(height: 16),
             mod.ModCard(
               header: const Text(
@@ -246,7 +272,7 @@ class ModalPage extends StatelessWidget {
                               type: mod.ModButtonType.none,
                               borderType: mod.ModBorderType.solid,
                               borderColor: mod.ModButtonType.primary,
-                              onPressed: () async => Navigator.pop(context),
+                              onPressed: () async => Get.back(),
                             ),
                           ],
                         ),
@@ -255,6 +281,26 @@ class ModalPage extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
+            const SizedBox(height: 8),
+            const mod.ModCodeExample(
+              code: '''// Modal Posicionado no Topo
+await ModModal.show(
+  context: context,
+  position: ModModalPosition.top,
+  header: const Text('Top Modal'),
+  body: const Text('This modal appears at the top'),
+  footer: closeButton,
+);
+
+// Modal Posicionado Embaixo
+await ModModal.show(
+  context: context,
+  position: ModModalPosition.bottom,
+  header: const Text('Bottom Modal'),
+  body: const Text('This modal appears at the bottom'),
+  footer: closeButton,
+);''',
             ),
             const SizedBox(height: 16),
             mod.ModCard(
@@ -312,6 +358,33 @@ class ModalPage extends StatelessWidget {
                   },
                 ),
               ),
+            ),
+            const SizedBox(height: 8),
+            const mod.ModCodeExample(
+              code: '''// Modal com Estilo Customizado
+await ModModal.show(
+  context: context,
+  headerColor: Colors.blue,
+  bodyColor: Colors.grey[100],
+  footerColor: Colors.white,
+  borderRadius: 16,
+  barrierDismissible: false,
+  header: const Text(
+    'Styled Modal',
+    style: TextStyle(color: Colors.white),
+  ),
+  body: const Padding(
+    padding: EdgeInsets.all(16),
+    child: Text('Custom styled modal content'),
+  ),
+  footer: Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      ModButton(title: 'Cancel', ...),
+      ModButton(title: 'Confirm', ...),
+    ],
+  ),
+);''',
             ),
             const SizedBox(height: 16),
             mod.ModCard(
@@ -409,6 +482,30 @@ class ModalPage extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
+            const SizedBox(height: 8),
+            const mod.ModCodeExample(
+              code: '''// Posições do Modal
+// Top
+await ModModal.show(
+  context: context,
+  position: ModModalPosition.top,
+  ...
+);
+
+// Center (padrão)
+await ModModal.show(
+  context: context,
+  position: ModModalPosition.center,
+  ...
+);
+
+// Bottom
+await ModModal.show(
+  context: context,
+  position: ModModalPosition.bottom,
+  ...
+);''',
             ),
             const SizedBox(height: 16),
             mod.ModCard(
@@ -530,6 +627,37 @@ class ModalPage extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 8),
+            const mod.ModCodeExample(
+              code: '''// Tamanhos do Modal
+// Extra Small
+await ModModal.show(
+  context: context,
+  size: ModModalSize.xs,
+  ...
+);
+
+// Small
+await ModModal.show(
+  context: context,
+  size: ModModalSize.sm,
+  ...
+);
+
+// Medium
+await ModModal.show(
+  context: context,
+  size: ModModalSize.md,
+  ...
+);
+
+// Large
+await ModModal.show(
+  context: context,
+  size: ModModalSize.lg,
+  ...
+);''',
+            ),
             const SizedBox(height: 16),
             mod.ModCard(
               header: const Text(
@@ -624,6 +752,30 @@ class ModalPage extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
+            const SizedBox(height: 8),
+            const mod.ModCodeExample(
+              code: '''// Alturas do Modal
+// Normal
+await ModModal.show(
+  context: context,
+  height: ModModalHeight.normal,
+  ...
+);
+
+// Full Height
+await ModModal.show(
+  context: context,
+  height: ModModalHeight.full,
+  ...
+);
+
+// Full Screen
+await ModModal.show(
+  context: context,
+  fullScreen: true,
+  ...
+);''',
             ),
           ],
         ),

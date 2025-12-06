@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:mod_layout_one/widgets/buttons/icon_buttom.dart';
 
@@ -25,33 +26,43 @@ class ModDataHeader {
   });
 }
 
-/// Configuration class for the DataTable action bar
+/// Configuration class for the DataTable action bar.
+///
+/// The action bar supports dynamic composition through the [actions] list,
+/// allowing developers to add any widget (buttons, inputs, icons, etc.).
+/// The settings button (when enabled) is always positioned at the rightmost position.
+///
+/// Example usage:
+/// ```dart
+/// ModDataTableActionBarConfig(
+///   actions: [
+///     IconButton(
+///       icon: Icon(Icons.picture_as_pdf, color: Colors.red),
+///       onPressed: () => exportToPdf(),
+///     ),
+///     IconButton(
+///       icon: Icon(Icons.table_chart, color: Colors.green),
+///       onPressed: () => exportToExcel(),
+///     ),
+///     SizedBox(
+///       width: 200,
+///       child: TextField(
+///         decoration: InputDecoration(hintText: 'Search...'),
+///       ),
+///     ),
+///   ],
+///   enableSettings: true,
+///   settingsOnChange: (columns) => updateVisibleColumns(columns),
+/// )
+/// ```
 class ModDataTableActionBarConfig {
-  /// Enable PDF export button
-  final bool enablePdf;
+  /// List of custom action widgets to display in the action bar.
+  /// These widgets are rendered in order, from left to right.
+  /// The settings button (if enabled) is always rendered after all actions.
+  final List<Widget> actions;
 
-  /// Callback when PDF button is pressed
-  final Future<void> Function()? pdfOnPressed;
-
-  /// Icon widget for the PDF button. Defaults to Icon(Icons.picture_as_pdf) if not provided.
-  final Widget? pdfIcon;
-
-  /// Tooltip for the PDF button
-  final String? pdfTooltip;
-
-  /// Enable XLS export button
-  final bool enableXls;
-
-  /// Callback when XLS button is pressed
-  final Future<void> Function()? xlsOnPressed;
-
-  /// Icon widget for the XLS button. Defaults to Icon(Icons.table_chart) if not provided.
-  final Widget? xlsIcon;
-
-  /// Tooltip for the XLS button
-  final String? xlsTooltip;
-
-  /// Enable settings/column configuration button
+  /// Enable settings/column configuration button.
+  /// This button is always positioned at the rightmost position of the action bar.
   final bool enableSettings;
 
   /// Callback when column selection is confirmed in settings modal
@@ -79,14 +90,7 @@ class ModDataTableActionBarConfig {
   final BorderRadius? borderRadius;
 
   const ModDataTableActionBarConfig({
-    this.enablePdf = false,
-    this.pdfOnPressed,
-    this.pdfIcon,
-    this.pdfTooltip,
-    this.enableXls = false,
-    this.xlsOnPressed,
-    this.xlsIcon,
-    this.xlsTooltip,
+    this.actions = const [],
     this.enableSettings = false,
     this.settingsOnChange,
     this.settingsIcon,
@@ -98,8 +102,8 @@ class ModDataTableActionBarConfig {
     this.borderRadius,
   });
 
-  /// Returns true if at least one action button is enabled
-  bool get hasAnyAction => enablePdf || enableXls || enableSettings;
+  /// Returns true if there are any actions or if settings is enabled
+  bool get hasAnyAction => actions.isNotEmpty || enableSettings;
 }
 
 class ModDataTable<T> extends StatefulWidget {
@@ -120,6 +124,11 @@ class ModDataTable<T> extends StatefulWidget {
 
   /// Cor de fundo do footer/paginação da tabela
   final Color? footerBackgroundColor;
+
+  /// Cor de fundo quando o mouse está sobre a linha (hover).
+  /// Se não informado, usa a cor padrão do tema (hoverColor).
+  /// O efeito hover é ativado apenas em plataformas Windows e Web.
+  final Color? hoverColor;
 
   final String paginationText;
   final String rowsPerPageText;
@@ -156,6 +165,7 @@ class ModDataTable<T> extends StatefulWidget {
     this.evenRowColor,
     this.headerBackgroundColor,
     this.footerBackgroundColor,
+    this.hoverColor,
     this.paginationText = 'of',
     this.rowsPerPageText = 'Rows per page',
     required this.onPageChanged,
@@ -190,6 +200,14 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
   bool _isDragging = false;
   bool _isHorizontalDragging = false;
   double? _lastPanPosition;
+  int? _hoveredRowIndex;
+
+  /// Verifica se o hover deve ser habilitado (apenas Windows e Web)
+  bool get _isHoverEnabled {
+    if (kIsWeb) return true;
+    // Em plataformas nativas, verifica se é Windows
+    return Theme.of(context).platform == TargetPlatform.windows;
+  }
 
   /// Returns the list of visible headers based on columnsShow
   List<ModDataHeader> get _visibleHeaders {
@@ -583,7 +601,8 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
     return null;
   }
 
-  /// Builds the action bar with PDF, XLS, and Settings buttons
+  /// Builds the action bar with dynamic actions and the settings button.
+  /// Custom actions are rendered in order, followed by the settings button (if enabled).
   Widget _buildActionBar() {
     final config = widget.actionBarConfig;
     if (config == null || !config.hasAnyAction) {
@@ -599,22 +618,9 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          if (config.enablePdf)
-            ModIconButton(
-              icon: _extractIconData(config.pdfIcon, Icons.picture_as_pdf),
-              color: _extractIconColor(config.pdfIcon),
-              iconSize: _extractIconSize(config.pdfIcon),
-              tooltip: config.pdfTooltip,
-              onPressed: config.pdfOnPressed ?? () async {},
-            ),
-          if (config.enableXls)
-            ModIconButton(
-              icon: _extractIconData(config.xlsIcon, Icons.table_chart),
-              color: _extractIconColor(config.xlsIcon),
-              iconSize: _extractIconSize(config.xlsIcon),
-              tooltip: config.xlsTooltip,
-              onPressed: config.xlsOnPressed ?? () async {},
-            ),
+          // Render all custom actions from the actions list
+          ...config.actions,
+          // Settings button is always rendered last (rightmost position)
           if (config.enableSettings)
             Builder(
               builder: (context) => ModIconButton(
@@ -845,12 +851,22 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
 
   Widget _buildRows(List<T> visibleData, List<double> columnWidths) {
     final visibleIndices = _visibleColumnIndices;
+    final theme = Theme.of(context);
 
     return Column(
       children: List.generate(visibleData.length, (index) {
         final row = widget.source.getRow(index);
-        return Container(
-          color: index % 2 == 0 ? widget.evenRowColor : widget.oddRowColor,
+        final isHovered = _hoveredRowIndex == index;
+        final baseColor = index % 2 == 0 ? widget.evenRowColor : widget.oddRowColor;
+
+        // Determina a cor de hover: usa a cor personalizada ou a cor padrão do tema
+        final effectiveHoverColor = widget.hoverColor ?? theme.hoverColor;
+
+        // Aplica a cor de hover apenas se estiver habilitado e a linha estiver com hover
+        final rowColor = (_isHoverEnabled && isHovered) ? effectiveHoverColor : baseColor;
+
+        Widget rowWidget = Container(
+          color: rowColor,
           child: Row(
             children: List.generate(visibleIndices.length, (visibleIndex) {
               final originalIndex = visibleIndices[visibleIndex];
@@ -863,6 +879,25 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
             }),
           ),
         );
+
+        // Adiciona MouseRegion apenas se hover estiver habilitado
+        if (_isHoverEnabled) {
+          rowWidget = MouseRegion(
+            onEnter: (_) {
+              setState(() {
+                _hoveredRowIndex = index;
+              });
+            },
+            onExit: (_) {
+              setState(() {
+                _hoveredRowIndex = null;
+              });
+            },
+            child: rowWidget,
+          );
+        }
+
+        return rowWidget;
       }),
     );
   }

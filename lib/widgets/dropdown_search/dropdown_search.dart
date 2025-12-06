@@ -5,6 +5,27 @@ enum ModDropdownSearchSize { lg, md, sm, xs }
 
 enum ModDropdownSearchLabelPosition { top, inside }
 
+/// Helper class to hold the calculated dropdown position information
+class _DropdownPosition {
+  final bool openAbove;
+  final bool openToSide;
+  final Alignment sideAlignment;
+  final double spaceBelow;
+  final double spaceAbove;
+  final double spaceRight;
+  final double spaceLeft;
+
+  const _DropdownPosition({
+    required this.openAbove,
+    required this.openToSide,
+    required this.sideAlignment,
+    required this.spaceBelow,
+    required this.spaceAbove,
+    required this.spaceRight,
+    required this.spaceLeft,
+  });
+}
+
 class ModDropdownSearchMenuItem<T> extends DropdownMenuItem<T> {
   final IconData? icon;
   final String? imageUrl;
@@ -58,6 +79,11 @@ class ModDropdownSearch<T> extends StatefulWidget {
   final bool floatingLabel;
   final Color? floatingLabelBackgroundColor;
   final bool searchEnabled;
+  final Widget Function(T)? selectedItemBuilder;
+
+  /// Background color for hovered/highlighted items in the dropdown list.
+  /// If not specified, uses the theme's hover color.
+  final Color? backgroundHover;
 
   const ModDropdownSearch({
     super.key,
@@ -95,6 +121,8 @@ class ModDropdownSearch<T> extends StatefulWidget {
     this.floatingLabel = false,
     this.floatingLabelBackgroundColor = Colors.transparent,
     this.searchEnabled = true,
+    this.selectedItemBuilder,
+    this.backgroundHover,
   });
 
   @override
@@ -105,10 +133,14 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
   final LayerLink _layerLink = LayerLink();
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  final FocusNode _searchFocusNode = FocusNode();
   bool _isOpen = false;
   List<T> _selectedItems = [];
   OverlayEntry? _overlayEntry;
   List<ModDropdownSearchMenuItem<T>> _filteredItems = [];
+
+  /// Index of the currently highlighted item for keyboard navigation (-1 means no selection)
+  int _highlightedIndex = -1;
 
   bool get _shouldFloatLabel {
     // Debug para verificar o estado
@@ -173,6 +205,7 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
   void dispose() {
     _searchController.dispose();
     _focusNode.dispose();
+    _searchFocusNode.dispose();
     _overlayEntry?.remove();
     super.dispose();
   }
@@ -257,13 +290,76 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
     );
   }
 
+  Widget _buildSelectedDisplay(BuildContext context) {
+    // If no items selected, show hint or empty string
+    if (_selectedItems.isEmpty) {
+      return Text(
+        widget.floatingLabel ? '' : (widget.hint ?? ''),
+        style: TextStyle(
+          fontSize: widget.fontSize ?? _getFontSize(),
+          color: widget.textColor ??
+              Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
+        ),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+
+    // If selectedItemBuilder is provided, use it
+    if (widget.selectedItemBuilder != null) {
+      // For single select, use the first (only) item
+      // For multi-select, wrap in a Row with all items
+      if (!widget.multiSelect && _selectedItems.length == 1) {
+        return widget.selectedItemBuilder!(_selectedItems.first);
+      } else {
+        // Multi-select: display all selected items
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: _selectedItems
+                .map((item) => Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: widget.selectedItemBuilder!(item),
+                    ))
+                .toList(),
+          ),
+        );
+      }
+    }
+
+    // Default behavior: show display string(s)
+    return Text(
+      _selectedItems.map((e) => _getDisplayString(e)).join(', '),
+      style: TextStyle(
+        fontSize: widget.fontSize ?? _getFontSize(),
+        color:
+            widget.textColor ?? Theme.of(context).textTheme.bodyMedium?.color,
+      ),
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
   void _openDropdown() {
     _isOpen = true;
-    _focusNode.requestFocus(); // Solicita foco para capturar eventos de teclado
+    _highlightedIndex = -1; // Reset keyboard navigation index
+    _searchController.clear(); // Clear previous search
+    _filteredItems = widget.items; // Reset filtered items
     _overlayEntry = _createOverlayEntry();
     Overlay.of(context).insert(_overlayEntry!);
 
     if (mounted) setState(() {});
+
+    // Auto-focus on search bar after the overlay is built
+    if (widget.searchEnabled) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _isOpen) {
+          _searchFocusNode.requestFocus();
+        }
+      });
+    } else {
+      // If search is disabled, focus on the main focusNode for keyboard navigation
+      _focusNode.requestFocus();
+    }
   }
 
   void _closeDropdown() {
@@ -311,7 +407,7 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
 
   void _updateSearch(String value) {
     if (!widget.searchEnabled) return;
-    
+
     if (mounted) {
       setState(() {
         _filteredItems = widget.items
@@ -326,23 +422,166 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
 
   // Método para lidar com eventos de teclado
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
-    if (event is KeyDownEvent &&
-        event.logicalKey == LogicalKeyboardKey.escape) {
-      if (_isOpen) {
-        _closeDropdown();
-        return KeyEventResult.handled; // Evento consumido
+    if (event is KeyDownEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.escape) {
+        if (_isOpen) {
+          _closeDropdown();
+          return KeyEventResult.handled;
+        }
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+        if (_isOpen && _filteredItems.isNotEmpty) {
+          setState(() {
+            _highlightedIndex = (_highlightedIndex + 1) % _filteredItems.length;
+          });
+          _updateOverlay();
+          return KeyEventResult.handled;
+        }
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+        if (_isOpen && _filteredItems.isNotEmpty) {
+          setState(() {
+            _highlightedIndex = _highlightedIndex <= 0
+                ? _filteredItems.length - 1
+                : _highlightedIndex - 1;
+          });
+          _updateOverlay();
+          return KeyEventResult.handled;
+        }
+      } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+        if (_isOpen &&
+            _highlightedIndex >= 0 &&
+            _highlightedIndex < _filteredItems.length) {
+          _onItemSelected(_filteredItems[_highlightedIndex].value);
+          return KeyEventResult.handled;
+        }
       }
     }
-    return KeyEventResult.ignored; // Evento não consumido
+    return KeyEventResult.ignored;
+  }
+
+  /// Calculates the best position for the dropdown based on available screen space
+  _DropdownPosition _calculateDropdownPosition(
+    RenderBox renderBox,
+    Size screenSize,
+    double dropdownHeight,
+  ) {
+    final position = renderBox.localToGlobal(Offset.zero);
+    final widgetSize = renderBox.size;
+    final widgetHeight = _getHeight();
+
+    // Calculate available space in each direction
+    final spaceBelow = screenSize.height - position.dy - widgetHeight;
+    final spaceAbove = position.dy;
+    final spaceRight = screenSize.width - position.dx - widgetSize.width;
+    final spaceLeft = position.dx;
+
+    // Determine vertical direction
+    bool openAbove = false;
+    bool openToSide = false;
+    Alignment sideAlignment = Alignment.topLeft;
+
+    // Check if dropdown fits below
+    if (spaceBelow >= dropdownHeight) {
+      // Fits below - default behavior
+      openAbove = false;
+    } else if (spaceAbove >= dropdownHeight) {
+      // Fits above
+      openAbove = true;
+    } else if (spaceRight >= widgetSize.width &&
+        (spaceBelow + spaceAbove >= dropdownHeight ||
+            screenSize.height * 0.5 >= dropdownHeight)) {
+      // Open to the right side
+      openToSide = true;
+      sideAlignment = Alignment.topLeft;
+    } else if (spaceLeft >= widgetSize.width &&
+        (spaceBelow + spaceAbove >= dropdownHeight ||
+            screenSize.height * 0.5 >= dropdownHeight)) {
+      // Open to the left side
+      openToSide = true;
+      sideAlignment = Alignment.topRight;
+    } else {
+      // Not enough space anywhere, choose the direction with most space
+      if (spaceAbove > spaceBelow) {
+        openAbove = true;
+      }
+    }
+
+    return _DropdownPosition(
+      openAbove: openAbove,
+      openToSide: openToSide,
+      sideAlignment: sideAlignment,
+      spaceBelow: spaceBelow,
+      spaceAbove: spaceAbove,
+      spaceRight: spaceRight,
+      spaceLeft: spaceLeft,
+    );
   }
 
   OverlayEntry _createOverlayEntry() {
     RenderBox renderBox = context.findRenderObject() as RenderBox;
     var size = renderBox.size;
+    final screenSize = MediaQuery.of(context).size;
 
     // Calculate item height based on ListTile default height
     double itemHeight = 48.0; // Default ListTile height
-    double defaultListHeight = itemHeight * 5; // Height for 5 items
+    double searchBoxHeight =
+        widget.searchEnabled ? 56.0 : 0.0; // Approximate search box height
+    double closeButtonHeight =
+        widget.multiSelect ? 56.0 : 0.0; // Close button height
+
+    // Calculate the actual list height based on number of items
+    // Use the smaller of: max 5 items height, actual items height, or custom dropdownHeight
+    int maxVisibleItems = 5;
+    int actualItemCount = _filteredItems.length;
+    double maxListHeight = itemHeight * maxVisibleItems;
+    double actualItemsHeight = itemHeight * actualItemCount;
+
+    double defaultListHeight = widget.dropdownHeight ??
+        (actualItemsHeight < maxListHeight ? actualItemsHeight : maxListHeight);
+
+    double totalDropdownHeight =
+        defaultListHeight + searchBoxHeight + closeButtonHeight;
+
+    // Calculate the best position for the dropdown
+    final dropdownPosition = _calculateDropdownPosition(
+      renderBox,
+      screenSize,
+      totalDropdownHeight,
+    );
+
+    // Constrain dropdown height to available space
+    double constrainedHeight = defaultListHeight;
+    if (!dropdownPosition.openToSide) {
+      final availableSpace = dropdownPosition.openAbove
+          ? dropdownPosition.spaceAbove - 3
+          : dropdownPosition.spaceBelow - 3;
+      final availableListHeight =
+          availableSpace - searchBoxHeight - closeButtonHeight;
+      if (availableListHeight < constrainedHeight && availableListHeight > 0) {
+        constrainedHeight = availableListHeight;
+      }
+    }
+
+    // Calculate the actual total height of the dropdown popup
+    final actualDropdownHeight =
+        constrainedHeight + searchBoxHeight + closeButtonHeight;
+
+    // Calculate offset based on position
+    Offset dropdownOffset;
+    if (dropdownPosition.openToSide) {
+      if (dropdownPosition.sideAlignment == Alignment.topLeft) {
+        // Open to the right
+        dropdownOffset = Offset(size.width + 4, 0);
+      } else {
+        // Open to the left
+        dropdownOffset = Offset(-size.width - 4, 0);
+      }
+    } else if (dropdownPosition.openAbove) {
+      // Open above - position so popup's bottom edge is at the top of the dropdown widget
+      dropdownOffset = Offset(0.0, -actualDropdownHeight - 3);
+    } else {
+      // Open below (default)
+      dropdownOffset = Offset(0.0, _getHeight() + 3);
+    }
 
     return OverlayEntry(
       builder: (context) => GestureDetector(
@@ -365,7 +604,7 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
               child: CompositedTransformFollower(
                 link: _layerLink,
                 showWhenUnlinked: false,
-                offset: Offset(0.0, _getHeight() + 3),
+                offset: dropdownOffset,
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () {
@@ -378,7 +617,7 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: widget.dropdownBackgroundColor ??
-                            Theme.of(context).appBarTheme.backgroundColor,
+                            Theme.of(context).scaffoldBackgroundColor,
                         borderRadius:
                             BorderRadius.circular(widget.borderRadius),
                       ),
@@ -390,36 +629,48 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
                             Padding(
                               padding: widget.searchBoxPadding ??
                                   const EdgeInsets.all(8.0),
-                              child: TextField(
-                                controller: _searchController,
-                                decoration: widget.searchDecoration ??
-                                    InputDecoration(
-                                      hintText: widget.searchHint ?? 'Search...',
-                                      prefixIcon: const Icon(Icons.search),
-                                      suffixIcon: IconButton(
-                                        icon: const Icon(Icons.clear),
-                                        onPressed: () {
-                                          _searchController.clear();
-                                          _updateSearch('');
-                                        },
+                              child: Focus(
+                                onKeyEvent: _handleKeyEvent,
+                                child: TextField(
+                                  controller: _searchController,
+                                  focusNode: _searchFocusNode,
+                                  decoration: widget.searchDecoration ??
+                                      InputDecoration(
+                                        hintText:
+                                            widget.searchHint ?? 'Search...',
+                                        prefixIcon: const Icon(Icons.search),
+                                        suffixIcon: IconButton(
+                                          icon: const Icon(Icons.clear),
+                                          onPressed: () {
+                                            _searchController.clear();
+                                            _updateSearch('');
+                                          },
+                                        ),
+                                        filled: true,
+                                        fillColor: widget.searchBackgroundColor,
                                       ),
-                                      filled: true,
-                                      fillColor: widget.searchBackgroundColor,
-                                    ),
-                                onChanged: _updateSearch,
+                                  onChanged: (value) {
+                                    _highlightedIndex =
+                                        -1; // Reset highlight when search changes
+                                    _updateSearch(value);
+                                  },
+                                ),
                               ),
                             ),
                           Container(
                             constraints: BoxConstraints(
-                              maxHeight:
-                                  widget.dropdownHeight ?? defaultListHeight,
+                              maxHeight: constrainedHeight,
                             ),
-                            child: ListView(
+                            child: ListView.builder(
                               padding: EdgeInsets.zero,
                               shrinkWrap: true,
-                              children: _filteredItems.map((item) {
+                              itemCount: _filteredItems.length,
+                              itemBuilder: (context, index) {
+                                final item = _filteredItems[index];
                                 final isSelected =
                                     _selectedItems.contains(item.value);
+                                final isHighlighted =
+                                    index == _highlightedIndex;
                                 Widget? leading;
                                 if (item.imageUrl != null) {
                                   leading = Image.network(
@@ -431,17 +682,25 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
                                 } else if (item.icon != null) {
                                   leading = Icon(item.icon);
                                 }
-                                return ListTile(
-                                  selected: isSelected,
-                                  leading: leading,
-                                  title: item.child,
-                                  onTap: () => _onItemSelected(item.value),
-                                  trailing: widget.multiSelect && isSelected
-                                      ? (widget.checkIcon ??
-                                          const Icon(Icons.check))
-                                      : null,
+
+                                // Get hover color from widget or theme
+                                final hoverColor = widget.backgroundHover ??
+                                    Theme.of(context).hoverColor;
+
+                                return Container(
+                                  color: isHighlighted ? hoverColor : null,
+                                  child: ListTile(
+                                    selected: isSelected,
+                                    leading: leading,
+                                    title: item.child,
+                                    onTap: () => _onItemSelected(item.value),
+                                    trailing: widget.multiSelect && isSelected
+                                        ? (widget.checkIcon ??
+                                            const Icon(Icons.check))
+                                        : null,
+                                  ),
                                 );
-                              }).toList(),
+                              },
                             ),
                           ),
                           if (widget.multiSelect)
@@ -472,9 +731,9 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
     // Definir cor de fundo padrão baseada no tema (igual ao ModDropDown)
     Color defaultBackgroundColor;
     if (theme.brightness == Brightness.dark) {
-      defaultBackgroundColor = theme.colorScheme.surface.withOpacity(0.8);
+      defaultBackgroundColor = theme.scaffoldBackgroundColor.withOpacity(0.8);
     } else {
-      defaultBackgroundColor = theme.colorScheme.onSurface.withOpacity(0.05);
+      defaultBackgroundColor = theme.scaffoldBackgroundColor.withOpacity(0.05);
     }
 
     final backgroundColor = widget.backgroundColor ?? defaultBackgroundColor;
@@ -536,24 +795,7 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
                             Expanded(
                               child: Align(
                                 alignment: Alignment.centerLeft,
-                                child: Text(
-                                  _selectedItems.isEmpty
-                                      ? (widget.floatingLabel
-                                          ? ''
-                                          : (widget.hint ?? ''))
-                                      : _selectedItems
-                                          .map((e) => _getDisplayString(e))
-                                          .join(', '),
-                                  style: TextStyle(
-                                    fontSize: widget.fontSize ?? _getFontSize(),
-                                    color: widget.textColor ??
-                                        Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium
-                                            ?.color,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                                child: _buildSelectedDisplay(context),
                               ),
                             ),
                             if (widget.suffixIcon != null)

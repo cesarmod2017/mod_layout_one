@@ -416,8 +416,9 @@ class _ModBaseLayoutState extends State<ModBaseLayout> {
                   width: isExpanded ? expandedWidth : collapsedWidth,
                   child: Column(
                     children: [
-                      if (widget.moduleMenuGroups != null &&
-                          _filteredModules.isNotEmpty)
+                      // Only show module selector if there's more than one visible module
+                  if (widget.moduleMenuGroups != null &&
+                          _filteredModules.length > 1)
                         SizedBox(
                           width: isExpanded ? expandedWidth : collapsedWidth,
                           child: ModuleSelector(

@@ -71,6 +71,15 @@ class ModSidebar extends StatelessWidget {
         ? Theme.of(context).drawerTheme.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor
         : (backgroundColor ?? Theme.of(context).drawerTheme.backgroundColor);
 
+    // Find the first valid group to mark it for auto-expanding
+    int firstValidGroupIndex = -1;
+    for (int i = 0; i < menuGroups.length; i++) {
+      if (_hasValidGroupClaim(menuGroups[i])) {
+        firstValidGroupIndex = i;
+        break;
+      }
+    }
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       width: width,
@@ -85,11 +94,16 @@ class ModSidebar extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: menuGroups
-                    .map((group) {
+                    .asMap()
+                    .entries
+                    .map((entry) {
+                      final index = entry.key;
+                      final group = entry.value;
                       debugPrint('[ModSidebar] Building menu group: ${group.title}');
                       return _buildMenuGroup(
                         group,
                         isExpanded || isInDrawer,
+                        isFirstGroup: index == firstValidGroupIndex,
                       );
                     })
                     .toList(),
@@ -116,14 +130,17 @@ class ModSidebar extends StatelessWidget {
     return group.items.any((item) => _hasValidClaim(item));
   }
 
-  Widget _buildMenuGroup(MenuGroup group, bool showTitle) {
-    debugPrint('[ModSidebar] Building group with ${group.items.length} items, showTitle: $showTitle');
-    
+  Widget _buildMenuGroup(MenuGroup group, bool showTitle, {bool isFirstGroup = false}) {
+    debugPrint('[ModSidebar] Building group with ${group.items.length} items, showTitle: $showTitle, isFirstGroup: $isFirstGroup');
+
     // Check if the group should be visible
     if (!_hasValidGroupClaim(group)) {
       return const SizedBox.shrink();
     }
-    
+
+    // Find the first expandable item (item with subItems) in the first group
+    bool firstExpandableFound = false;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -141,7 +158,13 @@ class ModSidebar extends StatelessWidget {
           ),
         ...group.items.map((item) {
           debugPrint('[ModSidebar] Building menu item: ${item.title}');
-          return _buildMenuItem(item, 0, group);
+          // Check if this item should be initially expanded (first expandable item in the first group)
+          final hasSubItems = item.subItems?.isNotEmpty ?? false;
+          final shouldExpandInitially = isFirstGroup && hasSubItems && !firstExpandableFound && _hasValidClaim(item);
+          if (shouldExpandInitially) {
+            firstExpandableFound = true;
+          }
+          return _buildMenuItem(item, 0, group, initiallyExpanded: shouldExpandInitially);
         }),
       ],
     );
@@ -166,7 +189,7 @@ class ModSidebar extends StatelessWidget {
     return false;
   }
 
-  Widget _buildMenuItem(MenuItem item, int level, MenuGroup group) {
+  Widget _buildMenuItem(MenuItem item, int level, MenuGroup group, {bool initiallyExpanded = false}) {
     if (!_hasValidClaim(item)) {
       return const SizedBox.shrink();
     }
@@ -180,6 +203,7 @@ class ModSidebar extends StatelessWidget {
       fontWeight: item.fontWeight ?? group.fontWeight ?? fontWeight,
       iconSize: item.iconSize ?? group.iconSize ?? iconSize,
       buildSubmenu: (subItem) => _buildMenuItem(subItem, level + 1, group),
+      initiallyExpanded: initiallyExpanded,
     );
   }
 }
@@ -193,6 +217,7 @@ class _ExpandableMenuItem extends StatefulWidget {
   final FontWeight? fontWeight;
   final double? iconSize;
   final Widget Function(MenuItem) buildSubmenu;
+  final bool initiallyExpanded;
 
   const _ExpandableMenuItem({
     required this.item,
@@ -203,6 +228,7 @@ class _ExpandableMenuItem extends StatefulWidget {
     this.fontWeight,
     this.iconSize,
     required this.buildSubmenu,
+    this.initiallyExpanded = false,
   });
 
   @override
@@ -223,6 +249,14 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
     if (!Get.find<LayoutController>().isMobile.value) {
       final selectedRoute = Get.find<LayoutController>().selectedRoute.value;
       _isExpanded = _checkIfContainsRoute(widget.item, selectedRoute);
+
+      // If not expanded by route check, use initiallyExpanded
+      if (!_isExpanded && widget.initiallyExpanded) {
+        _isExpanded = true;
+      }
+    } else if (widget.initiallyExpanded) {
+      // For mobile, also respect initiallyExpanded
+      _isExpanded = true;
     }
   }
 
