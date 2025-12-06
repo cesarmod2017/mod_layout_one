@@ -1,3 +1,55 @@
+## 1.2.0
+* Added ModProgress widget:
+  * New comprehensive progress indicator system with circular and linear types
+  * Configurable position options: topLeft, topCenter, topRight, bottomLeft, bottomCenter, bottomRight
+  * Support for determinate progress (0.0 to 1.0) and indeterminate mode
+  * Customizable appearance: backgroundColor, borderColor, borderRadius, progressColor, progressBackgroundColor
+  * Title and subtitle text with configurable colors and font sizes
+  * Optional close button and barrier dismissible mode
+  * Icon support for completed/error states
+  * ModProgressController for programmatic progress updates
+  * ModProgressManager for centralized progress management
+  * Box shadow and margin/padding customization
+
+* Added ModCodeExample widget:
+  * Collapsible code example display with expand/collapse functionality
+  * Copy to clipboard support with visual feedback
+  * Customizable title, background color, and code text style
+  * Smooth animation transitions for expand/collapse
+  * Configurable border radius and initial expansion state
+
+* Enhanced ModDataTable widget:
+  * Added action bar support via ModDataTableActionBarConfig
+  * Support for custom action widgets (PDF export, XLS export, search, etc.)
+  * Column settings button with modal for column visibility configuration
+  * Customizable action bar background color and border radius
+  * Settings modal with confirm/cancel buttons and column selection
+  * columnsShow property to control which columns are displayed
+  * Actions are rendered left to right with settings button at rightmost position
+
+* Added ModDataTableModal widget:
+  * New composite widget displaying ModDataTable inside ModModal
+  * Pagination controls positioned in modal footer
+  * Configurable footer with custom buttons via ModDataTableModalFooterConfig
+  * Supports all ModDataTable and ModModal properties
+  * Footer organized with pagination on left and action buttons on right
+  * Optional close button with customizable text and style
+
+* Enhanced ModDropdownSearch widget:
+  * Added keyboard navigation support for dropdown items
+  * Arrow keys (up/down) navigate through items with visual highlighting
+  * Enter key selects the highlighted item
+  * Escape key closes the dropdown
+  * Added backgroundHover property for highlighted item color customization
+  * Improved selectedItemBuilder for custom selected value rendering
+  * Enhanced focus management between search box and item list
+
+* Enhanced ModLoading widget:
+  * Added ModLoadingNavigatorObserver for automatic loading closure on route changes
+  * Automatically closes loading overlays on push, pop, replace, and remove navigation events
+  * Added static closeAll() method to close all active loading overlays
+  * Improved overlay entry management with proper cleanup
+
 ## 1.1.7
 * Enhanced ModTextBox with Enter key action support:
   * Added enableEnterAction property to enable custom Enter key handling
