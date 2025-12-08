@@ -78,6 +78,9 @@ export 'widgets/code_example/code_example.dart';
 export 'widgets/progress/mod_progress.dart';
 export 'widgets/progress/mod_progress_controller.dart';
 export 'widgets/progress/mod_progress_manager.dart';
+// Wheel Slider
+export 'widgets/wheel_slider/mod_wheel_slider.dart';
+export 'widgets/wheel_slider/mod_wheel_date_picker.dart';
 
 // Configuration
 class ModLayoutConfig {

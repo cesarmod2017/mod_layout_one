@@ -19,6 +19,7 @@ import 'package:example/pages/textbox_page.dart';
 import 'package:example/pages/textcopy_page.dart';
 import 'package:example/pages/toast_page.dart';
 import 'package:example/pages/tree_view_page.dart';
+import 'package:example/pages/wheel_slider_page.dart';
 import 'package:example/services/auth_service.dart';
 import 'package:example/services/storage_service.dart';
 import 'package:example/theme/app_theme.dart';
@@ -121,6 +122,11 @@ void main() async {
           title: 'progress'.tr,
           icon: Icons.trending_up,
           route: '/progress',
+        ),
+        MenuItem(
+          title: 'wheelSlider'.tr,
+          icon: Icons.tune,
+          route: '/wheel-slider',
         ),
       ],
       customTranslations:
@@ -268,6 +274,12 @@ class MyApp extends StatelessWidget {
               transition: Transition.noTransition,
               preventDuplicates: true,
             ),
+            GetPage(
+              name: '/wheel-slider',
+              page: () => const WheelSliderPage(),
+              transition: Transition.noTransition,
+              preventDuplicates: true,
+            ),
           ],
           initialRoute: '/home',
         ));
@@ -325,6 +337,7 @@ class CustomLayout extends StatelessWidget {
         'menu:charts',
         'menu:toast',
         'menu:progress',
+        'menu:wheelSlider',
         'module:administrativo',
         'module:documentos',
       ],
@@ -492,6 +505,13 @@ class CustomLayout extends StatelessWidget {
                   route: '/progress',
                   type: 'menu',
                   value: 'progress',
+                ),
+                MenuItem(
+                  title: 'wheel slider',
+                  icon: Icons.abc_sharp,
+                  route: '/wheel-slider',
+                  type: 'menu',
+                  value: 'wheelSlider',
                 ),
               ],
             ),

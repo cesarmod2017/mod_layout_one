@@ -19,6 +19,7 @@ class AppTranslations extends BaseTranslations {
         'toast': 'Toast',
         'dropdowns': 'Dropdowns',
         'progress': 'Progress',
+        'wheelSlider': 'Wheel Slider',
       },
       'pt_BR': {
         'settings_content': 'Conteúdo das configurações aqui',
@@ -30,6 +31,7 @@ class AppTranslations extends BaseTranslations {
         'toast': 'Toast',
         'dropdowns': 'Dropdowns',
         'progress': 'Progresso',
+        'wheelSlider': 'Wheel Slider',
       },
       'es_ES': {
         'settings_content': 'Contenido de las configuraciones aquí',
@@ -41,6 +43,7 @@ class AppTranslations extends BaseTranslations {
         'toast': 'Toast',
         'dropdowns': 'Dropdowns',
         'progress': 'Progreso',
+        'wheelSlider': 'Wheel Slider',
       }
     };
 
