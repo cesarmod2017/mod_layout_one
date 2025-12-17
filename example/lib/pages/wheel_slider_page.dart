@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:example/main.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mod_layout_one/mod_layout_one.dart';
 
 class WheelSliderPage extends StatefulWidget {
@@ -37,13 +40,18 @@ class _WheelSliderPageState extends State<WheelSliderPage> {
   void initState() {
     super.initState();
     _externalController = ModWheelSliderController(initialValue: 50);
-    _dateController = ModWheelDatePickerController(initialDate: DateTime.now());
+    // Initialize GetX controller using Get.put for proper lifecycle management
+    _dateController = Get.put(
+      ModWheelDatePickerController(initialDate: DateTime.now()),
+      tag: 'wheel_slider_page_date_controller',
+    );
   }
 
   @override
   void dispose() {
     _externalController.dispose();
-    _dateController.dispose();
+    // Delete GetX controller when page is disposed
+    Get.delete<ModWheelDatePickerController>(tag: 'wheel_slider_page_date_controller');
     super.dispose();
   }
 
@@ -426,10 +434,14 @@ ModWheelSlider.number(
                             day,
                             style: TextStyle(
                               fontSize: 16,
-                              fontWeight: _weekDays[_customValue.toInt() % _weekDays.length] == day
+                              fontWeight: _weekDays[_customValue.toInt() %
+                                          _weekDays.length] ==
+                                      day
                                   ? FontWeight.bold
                                   : FontWeight.normal,
-                              color: _weekDays[_customValue.toInt() % _weekDays.length] == day
+                              color: _weekDays[_customValue.toInt() %
+                                          _weekDays.length] ==
+                                      day
                                   ? Theme.of(context).primaryColor
                                   : Theme.of(context).hintColor,
                             ),
@@ -561,6 +573,34 @@ ModWheelSlider.customWidget(
                     ),
                   ),
                   const SizedBox(height: 16),
+                  const Text(
+                      "Slider with Large Numbers (selectedNumberWidth):"),
+                  const SizedBox(height: 8),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.amber.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: ModWheelSlider.number(
+                      totalCount: 20,
+                      initValue: 500,
+                      currentIndex: 500,
+                      interval: 100,
+                      itemSize: 60,
+                      selectedNumberWidth: 80,
+                      onValueChanged: (value) {},
+                      selectedNumberStyle: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.amber,
+                      ),
+                      unSelectedNumberStyle: TextStyle(
+                        fontSize: 14,
+                        color: Colors.amber.shade300,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   const Text("Non-Infinite Slider:"),
                   const SizedBox(height: 8),
                   Container(
@@ -607,6 +647,17 @@ ModWheelSlider.number(
       _intervalValue = value;
     });
   },
+),
+
+// Slider with Large Numbers (selectedNumberWidth)
+ModWheelSlider.number(
+  totalCount: 20,
+  initValue: 500,
+  currentIndex: 500,
+  interval: 100,
+  itemSize: 60,
+  selectedNumberWidth: 80, // Prevents large numbers from overflowing
+  onValueChanged: (value) {},
 ),
 
 // Non-Infinite Slider
@@ -870,6 +921,7 @@ ModWheelSlider(
                   ),
                   const SizedBox(height: 8),
                   Container(
+                    width: 300,
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(8),
@@ -878,12 +930,16 @@ ModWheelSlider(
                       ),
                     ),
                     child: ModWheelSlider.number(
-                      totalCount: 100,
+                      totalCount: 1000,
                       initValue: 50,
+                      itemSize: 60,
+                      selectedNumberWidth: 80,
+                      interval: 1,
                       currentIndex: 50,
                       sliderController: _externalController,
                       onValueChanged: (value) {
                         _externalController.setValue(value);
+                        log(value.toString());
                       },
                       selectedNumberStyle: TextStyle(
                         fontSize: 20,
@@ -1036,17 +1092,20 @@ ElevatedButton(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
-                        onPressed: () => _dateController.setDate(DateTime(2025, 1, 1)),
+                        onPressed: () =>
+                            _dateController.setDate(DateTime(2025, 1, 1)),
                         child: const Text('01/01/2025'),
                       ),
                       const SizedBox(width: 8),
                       ElevatedButton(
-                        onPressed: () => _dateController.setDate(DateTime(2024, 12, 25)),
+                        onPressed: () =>
+                            _dateController.setDate(DateTime(2024, 12, 25)),
                         child: const Text('25/12/2024'),
                       ),
                       const SizedBox(width: 8),
                       ElevatedButton(
-                        onPressed: () => _dateController.setDate(DateTime.now()),
+                        onPressed: () =>
+                            _dateController.setDate(DateTime.now()),
                         child: const Text('Hoje'),
                       ),
                     ],
@@ -1140,6 +1199,7 @@ controller.setYear(2024);''',
                         color: Theme.of(context).hintColor,
                       ),
                       onDateChanged: (date) {
+                        log(date.toIso8601String());
                         setState(() {
                           _selectedMonthYear = date;
                         });

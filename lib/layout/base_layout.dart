@@ -1,3 +1,6 @@
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mod_layout_one/controllers/layout_controller.dart';
@@ -6,6 +9,7 @@ import 'package:mod_layout_one/layout/components/header.dart';
 import 'package:mod_layout_one/layout/components/mobile_drawer.dart';
 import 'package:mod_layout_one/layout/components/no_access_screen.dart';
 import 'package:mod_layout_one/layout/components/sidebar.dart';
+import 'package:mod_layout_one/layout/models/chatbot_config.dart';
 import 'package:mod_layout_one/layout/models/menu_group.dart';
 import 'package:mod_layout_one/layout/models/menu_item.dart';
 import 'package:mod_layout_one/layout/models/module_model.dart';
@@ -69,6 +73,21 @@ import 'package:mod_layout_one/layout/widgets/user_profile.dart';
 ///   footer: Text('© 2024 Minha Empresa'),
 ///   footerBackgroundColor: Colors.blueGrey,
 ///   footerHeight: 60.0,
+/// )
+/// ```
+///
+/// ## Chatbot integrado (Windows/Web):
+/// ```dart
+/// ModBaseLayout(
+///   title: 'App',
+///   body: HomePage(),
+///   menuGroups: myMenuGroups,
+///   chatbotConfig: ChatbotConfig(
+///     chatWidget: MyChatbotWidget(),
+///     position: ChatbotPosition.bottomRight,
+///     icon: Icons.support_agent,
+///     backgroundColor: Colors.blue,
+///   ),
 /// )
 /// ```
 class ModBaseLayout extends StatefulWidget {
@@ -176,6 +195,11 @@ class ModBaseLayout extends StatefulWidget {
   /// Se não informado, usa Get.theme.colorScheme.onPrimary
   final Color? headerLanguageIconColor;
 
+  /// Configuração do chatbot flutuante.
+  /// Quando fornecido, exibe um botão flutuante que abre uma janela de chat.
+  /// Visível apenas em plataformas Windows e Web.
+  final ChatbotConfig? chatbotConfig;
+
   const ModBaseLayout({
     super.key,
     required this.title,
@@ -211,6 +235,7 @@ class ModBaseLayout extends StatefulWidget {
     this.headerThemeIconColor,
     this.headerProfileColor,
     this.headerLanguageIconColor,
+    this.chatbotConfig,
   }) : assert(menuGroups != null || moduleMenuGroups != null,
             'Pelo menos um de menuGroups ou moduleMenuGroups deve ser fornecido');
 
@@ -218,13 +243,38 @@ class ModBaseLayout extends StatefulWidget {
   State<ModBaseLayout> createState() => _ModBaseLayoutState();
 }
 
-class _ModBaseLayoutState extends State<ModBaseLayout> {
+class _ModBaseLayoutState extends State<ModBaseLayout>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   bool isDrawerOpen = false;
+  bool _isChatbotOpen = false;
+  late AnimationController _chatbotAnimationController;
+  late Animation<double> _chatbotScaleAnimation;
+
+  /// Verifica se o chatbot deve ser exibido (apenas Windows e Web)
+  bool get _shouldShowChatbot {
+    if (widget.chatbotConfig == null) return false;
+    if (kIsWeb) return true;
+    try {
+      return Platform.isWindows;
+    } catch (_) {
+      return false;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+
+    // Inicializa animação do chatbot
+    _chatbotAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+    );
+    _chatbotScaleAnimation = CurvedAnimation(
+      parent: _chatbotAnimationController,
+      curve: Curves.easeOutBack,
+    );
 
     // Se tivermos módulos visíveis e nenhum módulo estiver selecionado, selecione o primeiro
     if (widget.moduleMenuGroups != null &&
@@ -337,6 +387,208 @@ class _ModBaseLayoutState extends State<ModBaseLayout> {
   }
 
   @override
+  void dispose() {
+    _chatbotAnimationController.dispose();
+    super.dispose();
+  }
+
+  void _toggleChatbot() {
+    setState(() {
+      _isChatbotOpen = !_isChatbotOpen;
+      if (_isChatbotOpen) {
+        _chatbotAnimationController.forward();
+        widget.chatbotConfig?.onOpen?.call();
+      } else {
+        _chatbotAnimationController.reverse();
+        widget.chatbotConfig?.onClose?.call();
+      }
+    });
+  }
+
+  /// Calcula a posição do botão baseado na configuração
+  ({double? top, double? bottom, double? left, double? right})
+      _getChatbotButtonPosition() {
+    final config = widget.chatbotConfig!;
+    final margin = config.margin;
+
+    switch (config.position) {
+      case ChatbotPosition.bottomRight:
+        return (top: null, bottom: margin, left: null, right: margin);
+      case ChatbotPosition.bottomLeft:
+        return (top: null, bottom: margin, left: margin, right: null);
+      case ChatbotPosition.topRight:
+        return (top: margin + kToolbarHeight, bottom: null, left: null, right: margin);
+      case ChatbotPosition.topLeft:
+        return (top: margin + kToolbarHeight, bottom: null, left: margin, right: null);
+    }
+  }
+
+  /// Calcula a posição da janela do chatbot baseado na configuração
+  ({double? top, double? bottom, double? left, double? right})
+      _getChatbotWindowPosition() {
+    final config = widget.chatbotConfig!;
+    final margin = config.margin;
+    final buttonSize = config.buttonSize;
+    final spacing = 12.0;
+
+    switch (config.position) {
+      case ChatbotPosition.bottomRight:
+        return (
+          top: null,
+          bottom: margin + buttonSize + spacing,
+          left: null,
+          right: margin
+        );
+      case ChatbotPosition.bottomLeft:
+        return (
+          top: null,
+          bottom: margin + buttonSize + spacing,
+          left: margin,
+          right: null
+        );
+      case ChatbotPosition.topRight:
+        return (
+          top: margin + kToolbarHeight + buttonSize + spacing,
+          bottom: null,
+          left: null,
+          right: margin
+        );
+      case ChatbotPosition.topLeft:
+        return (
+          top: margin + kToolbarHeight + buttonSize + spacing,
+          bottom: null,
+          left: margin,
+          right: null
+        );
+    }
+  }
+
+  Widget _buildChatbotButton() {
+    final config = widget.chatbotConfig!;
+    final theme = Theme.of(context);
+    final position = _getChatbotButtonPosition();
+
+    final backgroundColor =
+        config.backgroundColor ?? theme.colorScheme.primary;
+    final iconColor = config.iconColor ?? theme.colorScheme.onPrimary;
+
+    return Positioned(
+      top: position.top,
+      bottom: position.bottom,
+      left: position.left,
+      right: position.right,
+      child: Material(
+        elevation: config.elevation,
+        shape: const CircleBorder(),
+        color: backgroundColor,
+        child: InkWell(
+          onTap: _toggleChatbot,
+          customBorder: const CircleBorder(),
+          child: Tooltip(
+            message: config.tooltip ?? 'Chat',
+            child: SizedBox(
+              width: config.buttonSize,
+              height: config.buttonSize,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    transitionBuilder: (child, animation) {
+                      return RotationTransition(
+                        turns: Tween(begin: 0.5, end: 1.0).animate(animation),
+                        child: ScaleTransition(scale: animation, child: child),
+                      );
+                    },
+                    child: Icon(
+                      _isChatbotOpen ? config.closeIcon : config.icon,
+                      key: ValueKey(_isChatbotOpen),
+                      color: iconColor,
+                      size: config.iconSize,
+                    ),
+                  ),
+                  if (config.showBadge && !_isChatbotOpen)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Container(
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: config.badgeColor ?? Colors.red,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: backgroundColor, width: 2),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChatbotWindow() {
+    final config = widget.chatbotConfig!;
+    final theme = Theme.of(context);
+    final position = _getChatbotWindowPosition();
+
+    final windowBackground =
+        config.windowBackgroundColor ?? theme.scaffoldBackgroundColor;
+    final borderColor =
+        config.windowBorderColor ?? theme.dividerColor;
+
+    return Positioned(
+      top: position.top,
+      bottom: position.bottom,
+      left: position.left,
+      right: position.right,
+      child: ScaleTransition(
+        scale: _chatbotScaleAnimation,
+        alignment: _getWindowAlignment(),
+        child: Material(
+          elevation: config.windowElevation,
+          borderRadius: BorderRadius.circular(config.windowBorderRadius),
+          color: windowBackground,
+          child: Container(
+            width: config.windowWidth,
+            height: config.windowHeight,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(config.windowBorderRadius),
+              border: Border.all(
+                color: borderColor,
+                width: config.windowBorderWidth,
+              ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(
+                config.windowBorderRadius - config.windowBorderWidth,
+              ),
+              child: config.chatWidget,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Alignment _getWindowAlignment() {
+    final config = widget.chatbotConfig!;
+    switch (config.position) {
+      case ChatbotPosition.bottomRight:
+        return Alignment.bottomRight;
+      case ChatbotPosition.bottomLeft:
+        return Alignment.bottomLeft;
+      case ChatbotPosition.topRight:
+        return Alignment.topRight;
+      case ChatbotPosition.topLeft:
+        return Alignment.topLeft;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final LayoutController layoutController = Get.find();
     layoutController.checkScreenSize(context);
@@ -355,6 +607,105 @@ class _ModBaseLayoutState extends State<ModBaseLayout> {
       );
     }
 
+    final scaffold = Scaffold(
+      key: scaffoldKey,
+      appBar: widget.showAppBar
+          ? PreferredSize(
+              preferredSize: const Size.fromHeight(kToolbarHeight),
+              child: ModHeader(
+                title: widget.title,
+                logo: widget.logo,
+                userProfile: widget.userProfile,
+                actions: widget.appBarActions,
+                showDefaultActions: widget.showDefaultActions,
+                scaffoldKey: scaffoldKey,
+                lightBackgroundColor: widget.lightBackgroundColor,
+                darkBackgroundColor: widget.darkBackgroundColor,
+                lightForegroundColor: widget.lightForegroundColor,
+                darkForegroundColor: widget.darkForegroundColor,
+                menuIconColor: widget.headerMenuIconColor,
+                titleColor: widget.headerTitleColor,
+                themeIconColor: widget.headerThemeIconColor,
+                profileColor: widget.headerProfileColor,
+                languageIconColor: widget.headerLanguageIconColor,
+              ),
+            )
+          : null,
+      drawer: layoutController.isMobile.value
+          ? MobileDrawer(
+              header: widget.drawerHeader,
+              menuGroups: currentMenuGroups,
+              moduleMenuGroups: widget.moduleMenuGroups,
+              claims: widget.claims,
+              backgroundColor:
+                  widget.drawerBackgroundColor ?? widget.sidebarBackgroundColor,
+              selectedColor: widget.sidebarSelectedColor,
+              unselectedColor: widget.sidebarUnselectedColor,
+            )
+          : null,
+      body: Row(
+        children: [
+          if (!layoutController.isMobile.value)
+            Obx(() {
+              // Observe apenas o estado de expansão do menu e o módulo selecionado
+              final isExpanded = layoutController.isMenuExpanded.value;
+              //final selectedModule = layoutController.selectedModule.value;
+
+              const double collapsedWidth = 70.0;
+              const double expandedWidth = 240.0;
+
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: isExpanded ? expandedWidth : collapsedWidth,
+                child: Column(
+                  children: [
+                    // Only show module selector if there's more than one visible module
+                    if (widget.moduleMenuGroups != null &&
+                        _filteredModules.length > 1)
+                      SizedBox(
+                        width: isExpanded ? expandedWidth : collapsedWidth,
+                        child: ModuleSelector(
+                          modules: _filteredModules,
+                          claims: widget.claims,
+                          onModuleSelected: (module) {
+                            layoutController.setSelectedModule(module);
+                            setState(() {});
+                          },
+                        ),
+                      ),
+                    Expanded(
+                      child: ModSidebar(
+                        claims: widget.claims,
+                        menuGroups: currentMenuGroups,
+                        backgroundColor: widget.sidebarBackgroundColor,
+                        selectedColor: widget.sidebarSelectedColor,
+                        unselectedColor: widget.sidebarUnselectedColor,
+                        header: widget.sidebarHeader,
+                        footer: widget.sidebarFooter,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          Expanded(
+            child: Column(
+              children: [
+                Expanded(child: widget.body ?? const SizedBox.shrink()),
+                if (widget.footer != null)
+                  ModFooter(
+                    height: widget.footerHeight,
+                    border: widget.footerBorder,
+                    backgroundColor: widget.footerBackgroundColor,
+                    child: widget.footer,
+                  )
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+
     return PopScope(
       onPopInvokedWithResult: (didPop, result) async {
         if (isDrawerOpen) {
@@ -364,104 +715,15 @@ class _ModBaseLayoutState extends State<ModBaseLayout> {
         }
         return;
       },
-      child: Scaffold(
-        key: scaffoldKey,
-        appBar: widget.showAppBar
-            ? PreferredSize(
-                preferredSize: const Size.fromHeight(kToolbarHeight),
-                child: ModHeader(
-                  title: widget.title,
-                  logo: widget.logo,
-                  userProfile: widget.userProfile,
-                  actions: widget.appBarActions,
-                  showDefaultActions: widget.showDefaultActions,
-                  scaffoldKey: scaffoldKey,
-                  lightBackgroundColor: widget.lightBackgroundColor,
-                  darkBackgroundColor: widget.darkBackgroundColor,
-                  lightForegroundColor: widget.lightForegroundColor,
-                  darkForegroundColor: widget.darkForegroundColor,
-                  menuIconColor: widget.headerMenuIconColor,
-                  titleColor: widget.headerTitleColor,
-                  themeIconColor: widget.headerThemeIconColor,
-                  profileColor: widget.headerProfileColor,
-                  languageIconColor: widget.headerLanguageIconColor,
-                ),
-              )
-            : null,
-        drawer: layoutController.isMobile.value
-            ? MobileDrawer(
-                header: widget.drawerHeader,
-                menuGroups: currentMenuGroups,
-                moduleMenuGroups: widget.moduleMenuGroups,
-                claims: widget.claims,
-                backgroundColor: widget.drawerBackgroundColor ??
-                    widget.sidebarBackgroundColor,
-                selectedColor: widget.sidebarSelectedColor,
-                unselectedColor: widget.sidebarUnselectedColor,
-              )
-            : null,
-        body: Row(
-          children: [
-            if (!layoutController.isMobile.value)
-              Obx(() {
-                // Observe apenas o estado de expansão do menu e o módulo selecionado
-                final isExpanded = layoutController.isMenuExpanded.value;
-                //final selectedModule = layoutController.selectedModule.value;
-
-                const double collapsedWidth = 70.0;
-                const double expandedWidth = 240.0;
-
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: isExpanded ? expandedWidth : collapsedWidth,
-                  child: Column(
-                    children: [
-                      // Only show module selector if there's more than one visible module
-                  if (widget.moduleMenuGroups != null &&
-                          _filteredModules.length > 1)
-                        SizedBox(
-                          width: isExpanded ? expandedWidth : collapsedWidth,
-                          child: ModuleSelector(
-                            modules: _filteredModules,
-                            claims: widget.claims,
-                            onModuleSelected: (module) {
-                              layoutController.setSelectedModule(module);
-                              setState(() {});
-                            },
-                          ),
-                        ),
-                      Expanded(
-                        child: ModSidebar(
-                          claims: widget.claims,
-                          menuGroups: currentMenuGroups,
-                          backgroundColor: widget.sidebarBackgroundColor,
-                          selectedColor: widget.sidebarSelectedColor,
-                          unselectedColor: widget.sidebarUnselectedColor,
-                          header: widget.sidebarHeader,
-                          footer: widget.sidebarFooter,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }),
-            Expanded(
-              child: Column(
-                children: [
-                  Expanded(child: widget.body ?? const SizedBox.shrink()),
-                  if (widget.footer != null)
-                    ModFooter(
-                      height: widget.footerHeight,
-                      border: widget.footerBorder,
-                      backgroundColor: widget.footerBackgroundColor,
-                      child: widget.footer,
-                    )
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+      child: _shouldShowChatbot
+          ? Stack(
+              children: [
+                scaffold,
+                if (_isChatbotOpen) _buildChatbotWindow(),
+                _buildChatbotButton(),
+              ],
+            )
+          : scaffold,
     );
   }
 }

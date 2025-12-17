@@ -1,3 +1,7 @@
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -86,6 +90,14 @@ class ModHapticFeedbackType {
 ///
 /// Supports horizontal and vertical orientations, custom items, haptic feedback,
 /// and various visual customization options.
+///
+/// **Important:** The `totalCount` parameter represents the number of steps/items,
+/// not the maximum value. The actual values displayed will be from 0 to
+/// `totalCount * interval`. For example, with `totalCount: 10` and `interval: 0.5`,
+/// the values will be: 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5.
+///
+/// To create a slider from `min` to `max` with a specific `interval`, calculate
+/// `totalCount` as: `((max - min) / interval).round()`.
 class ModWheelSlider extends StatefulWidget {
   /// Height of the horizontal list view.
   final double horizontalListHeight;
@@ -99,7 +111,8 @@ class ModWheelSlider extends StatefulWidget {
   /// Width of the vertical list view.
   final double verticalListWidth;
 
-  /// The total number of items in the slider.
+  /// The total number of steps/items in the slider.
+  /// The maximum value will be `totalCount * interval`.
   final int totalCount;
 
   /// The initial value to display in the slider.
@@ -155,6 +168,12 @@ class ModWheelSlider extends StatefulWidget {
 
   /// Text style for unselected numbers in the slider.
   final TextStyle? unSelectedNumberStyle;
+
+  /// Width of the selected number container.
+  ///
+  /// Use this to ensure large numbers (e.g., 1000) don't overflow or break
+  /// the layout. When null, the width adapts to the content automatically.
+  final double? selectedNumberWidth;
 
   /// A list of custom child widgets for the slider.
   final List<Widget>? children;
@@ -225,6 +244,7 @@ class ModWheelSlider extends StatefulWidget {
         _sliderType = _WheelSliderType.line,
         selectedNumberStyle = null,
         unSelectedNumberStyle = null,
+        selectedNumberWidth = null,
         children = null,
         currentIndex = null;
 
@@ -253,6 +273,7 @@ class ModWheelSlider extends StatefulWidget {
     this.customPointer,
     this.selectedNumberStyle = const TextStyle(fontWeight: FontWeight.bold),
     this.unSelectedNumberStyle = const TextStyle(),
+    this.selectedNumberWidth,
     required this.currentIndex,
     this.scrollPhysics,
     this.allowPointerTappable = true,
@@ -303,6 +324,7 @@ class ModWheelSlider extends StatefulWidget {
         lineColor = null,
         selectedNumberStyle = null,
         unSelectedNumberStyle = null,
+        selectedNumberWidth = null,
         currentIndex = null,
         interval = 1;
 
@@ -315,6 +337,28 @@ enum _WheelSliderType { line, number, custom }
 class _ModWheelSliderState extends State<ModWheelSlider> {
   late FixedExtentScrollController _scrollController;
   int _selectedIndex = 0;
+
+  // For mouse scroll handling on Windows
+  // Accumulated scroll delta to handle high-resolution scroll events
+  double _accumulatedScrollDelta = 0;
+  // Threshold for triggering a scroll (Windows typically sends 120 per notch)
+  static const double _scrollThreshold = 50.0;
+
+  // For drag-and-drop functionality
+  bool _isDragging = false;
+  double _dragStartY = 0;
+  double _dragStartX = 0;
+  int _dragStartIndex = 0;
+
+  /// Returns true if click-to-select should be enabled (Windows or Web only)
+  bool get _isClickToSelectEnabled {
+    if (kIsWeb) return true;
+    try {
+      return Platform.isWindows;
+    } catch (_) {
+      return false;
+    }
+  }
 
   @override
   void initState() {
@@ -372,11 +416,35 @@ class _ModWheelSliderState extends State<ModWheelSlider> {
 
   Future<int> _getItemIndex() async {
     for (int i = 0; i <= widget.totalCount; i++) {
-      if (i * widget.interval == widget.initValue) {
+      if (_calculateValue(i) == widget.initValue) {
         return i;
       }
     }
-    return 0;
+    // Fallback: find closest index if exact match not found
+    final targetIndex = (widget.initValue / widget.interval).round();
+    return targetIndex.clamp(0, widget.totalCount);
+  }
+
+  /// Calculates the value for a given index, handling floating-point precision.
+  num _calculateValue(int index) {
+    // Use multiplication and rounding to avoid floating-point precision issues
+    final intervalStr = widget.interval.toString();
+    if (intervalStr.contains('.')) {
+      final decimalPlaces = intervalStr.split('.').last.length;
+      final multiplier = _pow10(decimalPlaces);
+      final intervalInt = (widget.interval * multiplier).round();
+      return (index * intervalInt) / multiplier;
+    }
+    return index * widget.interval;
+  }
+
+  /// Returns 10^n for positive integers
+  static int _pow10(int n) {
+    int result = 1;
+    for (int i = 0; i < n; i++) {
+      result *= 10;
+    }
+    return result;
   }
 
   Future<void> _triggerHapticFeedback() async {
@@ -411,15 +479,34 @@ class _ModWheelSliderState extends State<ModWheelSlider> {
       setState(() {
         _selectedIndex = index;
       });
-      widget.onValueChanged(index * widget.interval);
+      widget.onValueChanged(_calculateValue(index));
     }
+  }
+
+  /// Handles tap on an item to select it directly (Windows/Web only)
+  void _onItemTap(int index) {
+    if (!_isClickToSelectEnabled) return;
+    if (index == _selectedIndex) return;
+    if (!_scrollController.hasClients) return;
+
+    // Clamp index for non-infinite sliders
+    final int clampedIndex = widget.isInfinite
+        ? index
+        : index.clamp(0, widget.totalCount);
+
+    _scrollController.animateToItem(
+      clampedIndex,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+    );
   }
 
   List<Widget> _buildLineItems() {
     return List.generate(
       widget.totalCount + 1,
       (index) {
-        final isMultipleOfFive = _isMultipleOfFive(index * widget.interval);
+        final value = _calculateValue(index);
+        final isMultipleOfFive = _isMultipleOfFive(value);
         final height = widget.horizontal
             ? (isMultipleOfFive ? 35.0 : 20.0)
             : 1.5;
@@ -427,7 +514,7 @@ class _ModWheelSliderState extends State<ModWheelSlider> {
             ? 1.5
             : (isMultipleOfFive ? 35.0 : 20.0);
 
-        return Container(
+        final lineWidget = Container(
           height: height,
           width: width,
           alignment: Alignment.center,
@@ -437,29 +524,68 @@ class _ModWheelSliderState extends State<ModWheelSlider> {
             color: widget.lineColor ?? Colors.black87,
           ),
         );
+
+        // Wrap with GestureDetector for click-to-select on Windows/Web
+        if (_isClickToSelectEnabled) {
+          return GestureDetector(
+            onTap: () => _onItemTap(index),
+            behavior: HitTestBehavior.opaque,
+            child: Container(
+              alignment: Alignment.center,
+              child: lineWidget,
+            ),
+          );
+        }
+
+        return lineWidget;
       },
     );
   }
 
   List<Widget> _buildNumberItems() {
+    // Determine decimal places from interval
+    final intervalStr = widget.interval.toString();
+    final decimalPlaces = intervalStr.contains('.')
+        ? intervalStr.split('.').last.length
+        : 0;
+
     return List.generate(
       widget.totalCount + 1,
       (index) {
-        final value = index * widget.interval;
-        final formattedValue = widget.interval.toString().contains('.')
-            ? value.toStringAsFixed(
-                widget.interval.toString().split('.').last.length)
-            : value.toString();
+        // Calculate value with proper precision to avoid floating-point errors
+        final value = _calculateValue(index);
+        final formattedValue = decimalPlaces > 0
+            ? value.toStringAsFixed(decimalPlaces)
+            : value.toInt().toString();
 
-        return Container(
+        final isSelected = _selectedIndex == index;
+
+        final numberWidget = Container(
+          width: isSelected ? widget.selectedNumberWidth : null,
           alignment: Alignment.center,
           child: Text(
             formattedValue,
-            style: _selectedIndex == index
+            style: isSelected
                 ? widget.selectedNumberStyle
                 : widget.unSelectedNumberStyle,
           ),
         );
+
+        // Wrap with GestureDetector for click-to-select on Windows/Web
+        if (_isClickToSelectEnabled) {
+          return GestureDetector(
+            onTap: () => _onItemTap(index),
+            behavior: HitTestBehavior.opaque,
+            child: MouseRegion(
+              cursor: isSelected
+                  ? SystemMouseCursors.basic
+                  : SystemMouseCursors.click,
+              child: numberWidget,
+            ),
+          );
+        }
+
+        return numberWidget;
       },
     );
   }
@@ -489,7 +615,117 @@ class _ModWheelSliderState extends State<ModWheelSlider> {
       case _WheelSliderType.number:
         return _buildNumberItems();
       case _WheelSliderType.custom:
-        return widget.children ?? [];
+        return _buildCustomItems();
+    }
+  }
+
+  List<Widget> _buildCustomItems() {
+    final children = widget.children ?? [];
+    if (!_isClickToSelectEnabled) return children;
+
+    return List.generate(
+      children.length,
+      (index) {
+        final isSelected = _selectedIndex == index;
+        return GestureDetector(
+          onTap: () => _onItemTap(index),
+          behavior: HitTestBehavior.opaque,
+          child: MouseRegion(
+            cursor: isSelected
+                ? SystemMouseCursors.basic
+                : SystemMouseCursors.click,
+            child: children[index],
+          ),
+        );
+      },
+    );
+  }
+
+  void _handlePointerSignal(PointerSignalEvent event) {
+    if (event is PointerScrollEvent && _scrollController.hasClients) {
+      // Accumulate scroll delta to handle high-resolution scroll devices
+      // On Windows, each scroll "notch" typically sends ~120 pixels
+      // On high-resolution touchpads, smaller deltas are sent more frequently
+      _accumulatedScrollDelta += event.scrollDelta.dy;
+
+      // Only trigger a scroll when we've accumulated enough delta
+      if (_accumulatedScrollDelta.abs() >= _scrollThreshold) {
+        // Determine direction: positive delta = scroll down = increase value
+        final int direction = _accumulatedScrollDelta > 0 ? 1 : -1;
+
+        // Reset accumulated delta after triggering
+        _accumulatedScrollDelta = 0;
+
+        final int targetIndex = _selectedIndex + direction;
+
+        // Clamp index for non-infinite sliders
+        final int clampedIndex = widget.isInfinite
+            ? targetIndex
+            : targetIndex.clamp(0, widget.totalCount);
+
+        _scrollController.animateToItem(
+          clampedIndex,
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.easeOut,
+        );
+      }
+    }
+  }
+
+  void _handlePointerDown(PointerDownEvent event) {
+    // Only handle mouse events (not touch)
+    if (event.kind == PointerDeviceKind.mouse) {
+      setState(() {
+        _isDragging = true;
+      });
+      _dragStartY = event.position.dy;
+      _dragStartX = event.position.dx;
+      _dragStartIndex = _selectedIndex;
+    }
+  }
+
+  void _handlePointerMove(PointerMoveEvent event) {
+    if (!_isDragging || !_scrollController.hasClients) return;
+
+    // Calculate drag delta based on orientation
+    final double dragDelta = widget.horizontal
+        ? event.position.dx - _dragStartX
+        : event.position.dy - _dragStartY;
+
+    // Calculate how many items to move based on drag distance
+    // Use a sensitivity factor to make dragging feel more natural
+    // Smaller itemSize = more sensitive, larger itemSize = less sensitive
+    final double sensitivity = widget.itemSize * 0.8;
+    final int itemsToMove = (dragDelta / sensitivity).round();
+
+    // For horizontal sliders, negative drag (left) should increase value
+    // For vertical sliders, positive drag (down) should increase value
+    final int direction = widget.horizontal ? -itemsToMove : itemsToMove;
+    final int targetIndex = _dragStartIndex + direction;
+
+    // Clamp index for non-infinite sliders
+    final int clampedIndex = widget.isInfinite
+        ? targetIndex
+        : targetIndex.clamp(0, widget.totalCount);
+
+    if (clampedIndex != _selectedIndex) {
+      _scrollController.jumpToItem(clampedIndex);
+    }
+  }
+
+  void _handlePointerUp(PointerUpEvent event) {
+    if (_isDragging) {
+      setState(() {
+        _isDragging = false;
+      });
+    }
+  }
+
+  void _handlePointerCancel(PointerCancelEvent event) {
+    if (_isDragging) {
+      setState(() {
+        _isDragging = false;
+      });
     }
   }
 
@@ -497,28 +733,38 @@ class _ModWheelSliderState extends State<ModWheelSlider> {
   Widget build(BuildContext context) {
     final children = _getChildren();
 
-    return SizedBox(
-      height: widget.horizontal
-          ? widget.horizontalListHeight
-          : widget.verticalListHeight,
-      width: widget.horizontal
-          ? widget.horizontalListWidth
-          : widget.verticalListWidth,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          if (widget.background != null) widget.background!,
-          widget.horizontal
-              ? _buildHorizontalWheelChooser(children)
-              : _buildVerticalWheelChooser(children),
-          IgnorePointer(
-            ignoring: widget.allowPointerTappable,
-            child: Visibility(
-              visible: widget.showPointer,
-              child: _buildPointer(),
-            ),
+    return Listener(
+      onPointerSignal: _handlePointerSignal,
+      onPointerDown: _handlePointerDown,
+      onPointerMove: _handlePointerMove,
+      onPointerUp: _handlePointerUp,
+      onPointerCancel: _handlePointerCancel,
+      child: MouseRegion(
+        cursor: _isDragging ? SystemMouseCursors.grabbing : SystemMouseCursors.grab,
+        child: SizedBox(
+          height: widget.horizontal
+              ? widget.horizontalListHeight
+              : widget.verticalListHeight,
+          width: widget.horizontal
+              ? widget.horizontalListWidth
+              : widget.verticalListWidth,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              if (widget.background != null) widget.background!,
+              widget.horizontal
+                  ? _buildHorizontalWheelChooser(children)
+                  : _buildVerticalWheelChooser(children),
+              IgnorePointer(
+                ignoring: widget.allowPointerTappable,
+                child: Visibility(
+                  visible: widget.showPointer,
+                  child: _buildPointer(),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

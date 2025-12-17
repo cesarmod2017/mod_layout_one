@@ -21,6 +21,15 @@ class _TablesPageState extends State<TablesPage> {
   // State for action bar example
   List<String>? _visibleColumns = ['name', 'city'];
 
+  // State for EmptyView example
+  List<Map<String, dynamic>> _emptyViewExampleData = [
+    {'id': 1, 'product': 'Laptop', 'price': 1299.99, 'stock': 15},
+    {'id': 2, 'product': 'Mouse', 'price': 29.99, 'stock': 150},
+    {'id': 3, 'product': 'Keyboard', 'price': 79.99, 'stock': 85},
+    {'id': 4, 'product': 'Monitor', 'price': 349.99, 'stock': 30},
+    {'id': 5, 'product': 'Headset', 'price': 99.99, 'stock': 60},
+  ];
+
   final List<Map<String, dynamic>> _data = [
     {'name': 'John Doe', 'age': 30, 'city': 'New York'},
     {'name': 'Jane Smith', 'age': 25, 'city': 'Los Angeles'},
@@ -898,6 +907,215 @@ ModDataTable(
                 ],
               ),
             ),
+            const SizedBox(height: 20),
+            ModCard(
+              header: const Text(
+                "DataTable with EmptyView Widget",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "EmptyView Features:",
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        const Text("• Custom widget shown when data is empty"),
+                        const Text("• Action bar remains visible when empty"),
+                        const Text("• Click the trash icon to clear data and see the empty view"),
+                        const Text("• Click the refresh icon to restore data"),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Current items: ${_emptyViewExampleData.length}",
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ModDataTable(
+                    fixedHeader: true,
+                    showHorizontalScrollbar: true,
+                    emptyViewWidget: Container(
+                      padding: const EdgeInsets.all(48),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.inbox_outlined,
+                              size: 64,
+                              color: Theme.of(context).colorScheme.outline,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'No data available',
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                color: Theme.of(context).colorScheme.outline,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Click the refresh button to reload the data',
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Theme.of(context).colorScheme.outline,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    actionBarConfig: ModDataTableActionBarConfig(
+                      actions: [
+                        // Clear data button (trash icon)
+                        IconButton(
+                          icon: Icon(
+                            Icons.delete_outline,
+                            color: Colors.red.shade400,
+                            size: 20,
+                          ),
+                          tooltip: 'Clear all data',
+                          onPressed: () {
+                            setState(() {
+                              _emptyViewExampleData = [];
+                            });
+                            log('[EmptyView Example]: Data cleared');
+                          },
+                        ),
+                        // Restore data button (refresh icon)
+                        IconButton(
+                          icon: Icon(
+                            Icons.refresh,
+                            color: Colors.green.shade400,
+                            size: 20,
+                          ),
+                          tooltip: 'Restore data',
+                          onPressed: () {
+                            setState(() {
+                              _emptyViewExampleData = [
+                                {'id': 1, 'product': 'Laptop', 'price': 1299.99, 'stock': 15},
+                                {'id': 2, 'product': 'Mouse', 'price': 29.99, 'stock': 150},
+                                {'id': 3, 'product': 'Keyboard', 'price': 79.99, 'stock': 85},
+                                {'id': 4, 'product': 'Monitor', 'price': 349.99, 'stock': 30},
+                                {'id': 5, 'product': 'Headset', 'price': 99.99, 'stock': 60},
+                              ];
+                            });
+                            log('[EmptyView Example]: Data restored');
+                          },
+                        ),
+                      ],
+                      background: Theme.of(context).scaffoldBackgroundColor,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    headers: [
+                      ModDataHeader(
+                        child: const SelectableText('ID'),
+                        widthType: WidthType.fixed,
+                        width: 80,
+                        sortable: true,
+                        field: 'id',
+                      ),
+                      ModDataHeader(
+                        child: const SelectableText('Product'),
+                        widthType: WidthType.fixed,
+                        width: 200,
+                        sortable: true,
+                        field: 'product',
+                      ),
+                      ModDataHeader(
+                        child: const SelectableText('Price'),
+                        widthType: WidthType.fixed,
+                        width: 120,
+                        sortable: true,
+                        field: 'price',
+                      ),
+                      ModDataHeader(
+                        child: const SelectableText('Stock'),
+                        widthType: WidthType.fixed,
+                        width: 100,
+                        sortable: true,
+                        field: 'stock',
+                      ),
+                    ],
+                    data: _emptyViewExampleData,
+                    source: _EmptyViewDataSource(_emptyViewExampleData),
+                    currentPage: 0,
+                    rowsPerPage: 5,
+                    totalRecords: _emptyViewExampleData.length,
+                    onPageChanged: (page) {
+                      log('[EmptyView Example]: Page changed: $page');
+                    },
+                    onSort: (field, direction) {
+                      log('[EmptyView Example]: Sorting by $field in $direction direction');
+                    },
+                    rowHeight: 40,
+                    oddRowColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    evenRowColor: Theme.of(context).colorScheme.surfaceContainer,
+                    headerBackgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                    footerBackgroundColor: Theme.of(context).colorScheme.surface,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            const ModCodeExample(
+              code: '''// DataTable with EmptyView Widget
+ModDataTable(
+  // Custom widget displayed when data is empty
+  emptyViewWidget: Container(
+    padding: const EdgeInsets.all(48),
+    child: Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.inbox_outlined, size: 64),
+          const SizedBox(height: 16),
+          Text('No data available'),
+          const SizedBox(height: 8),
+          Text('Click refresh to reload'),
+        ],
+      ),
+    ),
+  ),
+  // Action bar with clear/restore buttons
+  actionBarConfig: ModDataTableActionBarConfig(
+    actions: [
+      IconButton(
+        icon: Icon(Icons.delete_outline, color: Colors.red),
+        tooltip: 'Clear all data',
+        onPressed: () {
+          setState(() {
+            _data = [];  // Triggers emptyViewWidget display
+          });
+        },
+      ),
+      IconButton(
+        icon: Icon(Icons.refresh, color: Colors.green),
+        tooltip: 'Restore data',
+        onPressed: () {
+          setState(() {
+            _data = originalData;  // Restores data
+          });
+        },
+      ),
+    ],
+  ),
+  headers: [...],
+  data: _data,
+  source: _DataSource(_data),
+  ...
+),''',
+            ),
             const SizedBox(height: 8),
             const ModCodeExample(
               code: '''// DataTable Modal
@@ -1187,6 +1405,37 @@ class _ScrollDemoDataSource extends DataTableSource {
         DataCell(Text(row['col6']?.toString() ?? '')),
         DataCell(Text(row['col7']?.toString() ?? '')),
         DataCell(Text(row['col8']?.toString() ?? '')),
+      ],
+    );
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => _data.length;
+
+  @override
+  int get selectedRowCount => 0;
+}
+
+class _EmptyViewDataSource extends DataTableSource {
+  final List<Map<String, dynamic>> _data;
+
+  _EmptyViewDataSource(this._data);
+
+  @override
+  DataRow getRow(int index) {
+    if (index >= _data.length) {
+      return const DataRow(cells: []);
+    }
+    final row = _data[index];
+    return DataRow(
+      cells: [
+        DataCell(SelectableText(row['id']?.toString() ?? '')),
+        DataCell(SelectableText(row['product']?.toString() ?? '')),
+        DataCell(SelectableText('\$${row['price']?.toStringAsFixed(2) ?? '0.00'}')),
+        DataCell(SelectableText(row['stock']?.toString() ?? '')),
       ],
     );
   }

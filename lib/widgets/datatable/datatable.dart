@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mod_layout_one/widgets/buttons/icon_buttom.dart';
 import 'package:mod_layout_one/widgets/grid_system/grid_system.dart';
 
@@ -168,6 +169,11 @@ class ModDataTable<T> extends StatefulWidget {
   /// List of column field names to display. If null or empty, all columns are shown.
   final List<String>? columnsShow;
 
+  /// Widget to display when the data list is empty.
+  /// When provided and data is empty, this widget will be shown instead of the header and body,
+  /// but the action bar will remain visible.
+  final Widget? emptyViewWidget;
+
   const ModDataTable({
     super.key,
     required this.headers,
@@ -199,6 +205,7 @@ class ModDataTable<T> extends StatefulWidget {
     this.showHorizontalScrollbar = true,
     this.actionBarConfig,
     this.columnsShow,
+    this.emptyViewWidget,
   });
 
   @override
@@ -526,7 +533,7 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
                             final isSelected =
                                 selectedColumns.contains(header.field);
                             return CheckboxListTile(
-                              title: Text(header.field),
+                              title: Text(header.field.tr),
                               value: isSelected,
                               onChanged: (value) {
                                 setDialogState(() {
@@ -686,12 +693,36 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
     );
   }
 
+  /// Checks if the table should show the empty view
+  bool get _shouldShowEmptyView =>
+      widget.data.isEmpty && widget.emptyViewWidget != null;
+
   @override
   Widget build(BuildContext context) {
     const headerHeight = 40.0;
     const paginationHeight = 56.0;
     final hasActionBar = widget.actionBarConfig?.hasAnyAction ?? false;
     const actionBarHeight = 48.0;
+
+    // If showing empty view, calculate height differently
+    if (_shouldShowEmptyView) {
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Action bar is always visible
+              if (hasActionBar) _buildActionBar(),
+              // Empty view widget
+              Flexible(
+                child: widget.emptyViewWidget!,
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     final totalHeight =
         (widget.rowHeight * min(widget.rowsPerPage, widget.source.rowCount)) +
             headerHeight +

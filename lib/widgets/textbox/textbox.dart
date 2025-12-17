@@ -6,6 +6,14 @@ enum ModTextBoxLabelPosition { top, left }
 
 enum ModTextBoxSize { lg, md, sm, xs }
 
+/// Position of increment/decrement buttons for number mode
+enum ModTextBoxNumberButtonPosition {
+  /// Buttons positioned on left and right sides of the text field
+  leftRight,
+  /// Buttons positioned above and below the text field
+  topBottom,
+}
+
 class ModTextBox extends StatefulWidget {
   final String? label;
   final String? hint;
@@ -60,6 +68,28 @@ class ModTextBox extends StatefulWidget {
   final Color? borderColor;
   final double borderWidth;
 
+  // Parâmetros para modo numérico
+  /// Enables number mode with increment/decrement buttons
+  final bool numberMode;
+  /// Position of increment/decrement buttons (leftRight or topBottom)
+  final ModTextBoxNumberButtonPosition numberButtonPosition;
+  /// Minimum value for number mode
+  final num? minValue;
+  /// Maximum value for number mode
+  final num? maxValue;
+  /// Step value for increment/decrement
+  final num step;
+  /// Number of decimal places (0 for integers)
+  final int decimalPlaces;
+  /// Custom icon for increment button
+  final IconData? incrementIcon;
+  /// Custom icon for decrement button
+  final IconData? decrementIcon;
+  /// Color for increment/decrement buttons
+  final Color? numberButtonColor;
+  /// Background color for increment/decrement buttons
+  final Color? numberButtonBackgroundColor;
+
   const ModTextBox({
     super.key,
     this.label,
@@ -110,6 +140,16 @@ class ModTextBox extends StatefulWidget {
     this.backgroundColor,
     this.borderColor,
     this.borderWidth = 1.0,
+    this.numberMode = false,
+    this.numberButtonPosition = ModTextBoxNumberButtonPosition.leftRight,
+    this.minValue,
+    this.maxValue,
+    this.step = 1,
+    this.decimalPlaces = 0,
+    this.incrementIcon,
+    this.decrementIcon,
+    this.numberButtonColor,
+    this.numberButtonBackgroundColor,
   });
 
   @override
@@ -207,6 +247,77 @@ class _ModTextBoxState extends State<ModTextBox> {
     }
   }
 
+  // Métodos para modo numérico
+  num _getCurrentValue() {
+    final text = _controller.text.trim();
+    if (text.isEmpty) return 0;
+    return num.tryParse(text) ?? 0;
+  }
+
+  String _formatValue(num value) {
+    if (widget.decimalPlaces == 0) {
+      return value.toInt().toString();
+    }
+    return value.toStringAsFixed(widget.decimalPlaces);
+  }
+
+  void _increment() {
+    num currentValue = _getCurrentValue();
+    num newValue = currentValue + widget.step;
+
+    if (widget.maxValue != null && newValue > widget.maxValue!) {
+      newValue = widget.maxValue!;
+    }
+
+    final formattedValue = _formatValue(newValue);
+    _controller.text = formattedValue;
+    widget.onChange?.call(formattedValue);
+  }
+
+  void _decrement() {
+    num currentValue = _getCurrentValue();
+    num newValue = currentValue - widget.step;
+
+    if (widget.minValue != null && newValue < widget.minValue!) {
+      newValue = widget.minValue!;
+    }
+
+    final formattedValue = _formatValue(newValue);
+    _controller.text = formattedValue;
+    widget.onChange?.call(formattedValue);
+  }
+
+  List<TextInputFormatter> _getInputFormatters() {
+    if (!widget.numberMode) {
+      return widget.inputFormatters ?? [];
+    }
+
+    final List<TextInputFormatter> formatters = [];
+
+    if (widget.decimalPlaces == 0) {
+      // Apenas inteiros (permite números negativos se minValue for nulo ou negativo)
+      if (widget.minValue == null || widget.minValue! < 0) {
+        formatters.add(FilteringTextInputFormatter.allow(RegExp(r'^-?\d*$')));
+      } else {
+        formatters.add(FilteringTextInputFormatter.digitsOnly);
+      }
+    } else {
+      // Permite decimais
+      if (widget.minValue == null || widget.minValue! < 0) {
+        formatters.add(FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*$')));
+      } else {
+        formatters.add(FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$')));
+      }
+    }
+
+    // Adiciona formatters adicionais passados pelo usuário
+    if (widget.inputFormatters != null) {
+      formatters.addAll(widget.inputFormatters!);
+    }
+
+    return formatters;
+  }
+
   @override
   void dispose() {
     _focusNode.removeListener(_onFocusChange);
@@ -299,6 +410,40 @@ class _ModTextBoxState extends State<ModTextBox> {
     );
   }
 
+  Widget _buildNumberButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+    required ThemeData theme,
+    required bool isVertical,
+  }) {
+    final buttonSize = _getHeight();
+    final iconSize = _getIconSize();
+    final buttonColor = widget.numberButtonColor ?? theme.colorScheme.primary;
+    final backgroundColor = widget.numberButtonBackgroundColor ??
+        theme.colorScheme.surfaceContainerHighest;
+
+    return Material(
+      color: backgroundColor,
+      borderRadius: BorderRadius.circular(widget.borderRadius),
+      child: InkWell(
+        onTap: widget.enabled != false && !widget.readOnly ? onPressed : null,
+        borderRadius: BorderRadius.circular(widget.borderRadius),
+        child: Container(
+          width: isVertical ? null : buttonSize,
+          height: isVertical ? buttonSize / 2 : buttonSize,
+          alignment: Alignment.center,
+          child: Icon(
+            icon,
+            size: iconSize,
+            color: widget.enabled != false && !widget.readOnly
+                ? buttonColor
+                : theme.disabledColor,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -376,12 +521,19 @@ class _ModTextBoxState extends State<ModTextBox> {
               obscureText: widget.isPassword && _obscureText,
               readOnly: widget.readOnly,
               keyboardType: widget.keyboardType ??
-                  (widget.multiline
-                      ? TextInputType.multiline
-                      : TextInputType.text),
+                  (widget.numberMode
+                      ? (widget.decimalPlaces > 0
+                          ? const TextInputType.numberWithOptions(decimal: true, signed: true)
+                          : const TextInputType.numberWithOptions(signed: true))
+                      : (widget.multiline
+                          ? TextInputType.multiline
+                          : TextInputType.text)),
               style: widget.style?.copyWith(fontSize: _getFontSize()) ??
                   TextStyle(fontSize: _getFontSize()),
-              inputFormatters: widget.inputFormatters,
+              inputFormatters: _getInputFormatters(),
+              textAlign: widget.numberMode && widget.textAlign == TextAlign.start
+                  ? TextAlign.center
+                  : widget.textAlign,
               validator: widget.validator,
               autovalidateMode: widget.autovalidateMode,
               autocorrect: widget.autocorrect,
@@ -395,7 +547,6 @@ class _ModTextBoxState extends State<ModTextBox> {
               maxLength: widget.maxLength,
               maxLines: maxLines,
               minLines: minLines,
-              textAlign: widget.textAlign,
               onTapOutside: widget.onTapOutside as TapRegionCallback?,
               onEditingComplete: widget.onEditingComplete,
               onSaved: widget.onSaved,
@@ -537,6 +688,63 @@ class _ModTextBoxState extends State<ModTextBox> {
           ),
       ],
     );
+
+    // Wrap textField with number buttons if numberMode is enabled
+    if (widget.numberMode) {
+      final decrementIcon = widget.decrementIcon ??
+          (widget.numberButtonPosition == ModTextBoxNumberButtonPosition.topBottom
+              ? Icons.keyboard_arrow_down
+              : Icons.remove);
+      final incrementIcon = widget.incrementIcon ??
+          (widget.numberButtonPosition == ModTextBoxNumberButtonPosition.topBottom
+              ? Icons.keyboard_arrow_up
+              : Icons.add);
+
+      if (widget.numberButtonPosition == ModTextBoxNumberButtonPosition.leftRight) {
+        textField = Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildNumberButton(
+              icon: decrementIcon,
+              onPressed: _decrement,
+              theme: theme,
+              isVertical: false,
+            ),
+            const SizedBox(width: 4),
+            Expanded(child: textField),
+            const SizedBox(width: 4),
+            _buildNumberButton(
+              icon: incrementIcon,
+              onPressed: _increment,
+              theme: theme,
+              isVertical: false,
+            ),
+          ],
+        );
+      } else {
+        // topBottom position
+        textField = Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildNumberButton(
+              icon: incrementIcon,
+              onPressed: _increment,
+              theme: theme,
+              isVertical: true,
+            ),
+            const SizedBox(height: 2),
+            textField,
+            const SizedBox(height: 2),
+            _buildNumberButton(
+              icon: decrementIcon,
+              onPressed: _decrement,
+              theme: theme,
+              isVertical: true,
+            ),
+          ],
+        );
+      }
+    }
 
     if (widget.label == null) {
       return SizedBox(width: widget.width, child: textField);

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart' hide BorderStyle;
+import 'package:get/get.dart';
 import 'package:mod_layout_one/widgets/buttons/icon_buttom.dart';
 import 'package:mod_layout_one/widgets/grid_system/grid_system.dart';
 import 'package:mod_layout_one/widgets/modal/modal.dart';
@@ -70,6 +71,11 @@ class ModDataTableModal<T> extends StatefulWidget {
   final ModDataTableActionBarConfig? actionBarConfig;
   final List<String>? columnsShow;
 
+  /// Widget to display when the data list is empty.
+  /// When provided and data is empty, this widget will be shown instead of the header and body,
+  /// but the action bar will remain visible.
+  final Widget? emptyViewWidget;
+
   // Modal properties
   final Widget header;
   final Color? modalHeaderColor;
@@ -124,6 +130,7 @@ class ModDataTableModal<T> extends StatefulWidget {
     this.showHorizontalScrollbar = true,
     this.actionBarConfig,
     this.columnsShow,
+    this.emptyViewWidget,
     // Modal required properties
     required this.header,
     // Modal optional properties
@@ -182,6 +189,7 @@ class ModDataTableModal<T> extends StatefulWidget {
     bool showHorizontalScrollbar = true,
     ModDataTableActionBarConfig? actionBarConfig,
     List<String>? columnsShow,
+    Widget? emptyViewWidget,
     // Modal required properties
     required Widget header,
     // Modal optional properties
@@ -245,6 +253,7 @@ class ModDataTableModal<T> extends StatefulWidget {
           showHorizontalScrollbar: showHorizontalScrollbar,
           actionBarConfig: actionBarConfig,
           columnsShow: columnsShow,
+          emptyViewWidget: emptyViewWidget,
           // Modal properties
           header: header,
           modalHeaderColor: modalHeaderColor,
@@ -474,7 +483,7 @@ class _ModDataTableModalState<T> extends State<ModDataTableModal<T>> {
                             final isSelected =
                                 selectedColumns.contains(header.field);
                             return CheckboxListTile(
-                              title: Text(header.field),
+                              title: Text(header.field.tr),
                               value: isSelected,
                               onChanged: (value) {
                                 setDialogState(() {
@@ -1043,8 +1052,27 @@ class _ModDataTableModalState<T> extends State<ModDataTableModal<T>> {
     return List.generate(end - start + 1, (i) => start + i);
   }
 
+  /// Checks if the table should show the empty view
+  bool get _shouldShowEmptyView =>
+      widget.data.isEmpty && widget.emptyViewWidget != null;
+
   Widget _buildDataTableBody() {
     final hasActionBar = widget.actionBarConfig?.hasAnyAction ?? false;
+
+    // If showing empty view, display action bar and empty view widget only
+    if (_shouldShowEmptyView) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Action bar is always visible
+          if (hasActionBar) _buildActionBar(),
+          // Empty view widget
+          Flexible(
+            child: widget.emptyViewWidget!,
+          ),
+        ],
+      );
+    }
 
     return LayoutBuilder(
       builder: (context, constraints) {

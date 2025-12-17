@@ -1,3 +1,25 @@
+
+## 1.3.0
+* Added chatbot as a core feature
+
+## 1.2.9
+* Other improvements
+
+## 1.2.8
+* Other improvements
+
+## 1.2.7
+* Other improvements
+
+## 1.2.6
+* Other improvements
+
+## 1.2.5
+* Other improvements
+
+## 1.2.4
+* Other improvements
+
 ## 1.2.3
 * Enhanced ModDataTableActionBarConfig with responsive grid support:
   * Added actionsModColumn property for responsive action bar layouts

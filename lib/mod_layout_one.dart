@@ -10,6 +10,7 @@ import 'package:mod_layout_one/themes/app_theme.dart';
 import 'package:mod_layout_one/translations/base_translations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+export 'package:mod_layout_one/layout/models/chatbot_config.dart';
 export 'package:mod_layout_one/layout/models/menu_group.dart';
 export 'package:mod_layout_one/layout/models/menu_item.dart';
 export 'package:mod_layout_one/layout/models/module_model.dart';

@@ -579,6 +579,324 @@ ModDropDown<String>(
               ),
             ),
             const SizedBox(height: 16),
+            // Exemplo de TextBox Number com botões à esquerda e direita
+            mod.ModCard(
+              header: const Text(
+                "TextBox Number - Botões Esquerda/Direita",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "TextBox numérico com botões de incremento/decremento posicionados à esquerda e direita do campo.",
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 16),
+                  // Exemplo básico
+                  mod.ModTextBox(
+                    label: "Quantidade",
+                    hint: "0",
+                    value: "10",
+                    numberMode: true,
+                    numberButtonPosition: ModTextBoxNumberButtonPosition.leftRight,
+                    minValue: 0,
+                    maxValue: 100,
+                    step: 1,
+                    controller: TextEditingController(text: "10"),
+                    onChange: (text) {
+                      log("Quantidade: $text");
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  // Exemplo com decimais
+                  mod.ModTextBox(
+                    label: "Preço",
+                    hint: "0.00",
+                    value: "25.50",
+                    numberMode: true,
+                    numberButtonPosition: ModTextBoxNumberButtonPosition.leftRight,
+                    minValue: 0.0,
+                    maxValue: 1000.0,
+                    step: 0.5,
+                    decimalPlaces: 2,
+                    controller: TextEditingController(text: "25.50"),
+                    onChange: (text) {
+                      log("Preço: $text");
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  // Exemplo com ícones customizados
+                  mod.ModTextBox(
+                    label: "Com Ícones Customizados",
+                    hint: "0",
+                    value: "5",
+                    numberMode: true,
+                    numberButtonPosition: ModTextBoxNumberButtonPosition.leftRight,
+                    minValue: 0,
+                    maxValue: 50,
+                    step: 5,
+                    incrementIcon: Icons.arrow_forward,
+                    decrementIcon: Icons.arrow_back,
+                    numberButtonColor: Colors.green,
+                    controller: TextEditingController(text: "5"),
+                    onChange: (text) {
+                      log("Valor: $text");
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  const mod.ModCodeExample(
+                    code: '''// TextBox numérico básico (inteiros)
+ModTextBox(
+  label: "Quantidade",
+  hint: "0",
+  value: "10",
+  numberMode: true,
+  numberButtonPosition: ModTextBoxNumberButtonPosition.leftRight,
+  minValue: 0,
+  maxValue: 100,
+  step: 1,
+  controller: TextEditingController(text: "10"),
+  onChange: (text) {
+    print("Quantidade: \$text");
+  },
+),
+
+// TextBox numérico com decimais
+ModTextBox(
+  label: "Preço",
+  hint: "0.00",
+  value: "25.50",
+  numberMode: true,
+  numberButtonPosition: ModTextBoxNumberButtonPosition.leftRight,
+  minValue: 0.0,
+  maxValue: 1000.0,
+  step: 0.5,
+  decimalPlaces: 2,
+  controller: TextEditingController(text: "25.50"),
+),
+
+// Com ícones customizados
+ModTextBox(
+  label: "Com Ícones Customizados",
+  numberMode: true,
+  numberButtonPosition: ModTextBoxNumberButtonPosition.leftRight,
+  incrementIcon: Icons.arrow_forward,
+  decrementIcon: Icons.arrow_back,
+  numberButtonColor: Colors.green,
+),''',
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Exemplo de TextBox Number com botões acima e abaixo
+            mod.ModCard(
+              header: const Text(
+                "TextBox Number - Botões Acima/Abaixo",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "TextBox numérico com botões de incremento/decremento posicionados acima e abaixo do campo.",
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Exemplo básico vertical
+                      Expanded(
+                        child: mod.ModTextBox(
+                          label: "Idade",
+                          hint: "0",
+                          value: "25",
+                          numberMode: true,
+                          numberButtonPosition: ModTextBoxNumberButtonPosition.topBottom,
+                          minValue: 0,
+                          maxValue: 120,
+                          step: 1,
+                          controller: TextEditingController(text: "25"),
+                          onChange: (text) {
+                            log("Idade: $text");
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      // Exemplo com ícones customizados vertical
+                      Expanded(
+                        child: mod.ModTextBox(
+                          label: "Nível",
+                          hint: "0",
+                          value: "3",
+                          numberMode: true,
+                          numberButtonPosition: ModTextBoxNumberButtonPosition.topBottom,
+                          minValue: 1,
+                          maxValue: 10,
+                          step: 1,
+                          incrementIcon: Icons.expand_less,
+                          decrementIcon: Icons.expand_more,
+                          numberButtonColor: Colors.orange,
+                          numberButtonBackgroundColor: Colors.orange.withValues(alpha: 0.1),
+                          controller: TextEditingController(text: "3"),
+                          onChange: (text) {
+                            log("Nível: $text");
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      // Exemplo com tamanho pequeno
+                      Expanded(
+                        child: mod.ModTextBox(
+                          label: "Score",
+                          hint: "0",
+                          value: "100",
+                          numberMode: true,
+                          numberButtonPosition: ModTextBoxNumberButtonPosition.topBottom,
+                          minValue: 0,
+                          maxValue: 999,
+                          step: 10,
+                          size: ModTextBoxSize.sm,
+                          controller: TextEditingController(text: "100"),
+                          onChange: (text) {
+                            log("Score: $text");
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const mod.ModCodeExample(
+                    code: '''// TextBox numérico com botões acima/abaixo
+ModTextBox(
+  label: "Idade",
+  hint: "0",
+  value: "25",
+  numberMode: true,
+  numberButtonPosition: ModTextBoxNumberButtonPosition.topBottom,
+  minValue: 0,
+  maxValue: 120,
+  step: 1,
+  controller: TextEditingController(text: "25"),
+),
+
+// Com cores customizadas
+ModTextBox(
+  label: "Nível",
+  numberMode: true,
+  numberButtonPosition: ModTextBoxNumberButtonPosition.topBottom,
+  minValue: 1,
+  maxValue: 10,
+  incrementIcon: Icons.expand_less,
+  decrementIcon: Icons.expand_more,
+  numberButtonColor: Colors.orange,
+  numberButtonBackgroundColor: Colors.orange.withOpacity(0.1),
+),
+
+// Tamanho pequeno
+ModTextBox(
+  label: "Score",
+  numberMode: true,
+  numberButtonPosition: ModTextBoxNumberButtonPosition.topBottom,
+  step: 10,
+  size: ModTextBoxSize.sm,
+),''',
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Exemplo de diferentes tamanhos do TextBox Number
+            mod.ModCard(
+              header: const Text(
+                "TextBox Number - Diferentes Tamanhos",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "TextBox numérico em diferentes tamanhos: lg, md, sm, xs.",
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 16),
+                  mod.ModTextBox(
+                    label: "Tamanho LG",
+                    numberMode: true,
+                    size: ModTextBoxSize.lg,
+                    value: "100",
+                    controller: TextEditingController(text: "100"),
+                    onChange: (text) => log("LG: $text"),
+                  ),
+                  const SizedBox(height: 12),
+                  mod.ModTextBox(
+                    label: "Tamanho MD",
+                    numberMode: true,
+                    size: ModTextBoxSize.md,
+                    value: "50",
+                    controller: TextEditingController(text: "50"),
+                    onChange: (text) => log("MD: $text"),
+                  ),
+                  const SizedBox(height: 12),
+                  mod.ModTextBox(
+                    label: "Tamanho SM",
+                    numberMode: true,
+                    size: ModTextBoxSize.sm,
+                    value: "25",
+                    controller: TextEditingController(text: "25"),
+                    onChange: (text) => log("SM: $text"),
+                  ),
+                  const SizedBox(height: 12),
+                  mod.ModTextBox(
+                    label: "Tamanho XS",
+                    numberMode: true,
+                    size: ModTextBoxSize.xs,
+                    value: "10",
+                    controller: TextEditingController(text: "10"),
+                    onChange: (text) => log("XS: $text"),
+                  ),
+                  const SizedBox(height: 16),
+                  const mod.ModCodeExample(
+                    code: '''// Diferentes tamanhos de TextBox Number
+ModTextBox(
+  label: "Tamanho LG",
+  numberMode: true,
+  size: ModTextBoxSize.lg,
+),
+
+ModTextBox(
+  label: "Tamanho MD",
+  numberMode: true,
+  size: ModTextBoxSize.md,
+),
+
+ModTextBox(
+  label: "Tamanho SM",
+  numberMode: true,
+  size: ModTextBoxSize.sm,
+),
+
+ModTextBox(
+  label: "Tamanho XS",
+  numberMode: true,
+  size: ModTextBoxSize.xs,
+),''',
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
           ],
         ),
       ),

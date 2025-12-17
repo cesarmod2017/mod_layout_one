@@ -286,6 +286,130 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// Widget de exemplo para demonstrar o chatbot
+class ExampleChatbotWidget extends StatelessWidget {
+  const ExampleChatbotWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        // Header do chat
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          child: Row(
+            children: [
+              const CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(Icons.support_agent, color: Colors.blue),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Assistente Virtual',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      'Online',
+                      style: TextStyle(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onPrimary
+                            .withValues(alpha: 0.7),
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Área de mensagens
+        Expanded(
+          child: Container(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                _buildBotMessage(context, 'Olá! Como posso ajudar você hoje?'),
+                const SizedBox(height: 8),
+                _buildBotMessage(context,
+                    'Estou aqui para responder suas dúvidas sobre o sistema.'),
+              ],
+            ),
+          ),
+        ),
+        // Input de mensagem
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            border: Border(
+              top: BorderSide(color: Theme.of(context).dividerColor),
+            ),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Digite sua mensagem...',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.send,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBotMessage(BuildContext context, String message) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 280),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(4),
+            topRight: Radius.circular(16),
+            bottomLeft: Radius.circular(16),
+            bottomRight: Radius.circular(16),
+          ),
+        ),
+        child: Text(message),
+      ),
+    );
+  }
+}
+
 class CustomLayout extends StatelessWidget {
   final String title;
   final Widget body;
@@ -318,6 +442,25 @@ class CustomLayout extends StatelessWidget {
             Text('user@email.com'),
           ],
         ),
+      ),
+      // Configuração do Chatbot (visível apenas em Windows e Web)
+      chatbotConfig: ChatbotConfig(
+        chatWidget: const ExampleChatbotWidget(),
+        position: ChatbotPosition.bottomRight,
+        icon: Icons.support_agent,
+        closeIcon: Icons.close,
+        backgroundColor: Colors.blue,
+        iconColor: Colors.white,
+        buttonSize: 56,
+        iconSize: 28,
+        windowWidth: 380,
+        windowHeight: 500,
+        windowBorderRadius: 16,
+        tooltip: 'Assistente Virtual',
+        showBadge: true,
+        badgeColor: Colors.red,
+        onOpen: () => log('Chatbot opened'),
+        onClose: () => log('Chatbot closed'),
       ),
       loginRoute: '/login',
       claims: const [
