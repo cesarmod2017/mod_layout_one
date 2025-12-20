@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mod_layout_one/controllers/layout_controller.dart';
+import 'package:mod_layout_one/controllers/mod_base_layout_controller.dart';
 import 'package:mod_layout_one/layout/components/footer.dart';
 import 'package:mod_layout_one/layout/components/header.dart';
 import 'package:mod_layout_one/layout/components/mobile_drawer.dart';
@@ -90,7 +91,36 @@ import 'package:mod_layout_one/layout/widgets/user_profile.dart';
 ///   ),
 /// )
 /// ```
+///
+/// ## Uso com Controller para atualizações dinâmicas:
+/// ```dart
+/// // Crie o controller (pode ser em um GetController ou StatefulWidget)
+/// final layoutController = ModBaseLayoutController(
+///   claims: userClaims,
+///   menuGroups: myMenuGroups,
+///   userProfile: UserProfile(userName: 'João'),
+/// );
+///
+/// // Use no ModBaseLayout
+/// ModBaseLayout(
+///   title: 'App',
+///   body: HomePage(),
+///   controller: layoutController,
+/// )
+///
+/// // Atualize dinamicamente em qualquer lugar
+/// layoutController.updateClaims(newClaims);
+/// layoutController.updateUserProfile(newUserProfile);
+/// layoutController.refresh(); // Força rebuild
+/// ```
 class ModBaseLayout extends StatefulWidget {
+  /// Controller para gerenciamento dinâmico do estado do layout.
+  ///
+  /// Quando fornecido, o layout irá escutar mudanças no controller
+  /// e atualizar automaticamente. Os valores do controller têm precedência
+  /// sobre os parâmetros diretos quando ambos são fornecidos.
+  final ModBaseLayoutController? controller;
+
   /// Título da aplicação exibido no header (quando não há logo)
   final String title;
 
@@ -202,6 +232,7 @@ class ModBaseLayout extends StatefulWidget {
 
   const ModBaseLayout({
     super.key,
+    this.controller,
     required this.title,
     this.logo,
     required this.body,
@@ -236,8 +267,11 @@ class ModBaseLayout extends StatefulWidget {
     this.headerProfileColor,
     this.headerLanguageIconColor,
     this.chatbotConfig,
-  }) : assert(menuGroups != null || moduleMenuGroups != null,
-            'Pelo menos um de menuGroups ou moduleMenuGroups deve ser fornecido');
+  }) : assert(
+            controller != null ||
+                menuGroups != null ||
+                moduleMenuGroups != null,
+            'Pelo menos um de controller, menuGroups ou moduleMenuGroups deve ser fornecido');
 
   @override
   State<ModBaseLayout> createState() => _ModBaseLayoutState();
@@ -251,9 +285,59 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
   late AnimationController _chatbotAnimationController;
   late Animation<double> _chatbotScaleAnimation;
 
+  // Getters efetivos que priorizam valores do controller sobre parâmetros diretos
+
+  /// Retorna o título efetivo (do controller ou do widget)
+  String get _effectiveTitle =>
+      widget.controller?.title ?? widget.title;
+
+  /// Retorna o logo efetivo (do controller ou do widget)
+  Widget? get _effectiveLogo =>
+      widget.controller?.logo ?? widget.logo;
+
+  /// Retorna as claims efetivas (do controller ou do widget)
+  List<String>? get _effectiveClaims =>
+      widget.controller?.claims ?? widget.claims;
+
+  /// Retorna os menuGroups efetivos (do controller ou do widget)
+  List<MenuGroup>? get _effectiveMenuGroups =>
+      widget.controller?.menuGroups ?? widget.menuGroups;
+
+  /// Retorna os moduleMenuGroups efetivos (do controller ou do widget)
+  List<ModuleMenu>? get _effectiveModuleMenuGroups =>
+      widget.controller?.moduleMenuGroups ?? widget.moduleMenuGroups;
+
+  /// Retorna o userProfile efetivo (do controller ou do widget)
+  UserProfile? get _effectiveUserProfile =>
+      widget.controller?.userProfile ?? widget.userProfile;
+
+  /// Retorna as appBarActions efetivas (do controller ou do widget)
+  List<Widget>? get _effectiveAppBarActions =>
+      widget.controller?.appBarActions ?? widget.appBarActions;
+
+  /// Retorna o sidebarHeader efetivo (do controller ou do widget)
+  Widget? get _effectiveSidebarHeader =>
+      widget.controller?.sidebarHeader ?? widget.sidebarHeader;
+
+  /// Retorna o sidebarFooter efetivo (do controller ou do widget)
+  Widget? get _effectiveSidebarFooter =>
+      widget.controller?.sidebarFooter ?? widget.sidebarFooter;
+
+  /// Retorna o footer efetivo (do controller ou do widget)
+  Widget? get _effectiveFooter =>
+      widget.controller?.footer ?? widget.footer;
+
+  /// Retorna o drawerHeader efetivo (do controller ou do widget)
+  Widget? get _effectiveDrawerHeader =>
+      widget.controller?.drawerHeader ?? widget.drawerHeader;
+
+  /// Retorna a chatbotConfig efetiva (do controller ou do widget)
+  ChatbotConfig? get _effectiveChatbotConfig =>
+      widget.controller?.chatbotConfig ?? widget.chatbotConfig;
+
   /// Verifica se o chatbot deve ser exibido (apenas Windows e Web)
   bool get _shouldShowChatbot {
-    if (widget.chatbotConfig == null) return false;
+    if (_effectiveChatbotConfig == null) return false;
     if (kIsWeb) return true;
     try {
       return Platform.isWindows;
@@ -262,9 +346,18 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
     }
   }
 
+  void _onControllerChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+
+    // Adiciona listener ao controller se existir
+    widget.controller?.addListener(_onControllerChanged);
 
     // Inicializa animação do chatbot
     _chatbotAnimationController = AnimationController(
@@ -277,7 +370,7 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
     );
 
     // Se tivermos módulos visíveis e nenhum módulo estiver selecionado, selecione o primeiro
-    if (widget.moduleMenuGroups != null &&
+    if (_effectiveModuleMenuGroups != null &&
         _filteredModules.isNotEmpty &&
         Get.find<LayoutController>().selectedModule.value == null) {
       Get.find<LayoutController>().setSelectedModule(_filteredModules.first);
@@ -285,18 +378,18 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
   }
 
   bool _hasValidClaim(MenuItem item) {
-    if (widget.claims == null || widget.claims!.isEmpty) {
+    if (_effectiveClaims == null || _effectiveClaims!.isEmpty) {
       return true;
     }
 
     // First priority: check claimName
     if (item.claimName != null) {
-      return widget.claims!.contains(item.claimName!);
+      return _effectiveClaims!.contains(item.claimName!);
     }
 
     // Second priority: check type:value combination
     if (item.type != null && item.value != null) {
-      return widget.claims!.contains("${item.type}:${item.value}");
+      return _effectiveClaims!.contains("${item.type}:${item.value}");
     }
 
     // If both are null and claims exist, don't show the item
@@ -304,13 +397,13 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
   }
 
   bool _hasValidGroupClaim(MenuGroup group) {
-    if (widget.claims == null || widget.claims!.isEmpty) {
+    if (_effectiveClaims == null || _effectiveClaims!.isEmpty) {
       return true;
     }
 
     // Check if MenuGroup has claimName and validate it
     if (group.claimName != null) {
-      return widget.claims!.contains(group.claimName!);
+      return _effectiveClaims!.contains(group.claimName!);
     }
 
     // If no claimName, check if any items are visible
@@ -318,7 +411,7 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
   }
 
   bool _hasValidModuleClaim(ModuleMenu module) {
-    if (widget.claims == null || widget.claims!.isEmpty) {
+    if (_effectiveClaims == null || _effectiveClaims!.isEmpty) {
       return true;
     }
 
@@ -329,10 +422,10 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
   List<ModuleMenu> get _filteredModules {
     // If claims validation is disabled, return all modules
     if (widget.disableClaimsValidation) {
-      return widget.moduleMenuGroups ?? [];
+      return _effectiveModuleMenuGroups ?? [];
     }
 
-    return widget.moduleMenuGroups
+    return _effectiveModuleMenuGroups
             ?.where((module) => _hasValidModuleClaim(module))
             .toList() ??
         [];
@@ -345,18 +438,18 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
     }
 
     // Only show no access screen if claims are provided and no modules are available
-    if (widget.claims == null || widget.claims!.isEmpty) {
+    if (_effectiveClaims == null || _effectiveClaims!.isEmpty) {
       return false;
     }
 
     // Check if using modules system
-    if (widget.moduleMenuGroups != null) {
+    if (_effectiveModuleMenuGroups != null) {
       return _filteredModules.isEmpty;
     }
 
     // Check if using menu groups system
-    if (widget.menuGroups != null) {
-      return !widget.menuGroups!.any((group) => _hasValidGroupClaim(group));
+    if (_effectiveMenuGroups != null) {
+      return !_effectiveMenuGroups!.any((group) => _hasValidGroupClaim(group));
     }
 
     return false;
@@ -365,12 +458,12 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
   List<MenuGroup> get currentMenuGroups {
     final LayoutController controller = Get.find();
 
-    if (widget.moduleMenuGroups != null &&
+    if (_effectiveModuleMenuGroups != null &&
         controller.selectedModule.value != null) {
       return controller.selectedModule.value!.menuGroups;
     }
 
-    return widget.menuGroups ?? [];
+    return _effectiveMenuGroups ?? [];
   }
 
   @override
@@ -379,7 +472,7 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
     final LayoutController layoutController = Get.find();
 
     // Atualizar o layout controller quando as dependências mudarem
-    if (widget.moduleMenuGroups != null &&
+    if (_effectiveModuleMenuGroups != null &&
         _filteredModules.isNotEmpty &&
         layoutController.selectedModule.value == null) {
       layoutController.setSelectedModule(_filteredModules.first);
@@ -387,7 +480,20 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
   }
 
   @override
+  void didUpdateWidget(ModBaseLayout oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Remove listener do controller antigo se mudou
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller?.removeListener(_onControllerChanged);
+      widget.controller?.addListener(_onControllerChanged);
+    }
+  }
+
+  @override
   void dispose() {
+    // Remove listener do controller ao dispor
+    widget.controller?.removeListener(_onControllerChanged);
     _chatbotAnimationController.dispose();
     super.dispose();
   }
@@ -397,10 +503,10 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
       _isChatbotOpen = !_isChatbotOpen;
       if (_isChatbotOpen) {
         _chatbotAnimationController.forward();
-        widget.chatbotConfig?.onOpen?.call();
+        _effectiveChatbotConfig?.onOpen?.call();
       } else {
         _chatbotAnimationController.reverse();
-        widget.chatbotConfig?.onClose?.call();
+        _effectiveChatbotConfig?.onClose?.call();
       }
     });
   }
@@ -408,7 +514,7 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
   /// Calcula a posição do botão baseado na configuração
   ({double? top, double? bottom, double? left, double? right})
       _getChatbotButtonPosition() {
-    final config = widget.chatbotConfig!;
+    final config = _effectiveChatbotConfig!;
     final margin = config.margin;
 
     switch (config.position) {
@@ -426,7 +532,7 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
   /// Calcula a posição da janela do chatbot baseado na configuração
   ({double? top, double? bottom, double? left, double? right})
       _getChatbotWindowPosition() {
-    final config = widget.chatbotConfig!;
+    final config = _effectiveChatbotConfig!;
     final margin = config.margin;
     final buttonSize = config.buttonSize;
     final spacing = 12.0;
@@ -464,7 +570,7 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
   }
 
   Widget _buildChatbotButton() {
-    final config = widget.chatbotConfig!;
+    final config = _effectiveChatbotConfig!;
     final theme = Theme.of(context);
     final position = _getChatbotButtonPosition();
 
@@ -531,7 +637,7 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
   }
 
   Widget _buildChatbotWindow() {
-    final config = widget.chatbotConfig!;
+    final config = _effectiveChatbotConfig!;
     final theme = Theme.of(context);
     final position = _getChatbotWindowPosition();
 
@@ -575,7 +681,7 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
   }
 
   Alignment _getWindowAlignment() {
-    final config = widget.chatbotConfig!;
+    final config = _effectiveChatbotConfig!;
     switch (config.position) {
       case ChatbotPosition.bottomRight:
         return Alignment.bottomRight;
@@ -598,9 +704,9 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
       debugPrint('[ModBaseLayout] Showing NoAccessScreen');
       debugPrint('[ModBaseLayout] loginRoute: ${widget.loginRoute}');
       debugPrint('[ModBaseLayout] onNoAccessRedirect callback: ${widget.onNoAccessRedirect != null}');
-      debugPrint('[ModBaseLayout] claims: ${widget.claims}');
+      debugPrint('[ModBaseLayout] claims: $_effectiveClaims');
       debugPrint('[ModBaseLayout] filteredModules count: ${_filteredModules.length}');
-      
+
       return NoAccessScreen(
         loginRoute: widget.loginRoute,
         onLoginRedirect: widget.onNoAccessRedirect,
@@ -613,10 +719,10 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
           ? PreferredSize(
               preferredSize: const Size.fromHeight(kToolbarHeight),
               child: ModHeader(
-                title: widget.title,
-                logo: widget.logo,
-                userProfile: widget.userProfile,
-                actions: widget.appBarActions,
+                title: _effectiveTitle,
+                logo: _effectiveLogo,
+                userProfile: _effectiveUserProfile,
+                actions: _effectiveAppBarActions,
                 showDefaultActions: widget.showDefaultActions,
                 scaffoldKey: scaffoldKey,
                 lightBackgroundColor: widget.lightBackgroundColor,
@@ -633,10 +739,10 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
           : null,
       drawer: layoutController.isMobile.value
           ? MobileDrawer(
-              header: widget.drawerHeader,
+              header: _effectiveDrawerHeader,
               menuGroups: currentMenuGroups,
-              moduleMenuGroups: widget.moduleMenuGroups,
-              claims: widget.claims,
+              moduleMenuGroups: _effectiveModuleMenuGroups,
+              claims: _effectiveClaims,
               backgroundColor:
                   widget.drawerBackgroundColor ?? widget.sidebarBackgroundColor,
               selectedColor: widget.sidebarSelectedColor,
@@ -660,13 +766,13 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
                 child: Column(
                   children: [
                     // Only show module selector if there's more than one visible module
-                    if (widget.moduleMenuGroups != null &&
+                    if (_effectiveModuleMenuGroups != null &&
                         _filteredModules.length > 1)
                       SizedBox(
                         width: isExpanded ? expandedWidth : collapsedWidth,
                         child: ModuleSelector(
                           modules: _filteredModules,
-                          claims: widget.claims,
+                          claims: _effectiveClaims,
                           onModuleSelected: (module) {
                             layoutController.setSelectedModule(module);
                             setState(() {});
@@ -675,13 +781,13 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
                       ),
                     Expanded(
                       child: ModSidebar(
-                        claims: widget.claims,
+                        claims: _effectiveClaims,
                         menuGroups: currentMenuGroups,
                         backgroundColor: widget.sidebarBackgroundColor,
                         selectedColor: widget.sidebarSelectedColor,
                         unselectedColor: widget.sidebarUnselectedColor,
-                        header: widget.sidebarHeader,
-                        footer: widget.sidebarFooter,
+                        header: _effectiveSidebarHeader,
+                        footer: _effectiveSidebarFooter,
                       ),
                     ),
                   ],
@@ -692,12 +798,12 @@ class _ModBaseLayoutState extends State<ModBaseLayout>
             child: Column(
               children: [
                 Expanded(child: widget.body ?? const SizedBox.shrink()),
-                if (widget.footer != null)
+                if (_effectiveFooter != null)
                   ModFooter(
                     height: widget.footerHeight,
                     border: widget.footerBorder,
                     backgroundColor: widget.footerBackgroundColor,
-                    child: widget.footer,
+                    child: _effectiveFooter,
                   )
               ],
             ),

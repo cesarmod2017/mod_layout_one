@@ -30,6 +30,7 @@ import 'package:get/get.dart';
 import 'package:mod_layout_one/mod_layout_one.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+ModBaseLayoutController controllerBaseLayout = ModBaseLayoutController();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
@@ -420,6 +421,7 @@ class CustomLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ModBaseLayout(
+      controller: controllerBaseLayout,
       showAppBar: true,
       title: title,
       lightBackgroundColor: Colors.blue,

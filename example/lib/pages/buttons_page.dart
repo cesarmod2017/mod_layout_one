@@ -37,10 +37,135 @@ class ButtonsPage extends StatelessWidget {
                   ),
                   const Text("Button with Autosize Disabled:"),
                   ModButton(
-                    title: 'Simple Button',
+                    title: 'Change Base Layout',
                     type: ModButtonType.primary,
                     autosize: false,
-                    onPressed: () async {},
+                    onPressed: () async {
+                      controllerBaseLayout.updateModuleMenuGroups([
+                        ModuleMenu(
+                          name: 'Testandoooo',
+                          icon: Icons.description,
+                          description: 'Gestão de documentos',
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w600,
+                          iconSize: 28.0,
+                          onSelect: (module) async {
+                            // Ação a ser executada quando o módulo for selecionado
+
+                            // Removed Get.offAllNamed('/home') to avoid navigation issues
+                          },
+                          menuGroups: [
+                            const MenuGroup(
+                              title: Text('Components 1'),
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.w500,
+                              iconSize: 22.0,
+                              claimName: 'module:documentos',
+                              items: [
+                                MenuItem(
+                                  title: 'Corporate 1',
+                                  icon: Icons.business,
+                                  fontSize: 13.0,
+                                  fontWeight: FontWeight.w400,
+                                  iconSize: 20.0,
+                                  //route: '/avatars',
+                                  type: 'menu',
+                                  value: 'avatars',
+                                  subItems: [
+                                    MenuItem(
+                                      title: 'avatars',
+                                      icon: Icons.telegram,
+                                      fontSize: 12.0,
+                                      iconSize: 18.0,
+                                      type: 'menu',
+                                      value: 'avatars',
+                                      subItems: [
+                                        MenuItem(
+                                          title: 'avatars',
+                                          icon: Icons.account_circle,
+                                          route: '/avatars',
+                                          type: 'menu',
+                                          value: 'avatars',
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                MenuItem(
+                                  title: 'textCopy',
+                                  icon: Icons.text_decrease,
+                                  route: '/textCopy',
+                                  type: 'menu',
+                                  value: 'textCopy',
+                                  reloadOnNavigate: true,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        ModuleMenu(
+                          name: 'Testandoooo 222',
+                          icon: Icons.description,
+                          description: 'Gestão de documentos',
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w600,
+                          iconSize: 28.0,
+                          onSelect: (module) async {
+                            // Ação a ser executada quando o módulo for selecionado
+
+                            // Removed Get.offAllNamed('/home') to avoid navigation issues
+                          },
+                          menuGroups: [
+                            const MenuGroup(
+                              title: Text('Components 1'),
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.w500,
+                              iconSize: 22.0,
+                              claimName: 'module:documentos',
+                              items: [
+                                MenuItem(
+                                  title: 'Corporate 1',
+                                  icon: Icons.business,
+                                  fontSize: 13.0,
+                                  fontWeight: FontWeight.w400,
+                                  iconSize: 20.0,
+                                  //route: '/avatars',
+                                  type: 'menu',
+                                  value: 'avatars',
+                                  subItems: [
+                                    MenuItem(
+                                      title: 'avatars',
+                                      icon: Icons.telegram,
+                                      fontSize: 12.0,
+                                      iconSize: 18.0,
+                                      type: 'menu',
+                                      value: 'avatars',
+                                      subItems: [
+                                        MenuItem(
+                                          title: 'avatars',
+                                          icon: Icons.account_circle,
+                                          route: '/avatars',
+                                          type: 'menu',
+                                          value: 'avatars',
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                MenuItem(
+                                  title: 'textCopy',
+                                  icon: Icons.text_decrease,
+                                  route: '/textCopy',
+                                  type: 'menu',
+                                  value: 'textCopy',
+                                  reloadOnNavigate: true,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ]);
+                    },
                   ),
                   const SizedBox(height: 16),
                   const Text("Button with Icons:"),

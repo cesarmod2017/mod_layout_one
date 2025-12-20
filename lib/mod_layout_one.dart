@@ -18,6 +18,7 @@ export 'package:mod_layout_one/widgets/avatars/avatars.dart';
 
 export 'controllers/language_controller.dart';
 export 'controllers/layout_controller.dart';
+export 'controllers/mod_base_layout_controller.dart';
 // Controllers
 export 'controllers/theme_controller.dart';
 // Layout Components

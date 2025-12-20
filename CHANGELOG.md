@@ -1,4 +1,30 @@
 
+## 1.3.1
+
+* Added ModBaseLayoutController for dynamic state management:
+  * New dedicated controller for programmatic manipulation of ModBaseLayout state
+  * Similar pattern to TextEditingController for TextFields
+  * Extends ChangeNotifier for reactive updates without page navigation
+  * Supports dynamic updates of: claims, menuGroups, moduleMenuGroups, userProfile, appBarActions, sidebarFooter, sidebarHeader, footer, drawerHeader, chatbotConfig, logo, and title
+  * Individual update methods: updateClaims(), updateMenuGroups(), updateModuleMenuGroups(), updateUserProfile(), updateAppBarActions(), updateSidebarFooter(), updateSidebarHeader(), updateFooter(), updateDrawerHeader(), updateChatbotConfig(), updateLogo(), updateTitle()
+  * Batch update method: updateAll() for updating multiple properties in a single notification
+  * Utility methods: refresh() for forcing rebuild, clear() for resetting all state
+  * Comprehensive documentation with usage examples
+
+* Refactored ModBaseLayout to support controller-based state management:
+  * Added optional controller parameter for dynamic state updates
+  * Controller values take precedence over direct widget parameters when both are provided
+  * Automatic listener registration/cleanup for controller changes
+  * Effective getters pattern (_effectiveTitle, _effectiveClaims, etc.) for seamless fallback behavior
+  * Full backward compatibility - existing code using direct parameters continues to work
+  * Improved lifecycle management with proper didUpdateWidget handling
+
+* Enhanced integration patterns:
+  * Seamless integration with GetX controllers for complex state management scenarios
+  * Enables real-time UI updates after user login, permission changes, or profile updates
+  * Reduces need for page navigation to reflect state changes
+  * Better separation of concerns between layout configuration and business logic
+
 ## 1.3.0
 * Added chatbot as a core feature
 
