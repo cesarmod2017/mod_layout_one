@@ -1,4 +1,13 @@
 
+## 1.3.2
+
+* Added unique identifier support to MenuItem:
+  * Added optional `id` property to MenuItem for unique identification
+  * Enables distinguishing between different MenuItem instances pointing to the same route with different arguments
+  * Selection verification uses the `id` when provided, with route as fallback
+  * Improves menu item selection accuracy in complex navigation scenarios
+  * Maintains backward compatibility - existing code works without changes
+
 ## 1.3.1
 
 * Added ModBaseLayoutController for dynamic state management:

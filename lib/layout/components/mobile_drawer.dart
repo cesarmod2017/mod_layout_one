@@ -568,8 +568,15 @@ class _DrawerMenuItemState extends State<_DrawerMenuItem> {
     }
 
     final LayoutController controller = Get.find();
-    final isSelected = widget.item.route != null &&
-        controller.selectedRoute.value == widget.item.route;
+    // Verificar seleção: priorizar id, depois rota
+    final bool isSelected;
+    if (widget.item.id != null) {
+      isSelected = controller.selectedMenuId.value == widget.item.id;
+    } else {
+      isSelected = widget.item.route != null &&
+          controller.selectedRoute.value == widget.item.route &&
+          controller.selectedMenuId.value == null;
+    }
     final hasSubItems = widget.item.subItems?.isNotEmpty ?? false;
     
     final effectiveFontSize = widget.item.fontSize ?? 
@@ -601,7 +608,7 @@ class _DrawerMenuItemState extends State<_DrawerMenuItem> {
                 setState(() => _isExpanded = !_isExpanded);
               } else if (widget.item.route != null) {
                 debugPrint('[_DrawerMenuItem] Navigating to: ${widget.item.route}');
-                controller.setSelectedRoute(widget.item.route!);
+                controller.setSelectedRoute(widget.item.route!, menuId: widget.item.id);
                 Navigator.of(context).pop(); // Close drawer first
 
                 // Simplified navigation - avoid complex GetX route manipulations

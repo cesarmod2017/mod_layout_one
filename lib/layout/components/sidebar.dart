@@ -254,8 +254,10 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
 
   void _checkIfShouldBeExpanded() {
     if (!Get.find<LayoutController>().isMobile.value) {
-      final selectedRoute = Get.find<LayoutController>().selectedRoute.value;
-      _isExpanded = _checkIfContainsRoute(widget.item, selectedRoute);
+      final controller = Get.find<LayoutController>();
+      final selectedRoute = controller.selectedRoute.value;
+      final selectedMenuId = controller.selectedMenuId.value;
+      _isExpanded = _checkIfContainsRoute(widget.item, selectedRoute, selectedMenuId);
 
       // If not expanded by route check, use initiallyExpanded
       if (!_isExpanded && widget.initiallyExpanded) {
@@ -267,12 +269,18 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
     }
   }
 
-  bool _checkIfContainsRoute(MenuItem item, String? selectedRoute) {
-    if (item.route == selectedRoute) return true;
+  bool _checkIfContainsRoute(MenuItem item, String? selectedRoute, String? selectedMenuId) {
+    // Se o item tem id, verificar pelo id
+    if (item.id != null && selectedMenuId != null) {
+      if (item.id == selectedMenuId) return true;
+    } else if (item.route == selectedRoute) {
+      // Fallback: se não tem id, verificar pela rota
+      return true;
+    }
 
     if (item.subItems != null) {
       for (var subItem in item.subItems!) {
-        if (_checkIfContainsRoute(subItem, selectedRoute)) return true;
+        if (_checkIfContainsRoute(subItem, selectedRoute, selectedMenuId)) return true;
       }
     }
     return false;
@@ -355,7 +363,7 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
         ),
         onTap: () {
           if (item.route != null) {
-            controller.setSelectedRoute(item.route!);
+            controller.setSelectedRoute(item.route!, menuId: item.id);
 
             // Check if should reload on navigate
             if (item.reloadOnNavigate) {
@@ -423,8 +431,15 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
     // For desktop, keep the reactive Obx
     return Obx(() {
       final isMenuExpanded = controller.isMenuExpanded.value;
-      final isSelected = widget.item.route != null &&
-          controller.selectedRoute.value == widget.item.route;
+      // Verificar seleção: priorizar id, depois rota
+      final bool isSelected;
+      if (widget.item.id != null) {
+        isSelected = controller.selectedMenuId.value == widget.item.id;
+      } else {
+        isSelected = widget.item.route != null &&
+            controller.selectedRoute.value == widget.item.route &&
+            controller.selectedMenuId.value == null;
+      }
       final hasSubItems = widget.item.subItems?.isNotEmpty ?? false;
 
       return Column(
@@ -480,7 +495,7 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
               } else if (widget.item.route != null) {
                 debugPrint(
                     '[_ExpandableMenuItem] Navigating to: ${widget.item.route}');
-                controller.setSelectedRoute(widget.item.route!);
+                controller.setSelectedRoute(widget.item.route!, menuId: widget.item.id);
 
                 // Simplified navigation to avoid navigator issues
                 try {
@@ -544,8 +559,15 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
 
   Widget _buildSimpleMenuItem(
       BuildContext context, LayoutController controller) {
-    final isSelected = widget.item.route != null &&
-        controller.selectedRoute.value == widget.item.route;
+    // Verificar seleção: priorizar id, depois rota
+    final bool isSelected;
+    if (widget.item.id != null) {
+      isSelected = controller.selectedMenuId.value == widget.item.id;
+    } else {
+      isSelected = widget.item.route != null &&
+          controller.selectedRoute.value == widget.item.route &&
+          controller.selectedMenuId.value == null;
+    }
     final hasSubItems = widget.item.subItems?.isNotEmpty ?? false;
 
     debugPrint(
@@ -565,7 +587,7 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
               } else if (widget.item.route != null) {
                 debugPrint(
                     '[_ExpandableMenuItem] Drawer navigating to: ${widget.item.route}');
-                controller.setSelectedRoute(widget.item.route!);
+                controller.setSelectedRoute(widget.item.route!, menuId: widget.item.id);
                 Navigator.of(context).pop(); // Close drawer first
 
                 // Simplified navigation - avoid complex GetX route manipulations

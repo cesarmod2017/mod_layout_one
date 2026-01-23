@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 
 class MenuItem {
+  /// Identificador único do item de menu.
+  ///
+  /// Quando fornecido, este campo é usado para determinar qual item está
+  /// selecionado, permitindo distinguir entre diferentes instâncias de MenuItem
+  /// que apontam para a mesma rota mas possuem argumentos distintos.
+  ///
+  /// Se não fornecido, a verificação de seleção usará a rota como fallback.
+  final String? id;
   final String title;
   final IconData icon;
   final String? route;
@@ -17,6 +25,7 @@ class MenuItem {
   final bool reloadOnNavigate;
 
   const MenuItem({
+    this.id,
     required this.title,
     required this.icon,
     this.route,

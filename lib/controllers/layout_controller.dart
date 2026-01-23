@@ -5,6 +5,9 @@ import 'package:mod_layout_one/layout/models/module_model.dart';
 class LayoutController extends GetxController {
   final isMenuExpanded = false.obs;
   final selectedRoute = ''.obs;
+  /// Identificador único do item de menu selecionado.
+  /// Usado para distinguir entre diferentes MenuItems com a mesma rota.
+  final selectedMenuId = Rx<String?>(null);
   final menuBackgroundColor = Rx<Color?>(null);
   final isMobile = false.obs;
   var selectedModule = Rx<ModuleMenu?>(null);
@@ -23,8 +26,14 @@ class LayoutController extends GetxController {
     isMenuExpanded.value = !isMenuExpanded.value;
   }
 
-  void setSelectedRoute(String route) {
+  void setSelectedRoute(String route, {String? menuId}) {
     selectedRoute.value = route;
+    selectedMenuId.value = menuId;
+  }
+
+  /// Define o id do menu selecionado.
+  void setSelectedMenuId(String? menuId) {
+    selectedMenuId.value = menuId;
   }
 
   void setSelectedModule(ModuleMenu module) {

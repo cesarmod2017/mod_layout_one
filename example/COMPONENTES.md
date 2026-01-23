@@ -16,6 +16,13 @@ Esta documentação apresenta exemplos práticos de uso de todos os componentes 
 10. [ModDataTable](#moddatatable)
 11. [TreeView](#treeview)
 12. [CustomLayout](#customlayout)
+13. [Widgets Adicionais](#widgets-adicionais-referência-de-propriedades)
+    - [ModIconButton](#modiconbutton)
+    - [ModPopupButton](#modpopupbutton)
+    - [ModDropdownSearch](#moddropdownsearch)
+    - [ModProgress](#modprogress)
+    - [ModWheelSlider](#modwheelslider)
+    - [ModWheelDatePicker](#modwheeldatepicker)
 
 ---
 
@@ -88,6 +95,30 @@ ModButton(
 )
 ```
 
+### Propriedades do ModButton
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `title` | `String?` | Texto exibido no botão |
+| `leftIcon` | `IconData?` | Ícone exibido à esquerda do texto |
+| `rightIcon` | `IconData?` | Ícone exibido à direita do texto |
+| `centerIcon` | `IconData?` | Ícone centralizado (layout vertical com texto) |
+| `loadingIcon` | `IconData?` | Ícone exibido durante loading (padrão: Icons.refresh) |
+| `borderRadius` | `double` | Raio das bordas do botão (padrão: 4.0) |
+| `type` | `ModButtonType` | Estilo visual (primary, secondary, success, info, warning, danger, dark, defaultType, custom, none) |
+| `borderType` | `ModBorderType` | Tipo de borda (none, solid) |
+| `size` | `ModButtonSize` | Tamanho do botão (lg, md, sm, xs) |
+| `onPressed` | `Future<void> Function()?` | Callback assíncrono ao pressionar |
+| `loadingText` | `String?` | Texto exibido durante loading |
+| `borderColor` | `ModButtonType` | Cor da borda usando tipos predefinidos |
+| `textColor` | `Color?` | Cor customizada para o texto |
+| `backgroundColor` | `Color?` | Cor de fundo (usado com type: custom) |
+| `disabled` | `bool` | Desabilita interação (padrão: false) |
+| `autosize` | `bool` | Ajusta largura ao conteúdo (padrão: true) |
+| `textAlign` | `TextAlign` | Alinhamento do texto (padrão: center) |
+| `iconCenterAlign` | `ModIconCenterAlign` | Posição do centerIcon (top, bottom) |
+| `fontSize` | `double?` | Tamanho customizado da fonte |
+
 ---
 
 ## ModCard
@@ -143,6 +174,25 @@ ModCard(
 )
 ```
 
+### Propriedades do ModCard
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `header` | `Widget` | Widget exibido no cabeçalho do card (obrigatório) |
+| `toolbar` | `List<Widget>?` | Lista de widgets exibidos na barra de ferramentas do header |
+| `content` | `Widget` | Conteúdo principal do card (obrigatório) |
+| `footer` | `Widget?` | Widget exibido no rodapé do card |
+| `headerColor` | `Color` | Cor de fundo do header (padrão: transparent) |
+| `contentColor` | `Color` | Cor de fundo do conteúdo (padrão: transparent) |
+| `footerColor` | `Color` | Cor de fundo do footer (padrão: transparent) |
+| `isAccordion` | `bool` | Habilita comportamento accordion (padrão: false) |
+| `showFooterWhenCollapsed` | `bool` | Mostra footer quando accordion está recolhido (padrão: false) |
+| `margin` | `EdgeInsets` | Margem externa do card (padrão: 8.0 em todos os lados) |
+| `padding` | `EdgeInsets` | Padding interno das seções (padrão: 16.0 em todos os lados) |
+| `borderRadius` | `double` | Raio das bordas do card (padrão: 8.0) |
+| `initiallyExpanded` | `bool` | Estado inicial do accordion (padrão: false) |
+| `disableModCard` | `bool` | Remove header e mostra apenas content/footer (padrão: false) |
+
 ---
 
 ## ModTextCopy
@@ -192,6 +242,13 @@ ModTextCopy(
   ),
 )
 ```
+
+### Propriedades do ModTextCopy
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `child` | `Widget` | Widget filho que será exibido e clicável (obrigatório) |
+| `textToCopy` | `String` | Texto que será copiado para a área de transferência (obrigatório) |
 
 ---
 
@@ -260,6 +317,19 @@ ModAvatar(
 )
 ```
 
+### Propriedades do ModAvatar
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `text` | `String?` | Texto para gerar iniciais do avatar |
+| `icon` | `IconData?` | Ícone a ser exibido no avatar |
+| `imageUrl` | `String?` | URL da imagem do avatar (usa CachedNetworkImage) |
+| `shape` | `ModAvatarShape` | Forma do avatar (square, circle, triangle) |
+| `size` | `ModAvatarSize?` | Tamanho predefinido (lg: 56, md: 40, sm: 32, xs: 24) |
+| `customSize` | `double?` | Tamanho customizado em pixels |
+| `backgroundColor` | `Color` | Cor de fundo do avatar (padrão: Colors.blue) |
+| `textColor` | `Color` | Cor do texto/ícone (padrão: Colors.white) |
+
 ---
 
 ## ModLoading
@@ -305,6 +375,23 @@ final config = ModLoadingConfig(
 
 ModLoading.instance.show(config: config);
 ```
+
+### Propriedades do ModLoadingConfig
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `imagePath` | `String?` | Caminho para imagem customizada (suporta SVG e PNG/JPG) |
+| `icon` | `IconData?` | Ícone a ser exibido (padrão: Icons.loop) |
+| `animate` | `bool` | Habilita animação de rotação (padrão: true) |
+| `size` | `double` | Tamanho do ícone/imagem (padrão: 32) |
+| `position` | `ModLoadingPosition` | Posição na tela (center, left, right, topLeft, topCenter, topRight, bottomLeft, bottomCenter, bottomRight) |
+| `backgroundColor` | `Color?` | Cor de fundo do container |
+| `borderRadius` | `double` | Raio das bordas (padrão: 8) |
+| `padding` | `EdgeInsets?` | Padding interno do container |
+| `barrierDismissible` | `bool` | Permite fechar ao clicar fora (padrão: false) |
+| `title` | `String?` | Texto exibido junto ao indicador |
+| `orientation` | `ModLoadingOrientation` | Orientação do layout (vertical, horizontal) |
+| `spacing` | `double` | Espaçamento entre ícone e título (padrão: 20) |
 
 ---
 
@@ -380,6 +467,32 @@ List<ModTab> tabs = [
   const ModTab(id: 'index', text: 'index.html', closeable: true),
 ];
 ```
+
+### Propriedades do ModTabs
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `tabs` | `List<ModTab>` | Lista de abas a serem exibidas (obrigatório) |
+| `children` | `List<Widget>` | Lista de conteúdos correspondentes a cada aba (obrigatório) |
+| `orientation` | `TabOrientation` | Orientação das abas (horizontalTop, horizontalBottom, verticalLeft, verticalRight) |
+| `borderType` | `TabBorderType` | Tipo de borda (none, all, topBottom, leftRight) |
+| `initialIndex` | `int` | Índice da aba inicial (padrão: 0) |
+| `onTabChanged` | `Function(int)?` | Callback quando aba é alterada |
+| `onTabClosed` | `Function(String)?` | Callback quando aba é fechada |
+| `tabHeight` | `double?` | Altura customizada das abas |
+| `tabWidth` | `double?` | Largura customizada das abas |
+| `backgroundColor` | `Color?` | Cor de fundo do container de abas |
+| `selectedColor` | `Color?` | Cor da aba selecionada |
+| `unselectedColor` | `Color?` | Cor das abas não selecionadas |
+
+### Propriedades do ModTab
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `id` | `String` | Identificador único da aba (obrigatório) |
+| `text` | `String` | Texto exibido na aba (obrigatório) |
+| `icon` | `IconData?` | Ícone exibido na aba |
+| `closeable` | `bool` | Permite fechar a aba (padrão: false) |
 
 ---
 
@@ -467,6 +580,24 @@ await ModModal.show(
   ),
 );
 ```
+
+### Propriedades do ModModal
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `header` | `Widget?` | Widget exibido no cabeçalho do modal |
+| `body` | `Widget` | Conteúdo principal do modal (obrigatório) |
+| `footer` | `Widget?` | Widget exibido no rodapé do modal |
+| `height` | `ModModalHeight` | Altura do modal (auto, normal, half, full) |
+| `maxHeight` | `double?` | Altura máxima em pixels |
+| `maxWidth` | `double?` | Largura máxima em pixels |
+| `minHeight` | `double?` | Altura mínima em pixels |
+| `minWidth` | `double?` | Largura mínima em pixels |
+| `backgroundColor` | `Color?` | Cor de fundo do modal |
+| `borderRadius` | `double` | Raio das bordas (padrão: 8.0) |
+| `barrierDismissible` | `bool` | Permite fechar ao clicar fora (padrão: true) |
+| `showCloseButton` | `bool` | Exibe botão de fechar (padrão: true) |
+| `padding` | `EdgeInsets?` | Padding interno do modal |
 
 ---
 
@@ -563,6 +694,53 @@ ModDropDown<String>(
   },
 )
 ```
+
+### Propriedades do ModTextBox
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `label` | `String?` | Rótulo do campo de texto |
+| `hint` | `String?` | Texto de placeholder |
+| `controller` | `TextEditingController?` | Controller para manipular o texto |
+| `initialValue` | `String?` | Valor inicial do campo |
+| `onChange` | `Function(String)?` | Callback quando texto é alterado |
+| `onEditingComplete` | `Function()?` | Callback quando edição é finalizada |
+| `isPassword` | `bool` | Oculta o texto como senha (padrão: false) |
+| `keyboardType` | `TextInputType?` | Tipo de teclado virtual |
+| `inputFormatters` | `List<TextInputFormatter>?` | Formatadores de entrada |
+| `validator` | `String? Function(String?)?` | Função de validação |
+| `size` | `ModTextBoxSize` | Tamanho do campo (lg, md, sm, xs) |
+| `enabled` | `bool` | Habilita/desabilita o campo (padrão: true) |
+| `readOnly` | `bool` | Modo somente leitura (padrão: false) |
+| `maxLines` | `int?` | Número máximo de linhas |
+| `minLines` | `int?` | Número mínimo de linhas |
+| `floatingLabel` | `bool` | Label flutuante (padrão: false) |
+| `prefixIcon` | `Widget?` | Ícone no início do campo |
+| `suffixIcon` | `Widget?` | Ícone no final do campo |
+| `borderRadius` | `double` | Raio das bordas (padrão: 8.0) |
+| `hasBorder` | `bool` | Exibe borda (padrão: false) |
+| `backgroundColor` | `Color?` | Cor de fundo |
+| `textColor` | `Color?` | Cor do texto |
+
+### Propriedades do ModDropDown
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `items` | `List<DropdownMenuItem<T>>` | Lista de itens do dropdown (obrigatório) |
+| `value` | `T?` | Valor selecionado atualmente |
+| `label` | `String?` | Rótulo do dropdown |
+| `hint` | `String?` | Texto de placeholder |
+| `onChanged` | `Function(T?)?` | Callback quando valor é alterado |
+| `validator` | `String? Function(T?)?` | Função de validação |
+| `size` | `ModDropdownSize` | Tamanho do dropdown (lg, md, sm, xs) |
+| `enabled` | `bool` | Habilita/desabilita (padrão: true) |
+| `floatingLabel` | `bool` | Label flutuante (padrão: false) |
+| `prefixIcon` | `Widget?` | Ícone no início |
+| `suffixIcon` | `Widget?` | Ícone customizado no final |
+| `borderRadius` | `double` | Raio das bordas (padrão: 8.0) |
+| `hasBorder` | `bool` | Exibe borda (padrão: false) |
+| `backgroundColor` | `Color?` | Cor de fundo |
+| `dropdownBackgroundColor` | `Color?` | Cor de fundo do menu dropdown |
 
 ---
 
@@ -665,6 +843,25 @@ ModDialog(
 )
 ```
 
+### Propriedades do ModDialog
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `title` | `String?` | Título do diálogo |
+| `content` | `Widget?` | Conteúdo principal do diálogo |
+| `buttons` | `List<Widget>` | Lista de botões de ação (obrigatório) |
+| `icon` | `IconData?` | Ícone exibido no cabeçalho |
+| `iconColor` | `Color?` | Cor do ícone |
+| `maxWidth` | `double?` | Largura máxima do diálogo |
+| `minWidth` | `double?` | Largura mínima do diálogo |
+| `maxHeight` | `double?` | Altura máxima do diálogo |
+| `minHeight` | `double?` | Altura mínima do diálogo |
+| `dismissible` | `bool` | Permite fechar ao clicar fora (padrão: true) |
+| `backgroundColor` | `Color?` | Cor de fundo do diálogo |
+| `borderRadius` | `double` | Raio das bordas (padrão: 8.0) |
+| `padding` | `EdgeInsets?` | Padding interno |
+| `titleStyle` | `TextStyle?` | Estilo do texto do título |
+
 ---
 
 ## ModDataTable
@@ -732,6 +929,42 @@ ModDataTable(
   // ... outros parâmetros
 )
 ```
+
+### Propriedades do ModDataTable
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `headers` | `List<ModDataHeader>` | Lista de cabeçalhos das colunas (obrigatório) |
+| `data` | `List<Map<String, dynamic>>` | Dados da tabela (obrigatório) |
+| `source` | `DataTableSource` | Fonte de dados para a tabela (obrigatório) |
+| `currentPage` | `int` | Página atual (padrão: 0) |
+| `rowsPerPage` | `int` | Linhas por página (padrão: 10) |
+| `totalRecords` | `int` | Total de registros |
+| `onPageChanged` | `Function(int)?` | Callback quando página muda |
+| `onRowsPerPageChanged` | `Function(int)?` | Callback quando linhas por página muda |
+| `onSort` | `Function(String, SortDirection)?` | Callback de ordenação |
+| `fixedHeader` | `bool` | Mantém header fixo ao rolar (padrão: false) |
+| `enableColumnResize` | `bool` | Permite redimensionar colunas (padrão: false) |
+| `availableRowsPerPage` | `List<int>` | Opções de linhas por página |
+| `rowsPerPageText` | `String?` | Texto customizado para "Linhas por página" |
+| `paginationText` | `String?` | Texto customizado para paginação |
+| `paginationBorderRadius` | `double?` | Raio das bordas da paginação |
+| `headerColor` | `Color?` | Cor de fundo do header |
+| `oddRowColor` | `Color?` | Cor das linhas ímpares |
+| `evenRowColor` | `Color?` | Cor das linhas pares |
+| `paginationBackgroundColor` | `Color?` | Cor de fundo da paginação |
+
+### Propriedades do ModDataHeader
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `child` | `Widget` | Widget do cabeçalho (obrigatório) |
+| `field` | `String?` | Nome do campo para ordenação |
+| `sortable` | `bool` | Permite ordenação (padrão: false) |
+| `widthType` | `WidthType` | Tipo de largura (fixed, flex, auto) |
+| `width` | `double?` | Largura fixa em pixels |
+| `minWidth` | `double?` | Largura mínima |
+| `maxWidth` | `double?` | Largura máxima |
 
 ---
 
@@ -1044,6 +1277,56 @@ class _TreeViewWithSearchState extends State<TreeViewWithSearch> {
 }
 ```
 
+### Propriedades do ModTreeView
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `nodes` | `List<TreeNode>` | Lista de nós da árvore (obrigatório) |
+| `theme` | `TreeViewTheme` | Configuração de tema (indentação, ícones, cores) |
+| `enableDragDrop` | `bool` | Habilita arrastar e soltar (padrão: true) |
+| `showIcons` | `bool` | Exibe ícones dos nós (padrão: true) |
+| `showCheckboxes` | `bool` | Exibe checkboxes (padrão: false) |
+| `newItemIcon` | `Icon?` | Ícone para itens novos |
+| `updateIcon` | `Icon?` | Ícone para itens atualizados |
+| `syncIcon` | `Icon?` | Ícone para itens em sincronização |
+| `onNodeSelected` | `Function(TreeNode)?` | Callback ao selecionar nó |
+| `onNodeExpanded` | `Function(TreeNode)?` | Callback ao expandir nó |
+| `onNodeCollapsed` | `Function(TreeNode)?` | Callback ao recolher nó |
+| `onNodeDropped` | `Function(TreeNode, TreeNode)?` | Callback ao soltar nó |
+| `onNodeRightClick` | `Function(TreeNode)?` | Callback de clique direito |
+| `onNodeCheckChanged` | `Function(TreeNode, bool)?` | Callback de checkbox |
+| `sortComparator` | `int Function(TreeNode, TreeNode)?` | Comparador de ordenação |
+| `getContextMenuItems` | `List<TreeViewMenuItem> Function(TreeNode)?` | Função para obter itens do menu de contexto |
+| `onContextMenuItemSelected` | `Function(TreeNode, String)?` | Callback de seleção do menu de contexto |
+
+### Propriedades do TreeNode
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `id` | `String` | Identificador único do nó (obrigatório) |
+| `label` | `String` | Texto exibido no nó (obrigatório) |
+| `iconData` | `IconData` | Ícone do nó (obrigatório) |
+| `iconColor` | `Color?` | Cor do ícone |
+| `isFolder` | `bool` | Indica se é uma pasta (padrão: false) |
+| `isExpanded` | `bool` | Estado de expansão (padrão: false) |
+| `isSelected` | `bool` | Estado de seleção (padrão: false) |
+| `children` | `List<TreeNode>` | Lista de nós filhos (padrão: []) |
+| `data` | `dynamic` | Dados adicionais do nó |
+| `stateMode` | `NodeStateMode` | Estado do nó (synced, new_item, update, sync) |
+
+### Propriedades do TreeViewTheme
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `indentation` | `double` | Indentação por nível (padrão: 20.0) |
+| `iconSize` | `double` | Tamanho dos ícones (padrão: 16.0) |
+| `selectionColor` | `Color` | Cor de seleção |
+| `expanderType` | `ExpanderType` | Tipo de expansor (triangle, arrow, plusMinus) |
+| `showLines` | `bool` | Exibe linhas de conexão (padrão: true) |
+| `lineColor` | `Color?` | Cor das linhas |
+| `textColor` | `Color?` | Cor do texto |
+| `iconColor` | `Color?` | Cor dos ícones |
+
 ---
 
 ## CustomLayout
@@ -1157,6 +1440,231 @@ class DataSource extends DataTableSource {
   int get selectedRowCount => 0;
 }
 ```
+
+---
+
+## Widgets Adicionais (Referência de Propriedades)
+
+Os widgets a seguir estão disponíveis no pacote, mas ainda não possuem exemplos documentados. Esta seção contém a referência de suas propriedades.
+
+### ModIconButton
+
+Botão de ícone com suporte a loading assíncrono.
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `icon` | `IconData` | Ícone a ser exibido (obrigatório) |
+| `onPressed` | `Future<void> Function()` | Callback assíncrono ao pressionar (obrigatório) |
+| `loadingIcon` | `IconData` | Ícone durante loading (padrão: Icons.autorenew) |
+| `iconSize` | `double?` | Tamanho do ícone |
+| `visualDensity` | `VisualDensity?` | Densidade visual do botão |
+| `padding` | `EdgeInsetsGeometry?` | Padding interno |
+| `alignment` | `AlignmentGeometry?` | Alinhamento do ícone |
+| `splashRadius` | `double?` | Raio do efeito splash |
+| `color` | `Color?` | Cor do ícone |
+| `focusColor` | `Color?` | Cor quando focado |
+| `hoverColor` | `Color?` | Cor ao passar o mouse |
+| `highlightColor` | `Color?` | Cor ao pressionar |
+| `splashColor` | `Color?` | Cor do splash |
+| `disabledColor` | `Color?` | Cor quando desabilitado |
+| `mouseCursor` | `MouseCursor?` | Cursor do mouse |
+| `focusNode` | `FocusNode?` | Nó de foco |
+| `autofocus` | `bool` | Auto foco (padrão: false) |
+| `tooltip` | `String?` | Texto do tooltip |
+| `enableFeedback` | `bool?` | Habilita feedback tátil |
+| `constraints` | `BoxConstraints?` | Restrições de tamanho |
+| `style` | `ButtonStyle?` | Estilo do botão |
+| `isSelected` | `bool?` | Estado selecionado |
+| `selectedIcon` | `IconData?` | Ícone quando selecionado |
+
+### ModPopupButton
+
+Botão com menu popup e suporte a submenus.
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `title` | `String?` | Texto do botão |
+| `leftIcon` | `IconData?` | Ícone à esquerda |
+| `rightIcon` | `IconData?` | Ícone à direita |
+| `popupIcon` | `IconData?` | Ícone do popup (padrão: Icons.arrow_drop_down) |
+| `borderRadius` | `double` | Raio das bordas (padrão: 4.0) |
+| `type` | `ModButtonType` | Estilo visual do botão |
+| `borderType` | `ModBorderType` | Tipo de borda |
+| `size` | `ModButtonSize` | Tamanho (lg, md, sm, xs) |
+| `items` | `List<ModPopupMenuItem<T>>` | Itens do menu (obrigatório) |
+| `onSelected` | `Function(T)?` | Callback ao selecionar item |
+| `borderColor` | `ModButtonType` | Cor da borda |
+| `textColor` | `Color?` | Cor do texto |
+| `backgroundColor` | `Color?` | Cor de fundo |
+| `disabled` | `bool` | Desabilitado (padrão: false) |
+| `autosize` | `bool` | Auto dimensionar (padrão: true) |
+| `textAlign` | `TextAlign` | Alinhamento do texto |
+| `position` | `PopupMenuPosition` | Posição do menu (over, under) |
+| `tooltip` | `String?` | Tooltip do botão |
+| `popupBackgroundColor` | `Color?` | Cor de fundo do popup |
+| `elevation` | `double?` | Elevação do popup |
+| `shape` | `ShapeBorder?` | Forma do popup |
+| `popupPadding` | `EdgeInsets?` | Padding do popup |
+| `iconSize` | `double?` | Tamanho dos ícones |
+| `menuFontSize` | `double?` | Tamanho da fonte do menu |
+| `submenuFontSize` | `double?` | Tamanho da fonte do submenu |
+| `submenuOffset` | `Offset?` | Offset do submenu |
+
+### ModDropdownSearch
+
+Dropdown com busca integrada e suporte a seleção múltipla.
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `items` | `List<ModDropdownSearchMenuItem<T>>` | Itens do dropdown (obrigatório) |
+| `value` | `T?` | Valor selecionado |
+| `size` | `ModDropdownSearchSize` | Tamanho (lg, md, sm, xs) |
+| `labelPosition` | `ModDropdownSearchLabelPosition` | Posição do label (top, inside) |
+| `label` | `String?` | Rótulo do campo |
+| `hint` | `String?` | Texto de placeholder |
+| `searchHint` | `String?` | Placeholder da busca |
+| `borderRadius` | `double` | Raio das bordas (padrão: 8.0) |
+| `multiSelect` | `bool` | Seleção múltipla (padrão: false) |
+| `onChanged` | `Function(T?)?` | Callback de alteração |
+| `validator` | `String? Function(T?)?` | Função de validação |
+| `prefixIcon` | `Widget?` | Ícone no início |
+| `suffixIcon` | `Widget?` | Ícone no final |
+| `errorText` | `String?` | Texto de erro |
+| `enabled` | `bool` | Habilitado (padrão: true) |
+| `backgroundColor` | `Color?` | Cor de fundo |
+| `textColor` | `Color?` | Cor do texto |
+| `iconColor` | `Color?` | Cor dos ícones |
+| `borderColor` | `Color?` | Cor da borda |
+| `dropdownBackgroundColor` | `Color?` | Cor de fundo do dropdown |
+| `searchBackgroundColor` | `Color?` | Cor de fundo da busca |
+| `checkIcon` | `Widget?` | Ícone de check personalizado |
+| `closeButtonText` | `String?` | Texto do botão fechar |
+| `dropdownHeight` | `double?` | Altura do dropdown |
+| `displayStringForOption` | `String Function(T)?` | Função para exibir opção |
+| `hasBorder` | `bool` | Exibe borda (padrão: false) |
+| `borderWidth` | `double` | Largura da borda (padrão: 1.0) |
+| `fontSize` | `double?` | Tamanho da fonte |
+| `iconSize` | `double?` | Tamanho dos ícones |
+| `floatingLabel` | `bool` | Label flutuante (padrão: false) |
+| `floatingLabelBackgroundColor` | `Color?` | Cor de fundo do label flutuante |
+| `searchEnabled` | `bool` | Busca habilitada (padrão: true) |
+| `selectedItemBuilder` | `Widget Function(T)?` | Builder do item selecionado |
+| `backgroundHover` | `Color?` | Cor de hover dos itens |
+
+### ModProgress
+
+Widget de progresso com suporte a atualizações em tempo real via GetX.
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `controller` | `ModProgressController` | Controller GetX (obrigatório) |
+| `config` | `ModProgressConfig` | Configuração de aparência |
+| `onClose` | `VoidCallback?` | Callback ao fechar |
+
+### ModProgressConfig
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `position` | `ModProgressPosition` | Posição na tela (topLeft, topCenter, topRight, bottomLeft, bottomCenter, bottomRight) |
+| `type` | `ModProgressType` | Tipo de indicador (circular, linear) |
+| `title` | `String?` | Título |
+| `subtitle` | `String?` | Subtítulo/mensagem |
+| `initialProgress` | `double?` | Progresso inicial (0.0 a 1.0) |
+| `backgroundColor` | `Color?` | Cor de fundo |
+| `borderColor` | `Color?` | Cor da borda |
+| `borderWidth` | `double` | Largura da borda (padrão: 1.0) |
+| `borderRadius` | `double` | Raio das bordas (padrão: 8.0) |
+| `progressColor` | `Color?` | Cor do indicador |
+| `progressBackgroundColor` | `Color?` | Cor de fundo do indicador |
+| `titleColor` | `Color?` | Cor do título |
+| `subtitleColor` | `Color?` | Cor do subtítulo |
+| `titleFontSize` | `double` | Tamanho da fonte do título (padrão: 14.0) |
+| `subtitleFontSize` | `double` | Tamanho da fonte do subtítulo (padrão: 12.0) |
+| `width` | `double?` | Largura do container (padrão: 300.0) |
+| `height` | `double?` | Altura do container |
+| `circularSize` | `double` | Tamanho do indicador circular (padrão: 24.0) |
+| `circularStrokeWidth` | `double` | Espessura do indicador circular (padrão: 3.0) |
+| `linearHeight` | `double` | Altura do indicador linear (padrão: 4.0) |
+| `padding` | `EdgeInsets` | Padding interno (padrão: 16.0) |
+| `margin` | `EdgeInsets` | Margem externa (padrão: 16.0) |
+| `showCloseButton` | `bool` | Exibe botão fechar (padrão: true) |
+| `barrierDismissible` | `bool` | Permite fechar ao clicar fora (padrão: false) |
+| `showBarrier` | `bool` | Exibe barreira de fundo (padrão: false) |
+| `barrierColor` | `Color` | Cor da barreira (padrão: Colors.black26) |
+| `boxShadow` | `List<BoxShadow>?` | Sombra do container |
+| `icon` | `IconData?` | Ícone customizado |
+| `iconColor` | `Color?` | Cor do ícone |
+| `iconSize` | `double` | Tamanho do ícone (padrão: 20.0) |
+
+### ModWheelSlider
+
+Slider estilo roda com suporte a haptic feedback.
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `totalCount` | `int` | Total de valores (obrigatório) |
+| `initValue` | `int` | Valor inicial (obrigatório) |
+| `onValueChanged` | `Function(dynamic)` | Callback de alteração (obrigatório) |
+| `horizontalListHeight` | `double?` | Altura da lista horizontal |
+| `horizontalListWidth` | `double?` | Largura da lista horizontal |
+| `verticalListHeight` | `double?` | Altura da lista vertical |
+| `verticalListWidth` | `double?` | Largura da lista vertical |
+| `itemSize` | `double` | Tamanho dos itens (padrão: 10) |
+| `perspective` | `double?` | Perspectiva 3D |
+| `isInfinite` | `bool` | Scroll infinito (padrão: false) |
+| `horizontal` | `bool` | Orientação horizontal (padrão: true) |
+| `squeeze` | `double?` | Compressão dos itens |
+| `lineColor` | `Color` | Cor das linhas (padrão: Colors.black) |
+| `pointerColor` | `Color` | Cor do ponteiro (padrão: Colors.black) |
+| `pointerHeight` | `double` | Altura do ponteiro (padrão: 50) |
+| `pointerWidth` | `double` | Largura do ponteiro (padrão: 3) |
+| `background` | `Color` | Cor de fundo (padrão: Colors.white) |
+| `enableHapticFeedback` | `bool` | Habilita feedback tátil (padrão: true) |
+| `hapticFeedbackType` | `ModHapticFeedbackType` | Tipo de feedback (vibrate, lightImpact, mediumImpact, heavyImpact, selectionClick, none) |
+| `showPointer` | `bool` | Exibe ponteiro (padrão: true) |
+| `customPointer` | `Widget?` | Ponteiro customizado |
+| `selectedNumberStyle` | `TextStyle?` | Estilo do número selecionado |
+| `unSelectedNumberStyle` | `TextStyle?` | Estilo dos números não selecionados |
+| `selectedNumberWidth` | `double?` | Largura do número selecionado |
+| `children` | `List<Widget>?` | Widgets customizados |
+| `scrollPhysics` | `ScrollPhysics?` | Física de scroll |
+| `allowPointerTappable` | `bool` | Ponteiro clicável (padrão: true) |
+| `interval` | `int` | Intervalo entre valores (padrão: 1) |
+| `enableAnimation` | `bool` | Habilita animação (padrão: true) |
+| `animationDuration` | `Duration?` | Duração da animação |
+| `animationType` | `Curve?` | Curva de animação |
+| `controller` | `FixedExtentScrollController?` | Controller de scroll |
+| `sliderController` | `ModWheelSliderController?` | Controller GetX |
+| `currentIndex` | `int?` | Índice atual |
+
+### ModWheelDatePicker
+
+Seletor de data estilo roda com suporte a diferentes formatos.
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `type` | `ModWheelDatePickerType` | Tipo de seleção (fullDate, dayMonthYear, monthYear, yearOnly) |
+| `initialDate` | `DateTime?` | Data inicial |
+| `controller` | `ModWheelDatePickerController?` | Controller GetX |
+| `onDateChanged` | `Function(DateTime)?` | Callback de alteração |
+| `minYear` | `int` | Ano mínimo (padrão: 1900) |
+| `maxYear` | `int` | Ano máximo (padrão: 2100) |
+| `height` | `double` | Altura do widget (padrão: 200) |
+| `width` | `double?` | Largura do widget |
+| `selectedStyle` | `TextStyle?` | Estilo do item selecionado |
+| `unselectedStyle` | `TextStyle?` | Estilo dos itens não selecionados |
+| `showDividers` | `bool` | Exibe divisores (padrão: true) |
+| `dividerColor` | `Color?` | Cor dos divisores |
+| `backgroundColor` | `Color?` | Cor de fundo |
+| `borderRadius` | `double` | Raio das bordas (padrão: 8.0) |
+| `enableHapticFeedback` | `bool` | Habilita feedback tátil (padrão: true) |
+| `hapticFeedbackType` | `ModHapticFeedbackType` | Tipo de feedback |
+| `useShortMonthNames` | `bool` | Usa nomes curtos dos meses (padrão: false) |
+| `customMonthNames` | `List<String>?` | Nomes personalizados dos meses |
+| `itemSize` | `double` | Tamanho dos itens (padrão: 36) |
+| `enableAnimation` | `bool` | Habilita animação (padrão: true) |
+| `animationDuration` | `Duration?` | Duração da animação |
+| `dayMonthYearOrder` | `List<String>?` | Ordem dos campos (ex: ['day', 'month', 'year']) |
 
 ---
 
