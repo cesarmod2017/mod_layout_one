@@ -35,12 +35,17 @@ export 'layout/widgets/user_profile.dart';
 export 'themes/app_theme.dart';
 export 'themes/dark_theme.dart';
 export 'themes/light_theme.dart';
+export 'themes/mod_semantic_colors.dart';
+export 'themes/mod_tokens.dart';
 // Translations
 export 'translations/base_translations.dart';
 export 'translations/en_us.dart';
 export 'translations/es_es.dart';
 export 'translations/pt_br.dart';
 export 'widgets/buttons/buttons.dart';
+export 'widgets/buttons/icon_button.dart';
+export 'widgets/buttons/popup_button.dart';
+// Deprecated exports (for backwards compatibility)
 export 'widgets/buttons/icon_buttom.dart';
 export 'widgets/buttons/popup_buttom.dart';
 // Cards

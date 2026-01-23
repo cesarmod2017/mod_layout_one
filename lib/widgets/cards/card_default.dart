@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mod_layout_one/themes/mod_tokens.dart';
 
 class ModCard extends StatefulWidget {
   final Widget header;
@@ -27,9 +28,9 @@ class ModCard extends StatefulWidget {
     this.footerColor = Colors.transparent,
     this.isAccordion = false,
     this.showFooterWhenCollapsed = false,
-    this.margin = const EdgeInsets.all(8.0),
-    this.padding = const EdgeInsets.all(16.0),
-    this.borderRadius = 8.0,
+    this.margin = const EdgeInsets.all(ModTokens.space8),
+    this.padding = const EdgeInsets.all(ModTokens.space16),
+    this.borderRadius = ModTokens.radiusMd,
     this.initiallyExpanded = false,
     this.disableModCard = false,
   });
@@ -52,9 +53,9 @@ class ModCardState extends State<ModCard> {
     // Se disableModCard for true, mostra apenas content e footer
     if (widget.disableModCard) {
       return AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
+        duration: ModTokens.durationStandard,
         child: Card(
-          elevation: 5,
+          elevation: ModTokens.elevationMedium,
           margin: widget.margin,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(widget.borderRadius),
@@ -98,9 +99,9 @@ class ModCardState extends State<ModCard> {
 
     // Comportamento normal quando disableModCard for false
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
+      duration: ModTokens.durationStandard,
       child: Card(
-        elevation: 5,
+        elevation: ModTokens.elevationMedium,
         margin: widget.margin,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(widget.borderRadius),
@@ -150,7 +151,7 @@ class ModCardState extends State<ModCard> {
               ),
             ),
             AnimatedSize(
-              duration: const Duration(milliseconds: 300),
+              duration: ModTokens.durationStandard,
               child: _isExpanded || !widget.isAccordion
                   ? Container(
                       color: widget.contentColor,

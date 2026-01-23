@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mod_layout_one/themes/mod_tokens.dart';
 
 enum DialogSize {
   sm,
@@ -51,7 +52,7 @@ class ModDialog extends StatelessWidget {
     this.contentColor,
     this.footerColor,
     this.icon,
-    this.borderRadius = 8,
+    this.borderRadius = ModTokens.radiusMd,
     this.maxWidth,
     this.minWidth,
     this.maxHeight,
@@ -110,13 +111,13 @@ class ModDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
 
     return PopScope(
       canPop: dismissible,
       child: Dialog(
         alignment: _getDialogPosition(),
-        elevation: 8,
+        elevation: ModTokens.elevationHigh,
         child: ConstrainedBox(
           constraints: BoxConstraints(
             maxHeight: maxHeight ?? double.infinity,
@@ -125,11 +126,11 @@ class ModDialog extends StatelessWidget {
           child: Container(
             width: _getDialogWidth(context),
             decoration: BoxDecoration(
-              color: Theme.of(context).dialogBackgroundColor,
+              color: theme.dialogBackgroundColor,
               borderRadius: BorderRadius.circular(borderRadius),
               boxShadow: [
                 BoxShadow(
-                  color: (isDark ? Colors.grey : Colors.black).withOpacity(0.2),
+                  color: theme.shadowColor.withValues(alpha: ModTokens.opacityMediumLow),
                   blurRadius: 5,
                   offset: const Offset(0, 2),
                 ),
@@ -141,7 +142,7 @@ class ModDialog extends StatelessWidget {
               children: [
                 // Header
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(ModTokens.space16),
                   decoration: BoxDecoration(
                     color: headerColor,
                     borderRadius: BorderRadius.only(
@@ -157,11 +158,11 @@ class ModDialog extends StatelessWidget {
                           children: [
                             if (icon != null) ...[
                               Icon(icon),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: ModTokens.space8),
                             ],
                             Text(
                               title,
-                              style: Theme.of(context).textTheme.titleLarge,
+                              style: theme.textTheme.titleLarge,
                             ),
                           ],
                         ),
@@ -182,7 +183,7 @@ class ModDialog extends StatelessWidget {
                 // Content
                 Flexible(
                   child: Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(ModTokens.space16),
                     width: double.infinity,
                     color: contentColor,
                     child: content,
@@ -191,7 +192,7 @@ class ModDialog extends StatelessWidget {
 
                 // Footer
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(ModTokens.space16),
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: footerColor,
@@ -202,7 +203,7 @@ class ModDialog extends StatelessWidget {
                   ),
                   alignment: _getAlignment(),
                   child: Wrap(
-                    spacing: 8,
+                    spacing: ModTokens.space8,
                     children: buttons,
                   ),
                 ),

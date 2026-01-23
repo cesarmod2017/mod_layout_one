@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mod_layout_one/themes/mod_tokens.dart';
 
 enum ModModalPosition { top, center, bottom }
 
@@ -22,16 +23,16 @@ class ModModal extends StatelessWidget {
   final VoidCallback? onClose;
   final EdgeInsets? padding;
 
-  /// Largura máxima do modal (em pixels)
+  /// Largura maxima do modal (em pixels)
   final double? maxWidth;
 
-  /// Largura mínima do modal (em pixels)
+  /// Largura minima do modal (em pixels)
   final double? minWidth;
 
-  /// Altura máxima do modal (em pixels)
+  /// Altura maxima do modal (em pixels)
   final double? maxHeight;
 
-  /// Altura mínima do modal (em pixels)
+  /// Altura minima do modal (em pixels)
   final double? minHeight;
 
   const ModModal({
@@ -46,7 +47,7 @@ class ModModal extends StatelessWidget {
     this.size = ModModalSize.md,
     this.height = ModModalHeight.normal,
     this.fullScreen = false,
-    this.borderRadius = 8.0,
+    this.borderRadius = ModTokens.radiusMd,
     this.barrierDismissible = true,
     this.onClose,
     this.maxWidth,
@@ -77,7 +78,7 @@ class ModModal extends StatelessWidget {
         break;
     }
 
-    // Aplicar limitações de largura
+    // Aplicar limitacoes de largura
     if (maxWidth != null && calculatedWidth > maxWidth!) {
       calculatedWidth = maxWidth!;
     }
@@ -99,14 +100,14 @@ class ModModal extends StatelessWidget {
         calculatedHeight = screenHeight * 0.9;
         break;
       case ModModalHeight.auto:
-        // Para auto, usar maxHeight se disponível, senão permitir expansão livre
+        // Para auto, usar maxHeight se disponivel, senao permitir expansao livre
         return maxHeight ?? double.infinity;
       case ModModalHeight.normal:
         calculatedHeight = screenHeight * 0.6;
         break;
     }
 
-    // Aplicar limitações de altura apenas se não for auto
+    // Aplicar limitacoes de altura apenas se nao for auto
     if (maxHeight != null && calculatedHeight > maxHeight!) {
       calculatedHeight = maxHeight!;
     }
@@ -153,7 +154,7 @@ class ModModal extends StatelessWidget {
                 : BorderRadius.circular(borderRadius),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: theme.shadowColor.withValues(alpha: ModTokens.opacityMediumLow),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -164,7 +165,7 @@ class ModModal extends StatelessWidget {
             children: [
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(ModTokens.space16),
                 decoration: BoxDecoration(
                   color: headerColor ?? theme.colorScheme.surface,
                   borderRadius: fullScreen
@@ -195,14 +196,14 @@ class ModModal extends StatelessWidget {
                 child: Container(
                   width: double.infinity,
                   color: bodyColor ?? theme.colorScheme.surface,
-                  padding: padding ?? const EdgeInsets.all(16),
+                  padding: padding ?? const EdgeInsets.all(ModTokens.space16),
                   child: body,
                 ),
               ),
               const Divider(height: 1, thickness: 1),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(ModTokens.space16),
                 decoration: BoxDecoration(
                   color: footerColor ?? theme.colorScheme.surface,
                   borderRadius: fullScreen
@@ -233,7 +234,7 @@ class ModModal extends StatelessWidget {
     ModModalSize size = ModModalSize.md,
     ModModalHeight height = ModModalHeight.normal,
     bool fullScreen = false,
-    double borderRadius = 8.0,
+    double borderRadius = ModTokens.radiusMd,
     bool barrierDismissible = true,
     VoidCallback? onClose,
     double? maxWidth,

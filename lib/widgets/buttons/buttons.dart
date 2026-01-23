@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mod_layout_one/themes/mod_semantic_colors.dart';
 
 enum ModButtonType {
   none,
@@ -153,58 +154,66 @@ class _ModButtonState extends State<ModButton>
   }
 
   Color _getTypeColor() {
+    final theme = Get.theme;
+    final semanticColors = theme.extension<ModSemanticColors>()
+        ?? ModSemanticColors.defaultLight;
+
     if (widget.disabled) {
-      return Colors.grey.shade300;
+      return semanticColors.disabledLight;
     }
     switch (widget.type) {
       case ModButtonType.none:
         return Colors.transparent;
       case ModButtonType.primary:
-        return Get.theme.colorScheme.primary;
+        return theme.colorScheme.primary;
       case ModButtonType.secondary:
-        return Get.theme.colorScheme.secondary;
+        return theme.colorScheme.secondary;
       case ModButtonType.success:
-        return Colors.green;
+        return semanticColors.success;
       case ModButtonType.info:
-        return Colors.lightBlue;
+        return semanticColors.info;
       case ModButtonType.warning:
-        return Colors.orange;
+        return semanticColors.warning;
       case ModButtonType.danger:
-        return Colors.red;
+        return theme.colorScheme.error;
       case ModButtonType.dark:
-        return Get.theme.colorScheme.surface;
+        return theme.colorScheme.surface;
       case ModButtonType.defaultType:
-        return Colors.grey.shade300;
+        return theme.colorScheme.surfaceContainerHighest;
       case ModButtonType.custom:
-        return widget.backgroundColor ?? Colors.grey.shade300;
+        return widget.backgroundColor ?? theme.colorScheme.surfaceContainerHighest;
     }
   }
 
   Color _getBorderColor() {
+    final theme = Get.theme;
+    final semanticColors = theme.extension<ModSemanticColors>()
+        ?? ModSemanticColors.defaultLight;
+
     if (widget.disabled) {
-      return Colors.grey.shade300;
+      return semanticColors.disabledLight;
     }
     switch (widget.borderColor) {
       case ModButtonType.none:
         return Colors.transparent;
       case ModButtonType.primary:
-        return Get.theme.colorScheme.primary;
+        return theme.colorScheme.primary;
       case ModButtonType.secondary:
-        return Get.theme.colorScheme.secondary;
+        return theme.colorScheme.secondary;
       case ModButtonType.success:
-        return Colors.green;
+        return semanticColors.success;
       case ModButtonType.info:
-        return Colors.lightBlue;
+        return semanticColors.info;
       case ModButtonType.warning:
-        return Colors.orange;
+        return semanticColors.warning;
       case ModButtonType.danger:
-        return Colors.red;
+        return theme.colorScheme.error;
       case ModButtonType.dark:
-        return Get.theme.colorScheme.surface;
+        return theme.colorScheme.surface;
       case ModButtonType.defaultType:
-        return Colors.grey.shade300;
+        return theme.colorScheme.surfaceContainerHighest;
       case ModButtonType.custom:
-        return widget.backgroundColor ?? Colors.grey.shade300;
+        return widget.backgroundColor ?? theme.colorScheme.surfaceContainerHighest;
     }
   }
 
@@ -229,8 +238,12 @@ class _ModButtonState extends State<ModButton>
   }
 
   Color _getTextColor() {
+    final theme = Get.theme;
+    final semanticColors = theme.extension<ModSemanticColors>()
+        ?? ModSemanticColors.defaultLight;
+
     if (widget.disabled) {
-      return Colors.grey;
+      return semanticColors.disabled;
     }
     if (widget.textColor != null) {
       return widget.textColor!;
@@ -238,7 +251,11 @@ class _ModButtonState extends State<ModButton>
     if (widget.type == ModButtonType.none) {
       return _getBorderColor();
     }
-    return Colors.white;
+    // Use onPrimary for colored buttons, onSurface for default type
+    if (widget.type == ModButtonType.defaultType) {
+      return theme.colorScheme.onSurface;
+    }
+    return theme.colorScheme.onPrimary;
   }
 
   Widget _buildCenterIconLayout() {

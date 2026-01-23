@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mod_layout_one/themes/mod_semantic_colors.dart';
+import 'package:mod_layout_one/themes/mod_tokens.dart';
 
 enum ToastPosition {
   top,
@@ -56,7 +58,7 @@ class ModToast extends StatefulWidget {
     this.showCloseButton = true,
     this.onClose,
     this.margin = const EdgeInsets.all(16),
-    this.borderRadius = 8.0,
+    this.borderRadius = ModTokens.radiusMd,
     this.width,
     this.height,
     this.type = ToastType.custom,
@@ -77,9 +79,9 @@ class _ModToastState extends State<ModToast>
   @override
   void initState() {
     super.initState();
-    
+
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: ModTokens.durationStandard,
       vsync: this,
     );
 
@@ -141,17 +143,21 @@ class _ModToastState extends State<ModToast>
   }
 
   Color _getDefaultBackgroundColor(BuildContext context) {
+    final theme = Theme.of(context);
+    final semanticColors = theme.extension<ModSemanticColors>()
+        ?? ModSemanticColors.defaultLight;
+
     switch (widget.type) {
       case ToastType.success:
-        return Colors.green.shade600;
+        return semanticColors.success;
       case ToastType.error:
-        return Colors.red.shade600;
+        return theme.colorScheme.error;
       case ToastType.warning:
-        return Colors.orange.shade600;
+        return semanticColors.warning;
       case ToastType.info:
-        return Colors.blue.shade600;
+        return semanticColors.info;
       case ToastType.custom:
-        return Theme.of(context).colorScheme.surface;
+        return theme.colorScheme.surface;
     }
   }
 
@@ -171,10 +177,12 @@ class _ModToastState extends State<ModToast>
   }
 
   Color _getDefaultTextColor(BuildContext context) {
+    final theme = Theme.of(context);
     if (widget.type == ToastType.custom) {
-      return Theme.of(context).textTheme.bodyMedium?.color ?? Colors.black;
+      return theme.colorScheme.onSurface;
     }
-    return Colors.white;
+    // For colored backgrounds, use white or onPrimary
+    return theme.colorScheme.onPrimary;
   }
 
   @override
@@ -185,6 +193,7 @@ class _ModToastState extends State<ModToast>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final backgroundColor = widget.backgroundColor ?? _getDefaultBackgroundColor(context);
     final textColor = widget.textColor ?? _getDefaultTextColor(context);
     final iconColor = widget.iconColor ?? textColor;
@@ -201,14 +210,14 @@ class _ModToastState extends State<ModToast>
               width: widget.width,
               height: widget.height,
               margin: widget.margin,
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(ModTokens.space12),
               decoration: BoxDecoration(
                 color: backgroundColor,
                 borderRadius: BorderRadius.circular(widget.borderRadius),
                 boxShadow: [
                   widget.shadow ??
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: theme.shadowColor.withValues(alpha: ModTokens.opacityLight),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -220,9 +229,9 @@ class _ModToastState extends State<ModToast>
                   Icon(
                     icon,
                     color: iconColor,
-                    size: 24,
+                    size: ModTokens.iconSizeLg,
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: ModTokens.space12),
                   Expanded(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -231,34 +240,32 @@ class _ModToastState extends State<ModToast>
                         if (widget.title != null) ...[
                           Text(
                             widget.title!,
-                            style: TextStyle(
+                            style: theme.textTheme.titleSmall?.copyWith(
                               color: textColor,
-                              fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: ModTokens.space4),
                         ],
                         Text(
                           widget.message,
-                          style: TextStyle(
+                          style: theme.textTheme.bodyMedium?.copyWith(
                             color: textColor,
-                            fontSize: 14,
                           ),
                         ),
                       ],
                     ),
                   ),
                   if (widget.showCloseButton) ...[
-                    const SizedBox(width: 8),
+                    const SizedBox(width: ModTokens.space8),
                     GestureDetector(
                       onTap: _dismiss,
                       child: Container(
-                        padding: const EdgeInsets.all(4),
+                        padding: const EdgeInsets.all(ModTokens.space4),
                         child: Icon(
                           Icons.close,
-                          color: textColor.withOpacity(0.7),
-                          size: 18,
+                          color: textColor.withValues(alpha: ModTokens.opacityHigh),
+                          size: ModTokens.iconSizeSm,
                         ),
                       ),
                     ),

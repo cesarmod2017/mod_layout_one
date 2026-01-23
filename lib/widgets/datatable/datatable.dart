@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mod_layout_one/themes/mod_tokens.dart';
 import 'package:mod_layout_one/widgets/buttons/icon_buttom.dart';
 import 'package:mod_layout_one/widgets/grid_system/grid_system.dart';
 
@@ -294,10 +295,6 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
     final double percentage = (localPosition / trackWidth).clamp(0.0, 1.0);
     final double targetOffset = (maxScroll * percentage).clamp(0.0, maxScroll);
 
-    // Debug para entender o problema
-    debugPrint(
-        'Drag: localPos=$localPosition, trackWidth=$trackWidth, percentage=$percentage, targetOffset=$targetOffset, isDragging=$_isDragging');
-
     _bodyScrollController.jumpTo(targetOffset);
   }
 
@@ -378,8 +375,8 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
                       width: double.infinity,
                       height: 13,
                       decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(6),
+                        color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: ModTokens.opacityLight),
+                        borderRadius: BorderRadius.circular(ModTokens.radiusProgress),
                       ),
                       child: AnimatedBuilder(
                         animation: _bodyScrollController,
@@ -395,8 +392,8 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
                                 width: 50,
                                 height: 13,
                                 decoration: BoxDecoration(
-                                  color: Colors.grey.withOpacity(0.6),
-                                  borderRadius: BorderRadius.circular(6),
+                                  color: Theme.of(context).colorScheme.outline.withValues(alpha: ModTokens.opacityMediumHigh),
+                                  borderRadius: BorderRadius.circular(ModTokens.radiusProgress),
                                 ),
                               ),
                             );
@@ -425,8 +422,8 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
                               width: thumbWidth,
                               height: 13,
                               decoration: BoxDecoration(
-                                color: Colors.grey.withOpacity(0.6),
-                                borderRadius: BorderRadius.circular(6),
+                                color: Theme.of(context).colorScheme.outline.withValues(alpha: ModTokens.opacityMediumHigh),
+                                borderRadius: BorderRadius.circular(ModTokens.radiusProgress),
                               ),
                             ),
                           );
@@ -486,10 +483,10 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
                 constraints: const BoxConstraints(maxHeight: 500),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(ModTokens.radiusMd),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: Theme.of(context).shadowColor.withValues(alpha: ModTokens.opacityMediumLow),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -1123,19 +1120,20 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
   }
 
   BoxDecoration _getBorderDecoration() {
+    final borderColor = Theme.of(context).dividerColor;
     switch (widget.borderStyle) {
       case BorderStyle.none:
         return const BoxDecoration();
       case BorderStyle.topBottom:
         return BoxDecoration(
           border: Border(
-            top: BorderSide(color: Colors.grey.shade300),
-            bottom: BorderSide(color: Colors.grey.shade300),
+            top: BorderSide(color: borderColor),
+            bottom: BorderSide(color: borderColor),
           ),
         );
       case BorderStyle.topLeftRightBottom:
         return BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300),
+          border: Border.all(color: borderColor),
         );
     }
   }
