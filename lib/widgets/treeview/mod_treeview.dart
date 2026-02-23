@@ -423,8 +423,11 @@ class _ModTreeViewState extends State<ModTreeView> {
     });
 
     // Calculate position for the popup menu
+    final overlayWidget = Overlay.maybeOf(context) ??
+        Navigator.of(context).overlay;
+    if (overlayWidget == null) return;
     final RenderBox overlay =
-        Overlay.of(context).context.findRenderObject() as RenderBox;
+        overlayWidget.context.findRenderObject() as RenderBox;
 
     // Use the tap position if provided, otherwise calculate from the widget
     RelativeRect position;

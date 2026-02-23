@@ -345,7 +345,9 @@ class _ModDropdownSearchState<T> extends State<ModDropdownSearch<T>> {
     _searchController.clear(); // Clear previous search
     _filteredItems = widget.items; // Reset filtered items
     _overlayEntry = _createOverlayEntry();
-    Overlay.of(context).insert(_overlayEntry!);
+    final overlayState = Overlay.maybeOf(context) ??
+        Navigator.of(context).overlay;
+    overlayState?.insert(_overlayEntry!);
 
     if (mounted) setState(() {});
 

@@ -1,4 +1,24 @@
 
+## 1.4.0
+
+* Fixed Flutter 3.38+ compatibility for Overlay widget lookup:
+  * Replaced `Overlay.of(context)` with `Overlay.maybeOf(context)` + `Navigator.of(context).overlay` fallback across all components
+  * Fixes "No Overlay widget found" crash when context is the Overlay itself (e.g. `Get.overlayContext`)
+  * Affected widgets: ToastManager, ModPopupButton, ModDropdownSearch, Sidebar, ModTreeView
+  * Fully compatible with Flutter 3.38, 3.39, 3.40, and 3.41
+  * Maintains backward compatibility with older Flutter versions
+* Updated dependencies:
+  * get: ^4.7.3
+  * shared_preferences: ^2.5.4
+  * flutter_svg: ^2.2.3
+  * cached_network_image: ^3.4.1
+  * intl: ^0.20.2
+
+## 1.3.3
+
+* Added flutter_svg, cached_network_image and intl dependencies
+* Other improvements
+
 ## 1.3.2
 
 * Added unique identifier support to MenuItem:

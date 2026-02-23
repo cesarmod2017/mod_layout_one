@@ -28,7 +28,12 @@ class ToastManager {
     BoxShadow? shadow,
     double? maxWidth,
   }) {
-    final overlayState = Overlay.of(context);
+    // Flutter 3.38+ changed Overlay lookup behavior.
+    // Overlay.of() fails when context IS the Overlay itself (e.g. Get.overlayContext).
+    // Fallback: access the OverlayState directly via Navigator.
+    var overlayState = Overlay.maybeOf(context);
+    overlayState ??= Navigator.of(context).overlay;
+    if (overlayState == null) return;
 
     // Remove oldest toast if we have too many
     if (_activeToasts.length >= _maxToasts) {

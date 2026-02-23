@@ -341,7 +341,9 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
       ),
     );
 
-    Overlay.of(context).insert(_overlayEntry!);
+    final overlayState = Overlay.maybeOf(context) ??
+        Navigator.of(context).overlay;
+    overlayState?.insert(_overlayEntry!);
   }
 
   Widget _buildPopupMenuItem(BuildContext context, MenuItem item) {

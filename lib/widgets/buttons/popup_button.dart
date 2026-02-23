@@ -138,7 +138,9 @@ class _ModPopupButtonState<T> extends State<ModPopupButton<T>> {
     _removeSubmenuOverlay();
 
     final submenuItems = parentItem.submenu!;
-    final overlay = Overlay.of(context);
+    final overlay = Overlay.maybeOf(context) ??
+        Navigator.of(context).overlay;
+    if (overlay == null) return;
     final screenSize = MediaQuery.of(context).size;
 
     // Usar offset customizado ou padrao
