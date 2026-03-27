@@ -222,43 +222,42 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
   bool _isDragging = false;
   bool _isHorizontalDragging = false;
   double? _lastPanPosition;
-  int? _hoveredRowIndex;
+  final ValueNotifier<int?> _hoveredRowIndex = ValueNotifier<int?>(null);
+  bool _isSyncingScroll = false;
+  BoxDecoration _cachedBorderDecoration = const BoxDecoration();
+  List<ModDataHeader> _cachedVisibleHeaders = [];
+  List<int> _cachedVisibleColumnIndices = [];
+  List<double> _cachedVisibleColumnWidths = [];
 
   /// Verifica se o hover deve ser habilitado (apenas Windows e Web)
   bool get _isHoverEnabled {
     if (kIsWeb) return true;
-    // Em plataformas nativas, verifica se é Windows
     return Theme.of(context).platform == TargetPlatform.windows;
   }
 
-  /// Returns the list of visible headers based on columnsShow
-  List<ModDataHeader> get _visibleHeaders {
-    if (widget.columnsShow == null || widget.columnsShow!.isEmpty) {
-      return widget.headers;
-    }
-    return widget.headers
-        .where((header) => widget.columnsShow!.contains(header.field))
-        .toList();
-  }
+  List<ModDataHeader> get _visibleHeaders => _cachedVisibleHeaders;
+  List<int> get _visibleColumnIndices => _cachedVisibleColumnIndices;
+  List<double> get _visibleColumnWidths => _cachedVisibleColumnWidths;
 
-  /// Returns the indices of visible columns in the original headers list
-  List<int> get _visibleColumnIndices {
+  void _updateCachedVisibility() {
     if (widget.columnsShow == null || widget.columnsShow!.isEmpty) {
-      return List.generate(widget.headers.length, (index) => index);
-    }
-    final indices = <int>[];
-    for (int i = 0; i < widget.headers.length; i++) {
-      if (widget.columnsShow!.contains(widget.headers[i].field)) {
-        indices.add(i);
+      _cachedVisibleHeaders = widget.headers;
+      _cachedVisibleColumnIndices =
+          List.generate(widget.headers.length, (index) => index);
+    } else {
+      _cachedVisibleHeaders = widget.headers
+          .where((header) => widget.columnsShow!.contains(header.field))
+          .toList();
+      final indices = <int>[];
+      for (int i = 0; i < widget.headers.length; i++) {
+        if (widget.columnsShow!.contains(widget.headers[i].field)) {
+          indices.add(i);
+        }
       }
+      _cachedVisibleColumnIndices = indices;
     }
-    return indices;
-  }
-
-  /// Returns the widths of visible columns
-  List<double> get _visibleColumnWidths {
-    final indices = _visibleColumnIndices;
-    return indices.map((i) => _columnWidths[i]).toList();
+    _cachedVisibleColumnWidths =
+        _cachedVisibleColumnIndices.map((i) => _columnWidths[i]).toList();
   }
 
   @override
@@ -267,16 +266,23 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
     _sortField = widget.currentSortField;
     _sortDirection = widget.currentSortDirection;
     _columnWidths = widget.headers.map((header) => header.width).toList();
+    _updateCachedVisibility();
 
-    // Synchronize the scroll of header and body
+    // Synchronize the scroll of header and body with guard to prevent loop
     _headerScrollController.addListener(() {
+      if (_isSyncingScroll) return;
       if (_bodyScrollController.hasClients) {
+        _isSyncingScroll = true;
         _bodyScrollController.jumpTo(_headerScrollController.offset);
+        _isSyncingScroll = false;
       }
     });
     _bodyScrollController.addListener(() {
+      if (_isSyncingScroll) return;
       if (_headerScrollController.hasClients) {
+        _isSyncingScroll = true;
         _headerScrollController.jumpTo(_bodyScrollController.offset);
+        _isSyncingScroll = false;
       }
     });
   }
@@ -444,6 +450,7 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
   void dispose() {
     _headerScrollController.dispose();
     _bodyScrollController.dispose();
+    _hoveredRowIndex.dispose();
     super.dispose();
   }
 
@@ -454,6 +461,11 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
         oldWidget.currentSortDirection != widget.currentSortDirection) {
       _sortField = widget.currentSortField;
       _sortDirection = widget.currentSortDirection;
+    }
+    if (oldWidget.headers != widget.headers ||
+        oldWidget.columnsShow != widget.columnsShow) {
+      _columnWidths = widget.headers.map((header) => header.width).toList();
+      _updateCachedVisibility();
     }
   }
 
@@ -696,6 +708,7 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
 
   @override
   Widget build(BuildContext context) {
+    _updateCachedBorderDecoration();
     const headerHeight = 40.0;
     const paginationHeight = 56.0;
     final hasActionBar = widget.actionBarConfig?.hasAnyAction ?? false;
@@ -881,7 +894,7 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
             },
             child: Container(
               width: width,
-              decoration: _getBorderDecoration(),
+              decoration: _cachedBorderDecoration,
               padding: const EdgeInsets.all(8),
               child: Row(
                 children: [
@@ -930,55 +943,57 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
   Widget _buildRows(List<T> visibleData, List<double> columnWidths) {
     final visibleIndices = _visibleColumnIndices;
     final theme = Theme.of(context);
+    final effectiveHoverColor = widget.hoverColor ?? theme.hoverColor;
+    final hoverEnabled = _isHoverEnabled;
+    final rowCount = visibleData.length;
 
-    return Column(
-      children: List.generate(visibleData.length, (index) {
-        final row = widget.source.getRow(index);
-        final isHovered = _hoveredRowIndex == index;
-        final baseColor =
-            index % 2 == 0 ? widget.evenRowColor : widget.oddRowColor;
+    return SizedBox(
+      height: widget.rowHeight * rowCount,
+      child: ListView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: rowCount,
+        itemExtent: widget.rowHeight,
+        itemBuilder: (context, index) {
+          final row = widget.source.getRow(index);
+          final baseColor =
+              index % 2 == 0 ? widget.evenRowColor : widget.oddRowColor;
 
-        // Determina a cor de hover: usa a cor personalizada ou a cor padrão do tema
-        final effectiveHoverColor = widget.hoverColor ?? theme.hoverColor;
-
-        // Aplica a cor de hover apenas se estiver habilitado e a linha estiver com hover
-        final rowColor =
-            (_isHoverEnabled && isHovered) ? effectiveHoverColor : baseColor;
-
-        Widget rowWidget = Container(
-          color: rowColor,
-          child: Row(
+          final rowCells = Row(
             children: List.generate(visibleIndices.length, (visibleIndex) {
               final originalIndex = visibleIndices[visibleIndex];
               return Container(
                 width: _columnWidths[originalIndex],
-                decoration: _getBorderDecoration(),
+                decoration: _cachedBorderDecoration,
                 padding: const EdgeInsets.all(8),
                 child: row?.cells[originalIndex].child ?? const SizedBox(),
               );
             }),
-          ),
-        );
-
-        // Adiciona MouseRegion apenas se hover estiver habilitado
-        if (_isHoverEnabled) {
-          rowWidget = MouseRegion(
-            onEnter: (_) {
-              setState(() {
-                _hoveredRowIndex = index;
-              });
-            },
-            onExit: (_) {
-              setState(() {
-                _hoveredRowIndex = null;
-              });
-            },
-            child: rowWidget,
           );
-        }
 
-        return rowWidget;
-      }),
+          if (!hoverEnabled) {
+            return Container(color: baseColor, child: rowCells);
+          }
+
+          return MouseRegion(
+            onEnter: (_) => _hoveredRowIndex.value = index,
+            onExit: (_) {
+              if (_hoveredRowIndex.value == index) {
+                _hoveredRowIndex.value = null;
+              }
+            },
+            child: ValueListenableBuilder<int?>(
+              valueListenable: _hoveredRowIndex,
+              builder: (context, hoveredIndex, child) {
+                final rowColor = hoveredIndex == index
+                    ? effectiveHoverColor
+                    : baseColor;
+                return Container(color: rowColor, child: child);
+              },
+              child: rowCells,
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -1119,22 +1134,25 @@ class _ModDataTableState<T> extends State<ModDataTable<T>> {
     return List.generate(end - start + 1, (i) => start + i);
   }
 
-  BoxDecoration _getBorderDecoration() {
+  void _updateCachedBorderDecoration() {
     final borderColor = Theme.of(context).dividerColor;
     switch (widget.borderStyle) {
       case BorderStyle.none:
-        return const BoxDecoration();
+        _cachedBorderDecoration = const BoxDecoration();
+        break;
       case BorderStyle.topBottom:
-        return BoxDecoration(
+        _cachedBorderDecoration = BoxDecoration(
           border: Border(
             top: BorderSide(color: borderColor),
             bottom: BorderSide(color: borderColor),
           ),
         );
+        break;
       case BorderStyle.topLeftRightBottom:
-        return BoxDecoration(
+        _cachedBorderDecoration = BoxDecoration(
           border: Border.all(color: borderColor),
         );
+        break;
     }
   }
 }

@@ -16,7 +16,35 @@ class TablesPage extends StatefulWidget {
 class _TablesPageState extends State<TablesPage> {
   final bool _sortAscending = true;
   final int _sortColumnIndex = 0;
-  final int _rowsPerPage = 5;
+
+  // State for performance test table
+  int _perfColumns = 5;
+  int _perfRows = 50;
+  int _perfRowsPerPage = 20;
+  int _perfCurrentPage = 0;
+  double _perfRowHeight = 35;
+  final Stopwatch _perfStopwatch = Stopwatch();
+  String _perfBuildTime = '-';
+
+  List<ModDataHeader> get _perfHeaders {
+    return List.generate(_perfColumns, (i) => ModDataHeader(
+      child: Text('Col ${i + 1}', style: const TextStyle(fontWeight: FontWeight.bold)),
+      widthType: WidthType.fixed,
+      width: 150,
+      sortable: true,
+      field: 'col_$i',
+    ));
+  }
+
+  List<Map<String, dynamic>> get _perfData {
+    return List.generate(_perfRows, (row) {
+      final map = <String, dynamic>{};
+      for (int col = 0; col < _perfColumns; col++) {
+        map['col_$col'] = 'R${row + 1} C${col + 1}';
+      }
+      return map;
+    });
+  }
 
   // State for action bar example
   List<String>? _visibleColumns = ['name', 'city'];
@@ -104,140 +132,182 @@ class _TablesPageState extends State<TablesPage> {
             // Styled DataTable with pagination
 
             ModCard(
-              header: const Text(
-                "Custom ModDataTable Example",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              content: ModDataTable(
-                paginationBorderRadius: 1,
-                headerBackgroundColor: Get.theme.scaffoldBackgroundColor,
-                footerBackgroundColor: Get.theme.scaffoldBackgroundColor,
-                oddRowColor: Get.theme.colorScheme.surfaceContainerHighest,
-                evenRowColor: Get.theme.scaffoldBackgroundColor,
-                fixedHeader: true,
-                onColumnWidthChanged: (field, width) {
-                  log('Column width changed: $field to $width');
-                },
-                enableColumnResize: true,
-                headers: [
-                  ModDataHeader(
-                    child: SelectableText(
-                      'Name',
-                      style: Theme.of(Get.context!).textTheme.titleSmall,
-                    ),
-                    widthType: WidthType.fixed,
-                    width: 150,
-                    sortable: true,
-                    field: 'name', // Adicione o campo correspondente
+              header: Row(
+                children: [
+                  const Text(
+                    "Performance Test",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  ModDataHeader(
-                    child: SelectableText(
-                      'Age',
-                      style: Theme.of(Get.context!).textTheme.titleSmall,
+                  const SizedBox(width: 16),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    widthType: WidthType.fixed,
-                    width: 950,
-                    sortable: true,
-                    field: 'age', // Adicione o campo correspondente
+                    child: Text(
+                      'Build: $_perfBuildTime',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      ),
+                    ),
                   ),
-                  ModDataHeader(
-                    child: const SelectableText('City'),
-                    widthType: WidthType.fixed,
-                    width: 150,
-                    sortable: true,
-                    field: 'city', // Adicione o campo correspondente
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(
+                      'Widgets: ~${_perfRowsPerPage * _perfColumns} cells',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.onSecondaryContainer,
+                      ),
+                    ),
                   ),
                 ],
-                data: _sortedData,
-                source: _DataSource(_sortedData),
-                currentPage: 0,
-                rowsPerPage: 20,
-
-                totalRecords: _sortedData.length,
-
-                onPageChanged: (page) {
-                  // Handle page change
-                  log('Page changed: $page');
-                },
-                onSort: (field, direction) {
-                  // Handle sorting
-                  log('Sorting by $field in $direction direction');
-                },
-                rowHeight: 10,
-                paginationText: 'of', // Adicione se necessário
-                rowsPerPageText: 'Linhas por página',
-
-                onRowsPerPageChanged: (rowsPerPage) {
-                  // Handle rows per page change
-                  log('Rows per page changed: $rowsPerPage');
-                },
-                availableRowsPerPage: const [
-                  5,
-                  10,
-                  15,
-                  20,
-                  50,
-                  100,
-                  200
-                ], // Adicione se necessário
               ),
-            ),
-            const SizedBox(height: 8),
-            const ModCodeExample(
-              code: '''// ModDataTable Customizado
-ModDataTable(
-  paginationBorderRadius: 1,
-  headerBackgroundColor: Get.theme.scaffoldBackgroundColor,
-  footerBackgroundColor: Get.theme.scaffoldBackgroundColor,
-  oddRowColor: Get.theme.colorScheme.surfaceContainerHighest,
-  evenRowColor: Get.theme.scaffoldBackgroundColor,
-  fixedHeader: true,
-  enableColumnResize: true,
-  headers: [
-    ModDataHeader(
-      child: SelectableText('Name'),
-      widthType: WidthType.fixed,
-      width: 150,
-      sortable: true,
-      field: 'name',
-    ),
-    ModDataHeader(
-      child: SelectableText('Age'),
-      widthType: WidthType.fixed,
-      width: 100,
-      sortable: true,
-      field: 'age',
-    ),
-    ModDataHeader(
-      child: const SelectableText('City'),
-      widthType: WidthType.fixed,
-      width: 150,
-      sortable: true,
-      field: 'city',
-    ),
-  ],
-  data: dataList,
-  source: _DataSource(dataList),
-  currentPage: 0,
-  rowsPerPage: 20,
-  totalRecords: dataList.length,
-  onPageChanged: (page) {
-    log('Page changed: \$page');
-  },
-  onSort: (field, direction) {
-    log('Sorting by \$field in \$direction direction');
-  },
-  rowHeight: 10,
-  paginationText: 'of',
-  rowsPerPageText: 'Linhas por página',
-  onRowsPerPageChanged: (rowsPerPage) {
-    log('Rows per page changed: \$rowsPerPage');
-  },
-  availableRowsPerPage: const [5, 10, 15, 20, 50, 100],
-),''',
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Controls
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: Wrap(
+                      spacing: 24,
+                      runSpacing: 12,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        // Columns control
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text('Columns: ', style: TextStyle(fontWeight: FontWeight.w600)),
+                            SizedBox(
+                              width: 200,
+                              child: Slider(
+                                value: _perfColumns.toDouble(),
+                                min: 1,
+                                max: 30,
+                                divisions: 29,
+                                label: '$_perfColumns',
+                                onChanged: (v) => setState(() {
+                                  _perfColumns = v.toInt();
+                                  _perfCurrentPage = 0;
+                                }),
+                              ),
+                            ),
+                            Text('$_perfColumns', style: const TextStyle(fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        // Total rows control
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text('Total rows: ', style: TextStyle(fontWeight: FontWeight.w600)),
+                            SizedBox(
+                              width: 200,
+                              child: Slider(
+                                value: _perfRows.toDouble(),
+                                min: 1,
+                                max: 5000,
+                                divisions: 100,
+                                label: '$_perfRows',
+                                onChanged: (v) => setState(() {
+                                  _perfRows = v.toInt();
+                                  _perfCurrentPage = 0;
+                                }),
+                              ),
+                            ),
+                            Text('$_perfRows', style: const TextStyle(fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        // Row height control
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text('Row height: ', style: TextStyle(fontWeight: FontWeight.w600)),
+                            SizedBox(
+                              width: 150,
+                              child: Slider(
+                                value: _perfRowHeight,
+                                min: 20,
+                                max: 80,
+                                divisions: 12,
+                                label: '${_perfRowHeight.toInt()}',
+                                onChanged: (v) => setState(() {
+                                  _perfRowHeight = v;
+                                }),
+                              ),
+                            ),
+                            Text('${_perfRowHeight.toInt()}px', style: const TextStyle(fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  // The DataTable
+                  Builder(
+                    builder: (context) {
+                      _perfStopwatch.reset();
+                      _perfStopwatch.start();
+
+                      final data = _perfData;
+                      final headers = _perfHeaders;
+
+                      final table = ModDataTable(
+                        paginationBorderRadius: 1,
+                        headerBackgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                        footerBackgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                        oddRowColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        evenRowColor: Theme.of(context).scaffoldBackgroundColor,
+                        fixedHeader: true,
+                        showHorizontalScrollbar: true,
+                        enableColumnResize: true,
+                        headers: headers,
+                        data: data,
+                        source: _DynamicDataSource(data, _perfColumns),
+                        currentPage: _perfCurrentPage,
+                        rowsPerPage: _perfRowsPerPage,
+                        totalRecords: data.length,
+                        onPageChanged: (page) {
+                          setState(() => _perfCurrentPage = page);
+                        },
+                        onSort: (field, direction) {
+                          log('Sorting by $field in $direction direction');
+                        },
+                        rowHeight: _perfRowHeight,
+                        paginationText: 'of',
+                        rowsPerPageText: 'Rows/page',
+                        onRowsPerPageChanged: (rowsPerPage) {
+                          setState(() {
+                            _perfRowsPerPage = rowsPerPage;
+                            _perfCurrentPage = 0;
+                          });
+                        },
+                        availableRowsPerPage: const [5, 10, 20, 50, 100, 200, 500],
+                      );
+
+                      _perfStopwatch.stop();
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted) {
+                          final time = _perfStopwatch.elapsedMilliseconds;
+                          if (_perfBuildTime != '${time}ms') {
+                            setState(() => _perfBuildTime = '${time}ms');
+                          }
+                        }
+                      });
+
+                      return table;
+                    },
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 20),
             ModCard(
@@ -1406,6 +1476,33 @@ class _ScrollDemoDataSource extends DataTableSource {
         DataCell(Text(row['col7']?.toString() ?? '')),
         DataCell(Text(row['col8']?.toString() ?? '')),
       ],
+    );
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => _data.length;
+
+  @override
+  int get selectedRowCount => 0;
+}
+
+class _DynamicDataSource extends DataTableSource {
+  final List<Map<String, dynamic>> _data;
+  final int _columnCount;
+
+  _DynamicDataSource(this._data, this._columnCount);
+
+  @override
+  DataRow getRow(int index) {
+    if (index >= _data.length) return const DataRow(cells: []);
+    final row = _data[index];
+    return DataRow(
+      cells: List.generate(_columnCount, (col) =>
+        DataCell(Text(row['col_$col']?.toString() ?? '')),
+      ),
     );
   }
 

@@ -1,4 +1,27 @@
 
+## 1.5.0
+
+* **Major performance optimization for ModDataTable and ModDataTableModal:**
+  * Replaced `Column` + `List.generate` with `ListView.builder` for row virtualization - only visible rows are built, drastically reducing memory usage with large datasets (100-500+ rows per page)
+  * Replaced `setState` hover with `ValueNotifier` + `ValueListenableBuilder` per row - mouse hover now only rebuilds the affected row's color container, not the entire table
+  * Cached `BoxDecoration` per build instead of recreating per cell - eliminates hundreds of redundant object allocations per frame
+  * Added `_isSyncingScroll` guard to prevent infinite loop between header and body scroll controllers
+  * Cached computed getters (`_visibleHeaders`, `_visibleColumnIndices`, `_visibleColumnWidths`) as state fields updated in `initState`/`didUpdateWidget` instead of recalculating on every access
+
+* **Fixed sidebar ListTile overflow crash during AnimatedContainer transition:**
+  * Replaced `isMenuExpanded` state-based rendering with `LayoutBuilder` that detects actual available width
+  * Compact mode (`< 150px`): renders `InkWell` + centered `Icon` instead of `ListTile`, eliminating layout overflow assertions
+  * Expanded mode (`>= 150px`): renders full `ListTile` with leading, title, and trailing
+  * Fixes "Leading widget consumes the entire tile width" assertion error during sidebar expand/collapse animation
+
+* **Added performance test panel to tables example page:**
+  * Dynamic column count slider (1-30 columns)
+  * Dynamic total rows slider (1-5000 rows)
+  * Dynamic row height slider (20-80px)
+  * Real-time build time measurement badge
+  * Widget count indicator
+  * Rows per page selector that reflects in table state
+
 ## 1.4.0
 
 * Fixed Flutter 3.38+ compatibility for Overlay widget lookup:

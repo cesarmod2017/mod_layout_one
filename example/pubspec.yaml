@@ -10,9 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.8
+  cupertino_icons: ^1.0.9
   get: ^4.7.3
-  shared_preferences: ^2.5.4
+  shared_preferences: ^2.5.5
   mod_layout_one:
     path: ../
 

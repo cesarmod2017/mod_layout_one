@@ -444,117 +444,171 @@ class _ExpandableMenuItemState extends State<_ExpandableMenuItem> {
       }
       final hasSubItems = widget.item.subItems?.isNotEmpty ?? false;
 
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            contentPadding: EdgeInsets.only(
-              left: 16.0 + (widget.level * (isMenuExpanded ? 16.0 : 0)),
-              right: 16.0,
-            ),
-            leading: Icon(
-              widget.item.icon,
-              size: widget.iconSize ?? 24.0,
-              color: isSelected
-                  ? widget.selectedColor ??
-                      Theme.of(context).colorScheme.primary
-                  : widget.unselectedColor ?? Theme.of(context).iconTheme.color,
-            ),
-            title: isMenuExpanded
-                ? Text(
-                    widget.item.title,
-                    style: TextStyle(
-                      color: isSelected
-                          ? widget.selectedColor ??
-                              Theme.of(context).colorScheme.primary
-                          : widget.unselectedColor ??
-                              Theme.of(context).textTheme.bodyLarge?.color,
-                      fontWeight: widget.fontWeight ??
-                          (isSelected ? FontWeight.bold : FontWeight.normal),
-                      fontSize: widget.fontSize ?? 14.0,
-                    ),
-                  )
-                : null,
-            trailing: hasSubItems && isMenuExpanded
-                ? Icon(
-                    _isExpanded ? Icons.expand_less : Icons.expand_more,
-                    color: widget.unselectedColor ??
-                        Theme.of(context).iconTheme.color,
-                  )
-                : null,
-            selected: isSelected,
-            selectedTileColor:
-                Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-            onTap: () {
-              debugPrint(
-                  '[_ExpandableMenuItem] Tap detected on: ${widget.item.title}');
-              if (hasSubItems) {
-                if (!isMenuExpanded && !Get.isDialogOpen!) {
-                  _showSubmenuPopup(context, widget.item.subItems!);
-                } else {
-                  if (mounted) setState(() => _isExpanded = !_isExpanded);
-                }
-              } else if (widget.item.route != null) {
-                debugPrint(
-                    '[_ExpandableMenuItem] Navigating to: ${widget.item.route}');
-                controller.setSelectedRoute(widget.item.route!, menuId: widget.item.id);
+      final iconColor = isSelected
+          ? widget.selectedColor ?? Theme.of(context).colorScheme.primary
+          : widget.unselectedColor ?? Theme.of(context).iconTheme.color;
 
-                // Simplified navigation to avoid navigator issues
-                try {
-                  // Check if should reload on navigate
-                  if (widget.item.reloadOnNavigate) {
-                    // Force reload by using offAllNamed to clear navigation stack
-                    debugPrint(
-                        '[_ExpandableMenuItem] Reloading route: ${widget.item.route}');
-                    if (widget.item.arguments != null) {
-                      Get.offAllNamed(
-                        widget.item.route!,
-                        arguments: widget.item.arguments,
-                      );
-                    } else {
-                      Get.offAllNamed(widget.item.route!);
-                    }
-                  } else {
-                    // Only navigate if route is different from current
-                    if (Get.currentRoute != widget.item.route) {
-                      // Check if route exists before navigating
-                      if (widget.item.arguments != null) {
-                        Get.toNamed(
-                          widget.item.route!,
-                          arguments: widget.item.arguments,
-                        );
-                      } else {
-                        Get.toNamed(widget.item.route!);
+      // Use LayoutBuilder to decide visual mode based on actual width,
+      // not just isMenuExpanded, to avoid layout errors during AnimatedContainer transition
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final useCompactMode = constraints.maxWidth < 150;
+
+          if (useCompactMode) {
+            // Compact mode: just a centered icon, no ListTile
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                InkWell(
+                  onTap: () {
+                    if (hasSubItems) {
+                      if (!Get.isDialogOpen!) {
+                        _showSubmenuPopup(context, widget.item.subItems!);
+                      }
+                    } else if (widget.item.route != null) {
+                      controller.setSelectedRoute(widget.item.route!, menuId: widget.item.id);
+                      try {
+                        if (widget.item.reloadOnNavigate) {
+                          if (widget.item.arguments != null) {
+                            Get.offAllNamed(widget.item.route!, arguments: widget.item.arguments);
+                          } else {
+                            Get.offAllNamed(widget.item.route!);
+                          }
+                        } else {
+                          if (Get.currentRoute != widget.item.route) {
+                            if (widget.item.arguments != null) {
+                              Get.toNamed(widget.item.route!, arguments: widget.item.arguments);
+                            } else {
+                              Get.toNamed(widget.item.route!);
+                            }
+                          }
+                        }
+                      } catch (e) {
+                        debugPrint('[_ExpandableMenuItem] Navigation error: $e');
                       }
                     }
-                  }
-                } catch (e) {
-                  debugPrint('[_ExpandableMenuItem] Navigation error: $e');
-                  // Show error instead of trying complex navigation
-                  Get.snackbar(
-                    'Erro de Navegação',
-                    'Não foi possível navegar para ${widget.item.title}',
-                    snackPosition: SnackPosition.BOTTOM,
-                    duration: const Duration(seconds: 2),
-                  );
-                }
+                  },
+                  child: Container(
+                    height: 48,
+                    color: isSelected
+                        ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
+                        : null,
+                    child: Center(
+                      child: Icon(
+                        widget.item.icon,
+                        size: widget.iconSize ?? 24.0,
+                        color: iconColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
 
-                if (Get.isDialogOpen ?? false) Get.back();
-                if (Get.width < 768 && !isMenuExpanded) Get.back();
-              }
-            },
-          ),
-          if (hasSubItems && _isExpanded && isMenuExpanded)
-            AnimatedSize(
-              duration: const Duration(milliseconds: 200),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: widget.item.subItems!
-                    .map((subItem) => widget.buildSubmenu(subItem))
-                    .toList(),
+          // Expanded mode: full ListTile with leading, title, trailing
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                contentPadding: EdgeInsets.only(
+                  left: 16.0 + (widget.level * 16.0),
+                  right: 16.0,
+                ),
+                leading: Icon(
+                  widget.item.icon,
+                  size: widget.iconSize ?? 24.0,
+                  color: iconColor,
+                ),
+                title: Text(
+                  widget.item.title,
+                  style: TextStyle(
+                    color: isSelected
+                        ? widget.selectedColor ??
+                            Theme.of(context).colorScheme.primary
+                        : widget.unselectedColor ??
+                            Theme.of(context).textTheme.bodyLarge?.color,
+                    fontWeight: widget.fontWeight ??
+                        (isSelected ? FontWeight.bold : FontWeight.normal),
+                    fontSize: widget.fontSize ?? 14.0,
+                  ),
+                ),
+                trailing: hasSubItems
+                    ? Icon(
+                        _isExpanded ? Icons.expand_less : Icons.expand_more,
+                        color: widget.unselectedColor ??
+                            Theme.of(context).iconTheme.color,
+                      )
+                    : null,
+                selected: isSelected,
+                selectedTileColor:
+                    Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                onTap: () {
+                  debugPrint(
+                      '[_ExpandableMenuItem] Tap detected on: ${widget.item.title}');
+                  if (hasSubItems) {
+                    if (!isMenuExpanded && !Get.isDialogOpen!) {
+                      _showSubmenuPopup(context, widget.item.subItems!);
+                    } else {
+                      if (mounted) setState(() => _isExpanded = !_isExpanded);
+                    }
+                  } else if (widget.item.route != null) {
+                    debugPrint(
+                        '[_ExpandableMenuItem] Navigating to: ${widget.item.route}');
+                    controller.setSelectedRoute(widget.item.route!, menuId: widget.item.id);
+
+                    try {
+                      if (widget.item.reloadOnNavigate) {
+                        debugPrint(
+                            '[_ExpandableMenuItem] Reloading route: ${widget.item.route}');
+                        if (widget.item.arguments != null) {
+                          Get.offAllNamed(
+                            widget.item.route!,
+                            arguments: widget.item.arguments,
+                          );
+                        } else {
+                          Get.offAllNamed(widget.item.route!);
+                        }
+                      } else {
+                        if (Get.currentRoute != widget.item.route) {
+                          if (widget.item.arguments != null) {
+                            Get.toNamed(
+                              widget.item.route!,
+                              arguments: widget.item.arguments,
+                            );
+                          } else {
+                            Get.toNamed(widget.item.route!);
+                          }
+                        }
+                      }
+                    } catch (e) {
+                      debugPrint('[_ExpandableMenuItem] Navigation error: $e');
+                      Get.snackbar(
+                        'Erro de Navegação',
+                        'Não foi possível navegar para ${widget.item.title}',
+                        snackPosition: SnackPosition.BOTTOM,
+                        duration: const Duration(seconds: 2),
+                      );
+                    }
+
+                    if (Get.isDialogOpen ?? false) Get.back();
+                    if (Get.width < 768 && !isMenuExpanded) Get.back();
+                  }
+                },
               ),
-            ),
-        ],
+              if (hasSubItems && _isExpanded && isMenuExpanded)
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 200),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: widget.item.subItems!
+                        .map((subItem) => widget.buildSubmenu(subItem))
+                        .toList(),
+                  ),
+                ),
+            ],
+          );
+        },
       );
     });
   }
